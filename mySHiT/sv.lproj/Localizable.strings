@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  mySHiT
+
+  Created by Per Solberg on 2015-10-17.
+  Copyright © 2015 Per Solberg. All rights reserved.
+*/
+"Future" = "Framtidiga";
+"Upcoming" = "Nästa";
+"Current" = "Nuvarande";
+"Historic" = "Historiska";
+"%@ departs in %@, at %@" = "%@ avgår om %@, kl. %@";

@@ -13,11 +13,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound], categories: nil))
+        if !User.sharedUser.hasCredentials() {
+            // Show login view
+            showLogonScreen(animated: true)
+        }
         return true
     }
+
+    
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripList", object: self)
+        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripElements", object: self)
+    }
+
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -35,10 +46,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripList", object: self)
+        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripElements", object: self)
     }
+    
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+
+    func showLogonScreen(animated animated: Bool) {
+        // Get login screen from storyboard and present it
+        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
+        let logonVC = storyboard.instantiateViewControllerWithIdentifier("logonScreen") as! LogonViewController
+        window!.makeKeyAndVisible()
+        window!.rootViewController?.presentViewController(logonVC, animated: true, completion: nil)
+    }
+    
+    func logout() {
+        // Remove data from singleton (where all my app data is stored)
+        // [AppData clearData];
+    
+        // Reset view controller (this will quickly clear all the views)
+        let storyboard: UIStoryboard = UIStoryboard(name:"MainStoryboard", bundle:nil)
+        let viewController: TripListViewController = storyboard.instantiateViewControllerWithIdentifier("mainView") as! TripListViewController
+        window!.rootViewController = viewController
+        showLogonScreen(animated:true)
     }
 
 

@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  mySHiT
+
+  Created by Per Solberg on 2015-10-17.
+  Copyright © 2015 Per Solberg. All rights reserved.
+*/
+"Future" = "Future";
+"Upcoming" = "Upcoming";
+"Current" = "Current";
+"Historic" = "Historic";
+"%@ departs in %@, at %@" = "%@ departs in %@, at %@";

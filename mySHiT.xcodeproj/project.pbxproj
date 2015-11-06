@@ -7,13 +7,46 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8507431B1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8507431A1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift */; };
+		8507431D1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8507431C1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift */; };
+		851173881BE371D8008FE3BE /* FlightDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851173871BE371D8008FE3BE /* FlightDetailsViewController.swift */; };
+		8511738A1BE37245008FE3BE /* HotelDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851173891BE37245008FE3BE /* HotelDetailsViewController.swift */; };
+		85179B4D1BDDB09F0097F571 /* UIView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */; };
+		855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F33581BDEE853002CB89B /* AlertListViewController.swift */; };
+		855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F335A1BDF6C2F002CB89B /* TripList.swift */; };
+		856D66521BD66A3900C62D79 /* TripElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66511BD66A3900C62D79 /* TripElement.swift */; };
+		856D66541BD671A300C62D79 /* Flight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66531BD671A300C62D79 /* Flight.swift */; };
+		856D66561BD673C100C62D79 /* GenericTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66551BD673C100C62D79 /* GenericTransport.swift */; };
+		856D66581BD6845D00C62D79 /* ServerDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66571BD6845D00C62D79 /* ServerDate.swift */; };
+		856D665A1BD6F73100C62D79 /* Hotel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66591BD6F73100C62D79 /* Hotel.swift */; };
+		856D665C1BD7025400C62D79 /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D665B1BD7025400C62D79 /* Trip.swift */; };
+		856D665E1BD7933E00C62D79 /* Tenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D665D1BD7933E00C62D79 /* Tenses.swift */; };
+		856D66601BD7CE3C00C62D79 /* Development ideas in Resources */ = {isa = PBXBuildFile; fileRef = 856D665F1BD7CE3C00C62D79 /* Development ideas */; };
+		856D66621BD824E300C62D79 /* SecurityWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66611BD824E300C62D79 /* SecurityWrapper.swift */; };
+		859D44171BD4EC7E0068E5B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859D44161BD4EC7E0068E5B3 /* User.swift */; };
+		85ABD35C1BD58EA100B26F07 /* TripDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ABD35B1BD58EA100B26F07 /* TripDetailsViewController.swift */; };
+		85ABD35E1BD5987500B26F07 /* AnnotatedTripElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ABD35D1BD5987500B26F07 /* AnnotatedTripElement.swift */; };
+		85ABD3601BD59A5E00B26F07 /* TripElementListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ABD35F1BD59A5E00B26F07 /* TripElementListSection.swift */; };
+		85C52A181BD3004F00F625B5 /* AnnotatedTrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C52A171BD3004F00F625B5 /* AnnotatedTrip.swift */; };
+		85C52A1A1BD419E300F625B5 /* TripListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C52A191BD419E300F625B5 /* TripListSection.swift */; };
+		85C52A1D1BD446C100F625B5 /* NSDate+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C52A1C1BD446C100F625B5 /* NSDate+mySHiT.swift */; };
+		85C52A201BD44E1A00F625B5 /* UpcomingTrips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C52A1F1BD44E1A00F625B5 /* UpcomingTrips.swift */; };
+		85C52A211BD4681D00F625B5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 85C52A231BD4681D00F625B5 /* Localizable.strings */; };
 		85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC3E1BC7FCF800D8E38E /* AppDelegate.swift */; };
-		85FEFC411BC7FCF800D8E38E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC401BC7FCF800D8E38E /* ViewController.swift */; };
+		85FEFC411BC7FCF800D8E38E /* TripListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC401BC7FCF800D8E38E /* TripListViewController.swift */; };
 		85FEFC441BC7FCF800D8E38E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85FEFC421BC7FCF800D8E38E /* Main.storyboard */; };
 		85FEFC461BC7FCF800D8E38E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85FEFC451BC7FCF800D8E38E /* Assets.xcassets */; };
 		85FEFC491BC7FCF800D8E38E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85FEFC471BC7FCF800D8E38E /* LaunchScreen.storyboard */; };
 		85FEFC541BC7FCF900D8E38E /* mySHiTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC531BC7FCF900D8E38E /* mySHiTTests.swift */; };
 		85FEFC5F1BC7FCF900D8E38E /* mySHiTUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC5E1BC7FCF900D8E38E /* mySHiTUITests.swift */; };
+		85FEFC6D1BC818FA00D8E38E /* LogonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC6C1BC818FA00D8E38E /* LogonViewController.swift */; };
+		85FEFC7B1BCA7F4000D8E38E /* RSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC751BCA7F4000D8E38E /* RSTransaction.swift */; };
+		85FEFC7C1BCA7F4000D8E38E /* RSTransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC761BCA7F4000D8E38E /* RSTransactionRequest.swift */; };
+		85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC771BCA7F4000D8E38E /* RSURLRequest.swift */; };
+		85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC781BCA7F4000D8E38E /* RSUtilities.swift */; };
+		85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */; };
+		85FEFC801BCA7F4000D8E38E /* UIImageView+RSNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */; };
+		85FEFC841BCBFA6B00D8E38E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 85FEFC831BCBFA6B00D8E38E /* Settings.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +67,40 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8507431A1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownElementDetailsViewController.swift; sourceTree = "<group>"; };
+		8507431C1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledTransportDetailsViewController.swift; sourceTree = "<group>"; };
+		851173871BE371D8008FE3BE /* FlightDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightDetailsViewController.swift; sourceTree = "<group>"; };
+		851173891BE37245008FE3BE /* HotelDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotelDetailsViewController.swift; sourceTree = "<group>"; };
+		85179B4B1BDD9F670097F571 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
+		85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+mySHiT.swift"; sourceTree = "<group>"; };
+		855F33581BDEE853002CB89B /* AlertListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertListViewController.swift; sourceTree = "<group>"; };
+		855F335A1BDF6C2F002CB89B /* TripList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripList.swift; sourceTree = "<group>"; };
+		856D66511BD66A3900C62D79 /* TripElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripElement.swift; sourceTree = "<group>"; };
+		856D66531BD671A300C62D79 /* Flight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Flight.swift; sourceTree = "<group>"; };
+		856D66551BD673C100C62D79 /* GenericTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericTransport.swift; sourceTree = "<group>"; };
+		856D66571BD6845D00C62D79 /* ServerDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerDate.swift; sourceTree = "<group>"; };
+		856D66591BD6F73100C62D79 /* Hotel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hotel.swift; sourceTree = "<group>"; };
+		856D665B1BD7025400C62D79 /* Trip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
+		856D665D1BD7933E00C62D79 /* Tenses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tenses.swift; sourceTree = "<group>"; };
+		856D665F1BD7CE3C00C62D79 /* Development ideas */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Development ideas"; sourceTree = "<group>"; };
+		856D66611BD824E300C62D79 /* SecurityWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecurityWrapper.swift; sourceTree = "<group>"; };
+		859D44161BD4EC7E0068E5B3 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		85ABD35B1BD58EA100B26F07 /* TripDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripDetailsViewController.swift; sourceTree = "<group>"; };
+		85ABD35D1BD5987500B26F07 /* AnnotatedTripElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnotatedTripElement.swift; sourceTree = "<group>"; };
+		85ABD35F1BD59A5E00B26F07 /* TripElementListSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripElementListSection.swift; sourceTree = "<group>"; };
+		85C52A131BD2DC0800F625B5 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		85C52A141BD2DC1000F625B5 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
+		85C52A151BD2DC1000F625B5 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		85C52A171BD3004F00F625B5 /* AnnotatedTrip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnotatedTrip.swift; sourceTree = "<group>"; };
+		85C52A191BD419E300F625B5 /* TripListSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripListSection.swift; sourceTree = "<group>"; };
+		85C52A1C1BD446C100F625B5 /* NSDate+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+mySHiT.swift"; sourceTree = "<group>"; };
+		85C52A1F1BD44E1A00F625B5 /* UpcomingTrips.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpcomingTrips.swift; sourceTree = "<group>"; };
+		85C52A221BD4681D00F625B5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		85C52A251BD4682200F625B5 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
+		85C52A261BD4682300F625B5 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		85FEFC3B1BC7FCF800D8E38E /* mySHiT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mySHiT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85FEFC3E1BC7FCF800D8E38E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		85FEFC401BC7FCF800D8E38E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		85FEFC401BC7FCF800D8E38E /* TripListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListViewController.swift; sourceTree = "<group>"; };
 		85FEFC431BC7FCF800D8E38E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		85FEFC451BC7FCF800D8E38E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		85FEFC481BC7FCF800D8E38E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +111,14 @@
 		85FEFC5A1BC7FCF900D8E38E /* mySHiTUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mySHiTUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85FEFC5E1BC7FCF900D8E38E /* mySHiTUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mySHiTUITests.swift; sourceTree = "<group>"; };
 		85FEFC601BC7FCF900D8E38E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		85FEFC6C1BC818FA00D8E38E /* LogonViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogonViewController.swift; sourceTree = "<group>"; };
+		85FEFC751BCA7F4000D8E38E /* RSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTransaction.swift; sourceTree = "<group>"; };
+		85FEFC761BCA7F4000D8E38E /* RSTransactionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTransactionRequest.swift; sourceTree = "<group>"; };
+		85FEFC771BCA7F4000D8E38E /* RSURLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSURLRequest.swift; sourceTree = "<group>"; };
+		85FEFC781BCA7F4000D8E38E /* RSUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSUtilities.swift; sourceTree = "<group>"; };
+		85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+RSNetworking.swift"; sourceTree = "<group>"; };
+		85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+RSNetworking.swift"; sourceTree = "<group>"; };
+		85FEFC831BCBFA6B00D8E38E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +146,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85C52A161BD3002F00F625B5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				85C52A171BD3004F00F625B5 /* AnnotatedTrip.swift */,
+				85ABD35D1BD5987500B26F07 /* AnnotatedTripElement.swift */,
+				856D66531BD671A300C62D79 /* Flight.swift */,
+				856D66551BD673C100C62D79 /* GenericTransport.swift */,
+				856D66591BD6F73100C62D79 /* Hotel.swift */,
+				856D66611BD824E300C62D79 /* SecurityWrapper.swift */,
+				856D66571BD6845D00C62D79 /* ServerDate.swift */,
+				856D665D1BD7933E00C62D79 /* Tenses.swift */,
+				856D665B1BD7025400C62D79 /* Trip.swift */,
+				856D66511BD66A3900C62D79 /* TripElement.swift */,
+				85ABD35F1BD59A5E00B26F07 /* TripElementListSection.swift */,
+				855F335A1BDF6C2F002CB89B /* TripList.swift */,
+				85C52A191BD419E300F625B5 /* TripListSection.swift */,
+				859D44161BD4EC7E0068E5B3 /* User.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		85C52A1B1BD4469600F625B5 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				85C52A1C1BD446C100F625B5 /* NSDate+mySHiT.swift */,
+				85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		85C52A1E1BD44E0100F625B5 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				85C52A1F1BD44E1A00F625B5 /* UpcomingTrips.swift */,
+			);
+			name = Preferences;
+			sourceTree = "<group>";
+		};
 		85FEFC321BC7FCF800D8E38E = {
 			isa = PBXGroup;
 			children = (
@@ -97,12 +207,26 @@
 		85FEFC3D1BC7FCF800D8E38E /* mySHiT */ = {
 			isa = PBXGroup;
 			children = (
+				85C52A1E1BD44E0100F625B5 /* Preferences */,
+				85C52A1B1BD4469600F625B5 /* Extensions */,
+				85C52A161BD3002F00F625B5 /* Model */,
+				85FEFC741BCA7F4000D8E38E /* RSNetworking */,
 				85FEFC3E1BC7FCF800D8E38E /* AppDelegate.swift */,
-				85FEFC401BC7FCF800D8E38E /* ViewController.swift */,
+				855F33581BDEE853002CB89B /* AlertListViewController.swift */,
+				851173871BE371D8008FE3BE /* FlightDetailsViewController.swift */,
+				8507431C1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift */,
+				8507431A1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift */,
+				851173891BE37245008FE3BE /* HotelDetailsViewController.swift */,
+				85FEFC6C1BC818FA00D8E38E /* LogonViewController.swift */,
+				85FEFC401BC7FCF800D8E38E /* TripListViewController.swift */,
+				85ABD35B1BD58EA100B26F07 /* TripDetailsViewController.swift */,
 				85FEFC421BC7FCF800D8E38E /* Main.storyboard */,
+				85C52A231BD4681D00F625B5 /* Localizable.strings */,
 				85FEFC451BC7FCF800D8E38E /* Assets.xcassets */,
 				85FEFC471BC7FCF800D8E38E /* LaunchScreen.storyboard */,
 				85FEFC4A1BC7FCF800D8E38E /* Info.plist */,
+				85FEFC831BCBFA6B00D8E38E /* Settings.bundle */,
+				856D665F1BD7CE3C00C62D79 /* Development ideas */,
 			);
 			path = mySHiT;
 			sourceTree = "<group>";
@@ -123,6 +247,19 @@
 				85FEFC601BC7FCF900D8E38E /* Info.plist */,
 			);
 			path = mySHiTUITests;
+			sourceTree = "<group>";
+		};
+		85FEFC741BCA7F4000D8E38E /* RSNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				85FEFC751BCA7F4000D8E38E /* RSTransaction.swift */,
+				85FEFC761BCA7F4000D8E38E /* RSTransactionRequest.swift */,
+				85FEFC771BCA7F4000D8E38E /* RSURLRequest.swift */,
+				85FEFC781BCA7F4000D8E38E /* RSUtilities.swift */,
+				85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */,
+				85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */,
+			);
+			path = RSNetworking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -192,6 +329,7 @@
 				TargetAttributes = {
 					85FEFC3A1BC7FCF800D8E38E = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = F4YSQGFS7B;
 					};
 					85FEFC4E1BC7FCF900D8E38E = {
 						CreatedOnToolsVersion = 7.0;
@@ -210,6 +348,8 @@
 			knownRegions = (
 				en,
 				Base,
+				nb,
+				sv,
 			);
 			mainGroup = 85FEFC321BC7FCF800D8E38E;
 			productRefGroup = 85FEFC3C1BC7FCF800D8E38E /* Products */;
@@ -228,6 +368,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85C52A211BD4681D00F625B5 /* Localizable.strings in Resources */,
+				85FEFC841BCBFA6B00D8E38E /* Settings.bundle in Resources */,
+				856D66601BD7CE3C00C62D79 /* Development ideas in Resources */,
 				85FEFC491BC7FCF800D8E38E /* LaunchScreen.storyboard in Resources */,
 				85FEFC461BC7FCF800D8E38E /* Assets.xcassets in Resources */,
 				85FEFC441BC7FCF800D8E38E /* Main.storyboard in Resources */,
@@ -255,8 +398,38 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85FEFC411BC7FCF800D8E38E /* ViewController.swift in Sources */,
+				85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */,
+				85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */,
+				85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */,
+				85C52A181BD3004F00F625B5 /* AnnotatedTrip.swift in Sources */,
+				856D665C1BD7025400C62D79 /* Trip.swift in Sources */,
+				85C52A201BD44E1A00F625B5 /* UpcomingTrips.swift in Sources */,
+				85ABD35C1BD58EA100B26F07 /* TripDetailsViewController.swift in Sources */,
+				85FEFC411BC7FCF800D8E38E /* TripListViewController.swift in Sources */,
+				856D66561BD673C100C62D79 /* GenericTransport.swift in Sources */,
+				856D66621BD824E300C62D79 /* SecurityWrapper.swift in Sources */,
+				851173881BE371D8008FE3BE /* FlightDetailsViewController.swift in Sources */,
+				8507431D1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift in Sources */,
+				859D44171BD4EC7E0068E5B3 /* User.swift in Sources */,
+				85FEFC7B1BCA7F4000D8E38E /* RSTransaction.swift in Sources */,
+				855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */,
+				85179B4D1BDDB09F0097F571 /* UIView+mySHiT.swift in Sources */,
+				856D665A1BD6F73100C62D79 /* Hotel.swift in Sources */,
+				856D66521BD66A3900C62D79 /* TripElement.swift in Sources */,
+				85FEFC801BCA7F4000D8E38E /* UIImageView+RSNetworking.swift in Sources */,
+				85FEFC7C1BCA7F4000D8E38E /* RSTransactionRequest.swift in Sources */,
+				855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */,
 				85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */,
+				85ABD35E1BD5987500B26F07 /* AnnotatedTripElement.swift in Sources */,
+				856D665E1BD7933E00C62D79 /* Tenses.swift in Sources */,
+				8507431B1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift in Sources */,
+				856D66541BD671A300C62D79 /* Flight.swift in Sources */,
+				85FEFC6D1BC818FA00D8E38E /* LogonViewController.swift in Sources */,
+				85C52A1D1BD446C100F625B5 /* NSDate+mySHiT.swift in Sources */,
+				8511738A1BE37245008FE3BE /* HotelDetailsViewController.swift in Sources */,
+				856D66581BD6845D00C62D79 /* ServerDate.swift in Sources */,
+				85C52A1A1BD419E300F625B5 /* TripListSection.swift in Sources */,
+				85ABD3601BD59A5E00B26F07 /* TripElementListSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,10 +465,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		85C52A231BD4681D00F625B5 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				85C52A221BD4681D00F625B5 /* Base */,
+				85C52A251BD4682200F625B5 /* nb */,
+				85C52A261BD4682300F625B5 /* sv */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		85FEFC421BC7FCF800D8E38E /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				85FEFC431BC7FCF800D8E38E /* Base */,
+				85C52A141BD2DC1000F625B5 /* sv */,
+				85179B4B1BDD9F670097F571 /* nb */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -304,6 +489,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				85FEFC481BC7FCF800D8E38E /* Base */,
+				85C52A131BD2DC0800F625B5 /* nb */,
+				85C52A151BD2DC1000F625B5 /* sv */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -398,10 +585,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = mySHiT/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -409,10 +599,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = mySHiT/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -483,6 +676,7 @@
 				85FEFC651BC7FCF900D8E38E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		85FEFC661BC7FCF900D8E38E /* Build configuration list for PBXNativeTarget "mySHiTTests" */ = {
 			isa = XCConfigurationList;
@@ -491,6 +685,7 @@
 				85FEFC681BC7FCF900D8E38E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		85FEFC691BC7FCF900D8E38E /* Build configuration list for PBXNativeTarget "mySHiTUITests" */ = {
 			isa = XCConfigurationList;
@@ -499,6 +694,7 @@
 				85FEFC6B1BC7FCF900D8E38E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

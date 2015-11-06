@@ -1,0 +1,29 @@
+1) Automatisk oppdatering av flight-informasjon fra www.flightstats.com e.l.
+2) Meldingstjeneste
+3) Varslingsikoner:
+    let backgroundImage = UIImage(named: "image.png")
+    let watermarkImage = UIImage(named: "watermark.png")
+
+    UIGraphicsBeginImageContextWithOptions(backgroundImage.size, false, 0.0)
+    backgroundImage.drawInRect(CGRect(0.0, 0.0, backgroundImage.size.width, backgroundImage.size.height))
+    watermarkImage.drawInRect(CGRect(backgroundImage.size.width - watermarkImage.size.width, backgroundImage.size.height - watermarkImage.size.height, watermarkImage.size.width, watermarkImage.size.height))
+    let result = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+4) Tidssoner
+5) Detaljskjermbilder for reiseelementer
+6) Hyperlinks for referansenumre
+
+
+
+let inputBox = UITextField(frame: rect)
+inputBox.backgroundColor = UIColor.yellowColor()
+inputBox.setTranslatesAutoresizingMaskIntoConstraints(false)
+self.view.addSubview(inputBox)
+
+let bottomConstraint : NSLayoutConstraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[inputBox]-50-|", options: NSLayoutFormatOptions(0), metrics: nil, views: ["inputBox": inputBox])[0] as! NSLayoutConstraint
+let heightConstraint : NSLayoutConstraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[inputBox(==70)]", options: NSLayoutFormatOptions(0), metrics: nil, views: ["inputBox": inputBox])[0] as! NSLayoutConstraint
+let widthConstraint : NSLayoutConstraint = NSLayoutConstraint.constraintsWithVisualFormat("H:[inputBox(==superview)]", options: NSLayoutFormatOptions(0), metrics: nil, views: ["inputBox": inputBox, "superview":self.view])[0] as! NSLayoutConstraint
+
+view.addConstraint(bottomConstraint)
+view.addConstraint(heightConstraint)
+view.addConstraint(widthConstraint)

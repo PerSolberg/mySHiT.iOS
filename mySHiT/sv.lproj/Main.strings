@@ -1,0 +1,43 @@
+
+/* Class = "UIButton"; normalTitle = "Log on"; ObjectID = "6WV-rf-BWt"; */
+"6WV-rf-BWt.normalTitle" = "Logga in";
+
+/* Class = "UITextField"; placeholder = "User name"; ObjectID = "AmK-4j-lCV"; */
+"AmK-4j-lCV.placeholder" = "Användarnamn";
+
+/* Class = "UILabel"; text = "User name"; ObjectID = "C8I-hV-1aV"; */
+"C8I-hV-1aV.text" = "Användarnamn";
+
+/* Class = "UITextField"; placeholder = "Password"; ObjectID = "M9c-wV-gJe"; */
+"M9c-wV-gJe.placeholder" = "Lösenord";
+
+/* Class = "UINavigationItem"; title = "Trips"; ObjectID = "VWI-7h-IFA"; */
+"VWI-7h-IFA.title" = "Resor";
+
+/* Class = "UITextView"; text = "Welcome to SHiT"; ObjectID = "Vep-v4-mfo"; */
+"Vep-v4-mfo.text" = "Välkommen till SHiT";
+
+/* Class = "UIButton"; normalTitle = "Log on"; ObjectID = "eVD-AU-hnc"; */
+"eVD-AU-hnc.normalTitle" = "Logga in";
+
+/* Class = "UITableViewController"; title = "Trip Details"; ObjectID = "f3k-6O-YsJ"; */
+"f3k-6O-YsJ.title" = "Resedetaljer";
+
+/* Class = "UILabel"; text = "Password"; ObjectID = "gGG-YR-B8p"; */
+"gGG-YR-B8p.text" = "Lösenord";
+
+/* Class = "UILabel"; text = "Dates"; ObjectID = "o6x-9x-k3x"; */
+"o6x-9x-k3x.text" = "Datum";
+
+/* Class = "UILabel"; text = "Trip Name"; ObjectID = "rbz-MP-1nn"; */
+"rbz-MP-1nn.text" = "Resenamn";
+
+/* Class = "UITextView"; text = "Welcome to SHiT\n\nTo access your travel details, please log on using the user name and password provided in your welcome letter."; ObjectID = "uxc-5B-TQu"; */
+"uxc-5B-TQu.text" = "Välkommen till SHiT\n\nFör att se information om dina resor, var god att logga inn med användarnamnet och lösenordet du fick i ditt .";
+
+/* Class = "UILabel"; text = "Description"; ObjectID = "yie-iv-QDP"; */
+"yie-iv-QDP.text" = "Beskrivning";
+
+/* NavBar logon button */
+"bfz-i4-wM0.normalTitle" = "Logga in";
+
