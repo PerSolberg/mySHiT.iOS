@@ -22,6 +22,12 @@ class Trip: NSObject, NSCoding {
     var startTime: NSDate? {
         return startDate
     }
+    var startTimeZone: String? {
+        if elements != nil && elements?.count > 0 {
+            return elements![0].tripElement.startTimeZone
+        }
+        return nil
+    }
     var endTime: NSDate? {
         return endDate
     }
@@ -173,6 +179,26 @@ class Trip: NSObject, NSCoding {
     }
     
 
+    // MARK: Methods
+    func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+        if let departureTime = startTime {
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateStyle = dateStyle
+            dateFormatter.timeStyle = timeStyle
+            //if let timeZoneName = departureTimeZone {
+            if let timeZoneName = startTimeZone {
+                let timezone = NSTimeZone(name: timeZoneName)
+                if timezone != nil {
+                    dateFormatter.timeZone = timezone
+                }
+            }
+            
+            return dateFormatter.stringFromDate(departureTime)
+        }
+        return nil
+    }
+    
+
     func setNotification() {
         // First delete any existing notifications for this trip
         for notification in UIApplication.sharedApplication().scheduledLocalNotifications! as [UILocalNotification] {
@@ -186,21 +212,38 @@ class Trip: NSObject, NSCoding {
         // Set notification (if we have a start date)
         if let tripStart = startTime {
             if tense == .future {
+                let defaults = NSUserDefaults.standardUserDefaults()
+                let tripLeadtime = Int(defaults.floatForKey("trip_notification_leadtime"))
+                let startTimeText = startTime(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
                 let now = NSDate()
-                var alertTime = tripStart.addHours(-6)
-                // If we're already past the early warning, set a new alert for actual start
-                if alertTime.isLessThanDate(now) {
-                    alertTime = tripStart
+                let dcf = NSDateComponentsFormatter()
+                let genericAlertMessage = NSLocalizedString("SHiT trip '%@' starts in %@ (%@)", comment: "Some dummy comment")
+                
+                dcf.unitsStyle = .Short
+                dcf.zeroFormattingBehavior = .DropAll
+                
+                var userInfo: [String:NSObject] = ["TripID": id]
+                if let startTimeZone = startTimeZone {
+                    userInfo["TimeZone"] = startTimeZone
                 }
-                let notification = UILocalNotification()
-            
-                notification.alertBody = "SHiT trip '\(name!)' starts in 6 hours"
-                //notification.alertAction = "open" // text that is displayed after "slide to..." on the lock screen - defaults to "slide to view"
-                notification.fireDate = alertTime // todo item due date (when notification will be fired)
-                notification.soundName = UILocalNotificationDefaultSoundName // play default sound
-                notification.userInfo = ["TripID": id] // assign a unique identifier
-                notification.category = "SHiT"
-                UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                
+                if (tripLeadtime ?? -1) > 0 {
+                    var alertTime = tripStart.addHours( -tripLeadtime )
+                    // If we're already past the warning time, set a notification for right now instead
+                    if alertTime.isLessThanDate(now) {
+                        alertTime = now
+                    }
+                    let notification = UILocalNotification()
+                    
+                    let actualLeadTime = tripStart.timeIntervalSinceDate(alertTime)
+                    let leadTimeText = dcf.stringFromTimeInterval(actualLeadTime)
+                    notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                    notification.fireDate = alertTime
+                    notification.soundName = UILocalNotificationDefaultSoundName
+                    notification.userInfo = userInfo
+                    notification.category = "SHiT"
+                    UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                }
             }
         }
     }

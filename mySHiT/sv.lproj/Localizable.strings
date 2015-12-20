@@ -10,3 +10,4 @@
 "Current" = "Nuvarande";
 "Historic" = "Historiska";
 "%@ departs in %@, at %@" = "%@ avgår om %@, kl. %@";
+"SHiT trip '%@' starts in %@ (%@)" = "SHiT-resa '%@' börjar om %@ (%@)";

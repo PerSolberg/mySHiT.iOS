@@ -19,7 +19,13 @@ class TripElement: NSObject, NSCoding {
     var startTime: NSDate? {
         return nil
     }
+    var startTimeZone: String? {
+        return nil
+    }
     var endTime: NSDate? {
+        return nil
+    }
+    var endTimeZone: String? {
         return nil
     }
     var title: String? {

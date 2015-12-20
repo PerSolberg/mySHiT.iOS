@@ -15,14 +15,12 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var flightNoLabel: UILabel!
     @IBOutlet weak var flightNoTextField: UITextField!
+    @IBOutlet weak var airlineTextField: UITextField!
     @IBOutlet weak var departureTimeTextField: UITextField!
     @IBOutlet weak var departureLocationTextView: UITextView!
     @IBOutlet weak var arrivalTimeTextField: UITextField!
     @IBOutlet weak var arrivalLocationTextView: UITextView!
     @IBOutlet weak var referencesView: UIView!
-    //@IBOutlet weak var referencesView: UIView!
-    //@IBOutlet weak var referencesView: UIScrollView!
-    //@IBOutlet weak var mainStackView: UIStackView!
 
     // Passed from TripDetailsViewController
     var tripElement:AnnotatedTripElement?
@@ -58,6 +56,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
         
         if let flightElement = tripElement?.tripElement as? Flight {
             flightNoTextField.text = (flightElement.airlineCode ?? "XX") + " " + (flightElement.routeNo ?? "***")
+            airlineTextField.text = flightElement.companyName
             departureTimeTextField.text = flightElement.startTime(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
             var locationInfo = flightElement.departureStop ?? flightElement.departureLocation ?? ""
             if let departureTerminal = flightElement.departureTerminalName {
@@ -83,22 +82,6 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
             arrivalLocationTextView.textContainer.lineFragmentPadding = 0.0
             
             if let refList = flightElement.references {
-                /*
-                // Set up vertical stack view and add it to main view
-                let verticalStackView = UIStackView()
-                verticalStackView.axis = .Vertical
-                verticalStackView.distribution = .Fill
-                verticalStackView.alignment = .Fill
-                verticalStackView.spacing = 8;
-                verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-                referencesView.addSubview(verticalStackView)
-
-                // Constrain vertical stack view to (scrollable) view
-                referencesView.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Leading, relatedBy: .Equal, toItem: referencesView, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-                referencesView.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Trailing , relatedBy: .Equal, toItem: referencesView, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-                referencesView.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Top, relatedBy: .Equal, toItem: referencesView, attribute: .Top, multiplier: 1.0, constant: 0.0))
-                // */
-                
                 let horisontalHuggingLabel = flightNoLabel.contentHuggingPriorityForAxis(.Horizontal)
                 let horisontalHuggingValue = departureLocationTextView.contentHuggingPriorityForAxis(.Horizontal)
                 let verticalHuggingLabel = flightNoLabel.contentHuggingPriorityForAxis(.Vertical)
@@ -120,68 +103,6 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
                     }
                 }
                 referencesView.addDictionaryAsGrid(refDict, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: flightNoTextField)
-                
-                /*
-                for ref in refList {
-                    if let refType = ref["type"], refNo   = ref["refNo"] {
-                        print("Reference: Type = \(refType), Ref # = \(refNo)")
-                        let label = UILabel()
-                        label.translatesAutoresizingMaskIntoConstraints = false
-                        label.font = flightNoTextField.font //flightNoLabel.font
-                        label.userInteractionEnabled = false
-                        label.setContentHuggingPriority(horisontalHuggingLabel, forAxis: .Horizontal)
-                        label.setContentHuggingPriority(verticalHuggingLabel, forAxis: .Vertical)
-                        label.text = refType
-                        label.invalidateIntrinsicContentSize()
-                        
-                        // UITextView
-                        let value = UITextView()
-                        value.translatesAutoresizingMaskIntoConstraints = false
-                        value.font = flightNoTextField.font
-                        value.userInteractionEnabled = true
-                        value.editable = false
-                        value.selectable = true
-                        value.scrollEnabled = false
-                        value.textContainerInset = UIEdgeInsetsZero
-                        value.textContainer.lineFragmentPadding = 0.0
-                        value.setContentHuggingPriority(horisontalHuggingValue, forAxis: .Horizontal)
-                        value.setContentHuggingPriority(verticalHuggingValue, forAxis: .Vertical)
-                        
-                        if let refUrl = ref["urlLookup"], url = NSURL(string: refUrl) {
-                            let hyperlinkText = NSMutableAttributedString(string: refNo)
-                            hyperlinkText.addAttribute(NSLinkAttributeName, value: url, range: NSMakeRange(0, hyperlinkText.length))
-                            value.attributedText = hyperlinkText
-                        } else {
-                            value.text = refNo
-                        }
-                        value.invalidateIntrinsicContentSize()
-                        
-                        // Set up text wrapper
-                        let valueWrapper = UIView()
-                        valueWrapper.translatesAutoresizingMaskIntoConstraints = false
-                        valueWrapper.setContentHuggingPriority(horisontalHuggingValue, forAxis: .Horizontal)
-                        valueWrapper.setContentHuggingPriority(verticalHuggingValue, forAxis: .Vertical)
-                        valueWrapper.addSubview(value)
-                        valueWrapper.addConstraint(NSLayoutConstraint(item: value, attribute: .Leading, relatedBy: .Equal, toItem: valueWrapper, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-                        valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .Trailing , relatedBy: .Equal, toItem: value, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-                        valueWrapper.addConstraint(NSLayoutConstraint(item: value, attribute: .Top, relatedBy: .Equal, toItem: valueWrapper, attribute: .Top, multiplier: 1.0, constant: 0.0))
-                        valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .Bottom, relatedBy: .Equal, toItem: value, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
-                        
-                        let horisontalStackView = UIStackView(arrangedSubviews: [label , valueWrapper])
-                        horisontalStackView.axis = .Horizontal
-                        horisontalStackView.distribution = .Fill
-                        horisontalStackView.alignment = .Fill // .FirstBaseline
-                        horisontalStackView.spacing = 8;
-                        horisontalStackView.translatesAutoresizingMaskIntoConstraints = false
-                        
-                        verticalStackView.addArrangedSubview(horisontalStackView)
-
-                        // Constrain to flight info
-                        let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .Width, relatedBy: .Equal, toItem: flightNoTextField, attribute: .Width, multiplier: 1.0, constant: 0)
-                        mainStackView.addConstraint(valueWidthConstraint)
-                    }
-                }
-                // */
             }
         } else {
             flightNoTextField.text = "XX 0000"
@@ -191,7 +112,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
             arrivalLocationTextView.text = "<Missing info>"
         }
 
-        self.view.colourSubviews()
+        //self.view.colourSubviews()
     }
     
     

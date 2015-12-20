@@ -51,6 +51,11 @@ class TripDetailsViewController: UITableViewController {
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
+            case "showPrivateTransportInfoSegue":
+                let destinationController = segue.destinationViewController as! PrivateTransportDetailsViewController
+                destinationController.tripElement = selectedElement
+                destinationController.trip = trip
+                
             default:
                 let destinationController = segue.destinationViewController as! UnknownElementDetailsViewController
                 destinationController.tripElement = selectedElement
@@ -200,6 +205,12 @@ class TripDetailsViewController: UITableViewController {
                 performSegueWithIdentifier("showScheduledTransportInfoSegue", sender: selectedCell)
             case ("TRA", "TRN"):
                 performSegueWithIdentifier("showScheduledTransportInfoSegue", sender: selectedCell)
+            case ("TRA", "BOAT"):
+                performSegueWithIdentifier("showScheduledTransportInfoSegue", sender: selectedCell)
+            case ("TRA", "LIMO"):
+                performSegueWithIdentifier("showPrivateTransportInfoSegue", sender: selectedCell)
+            case ("TRA", "PBUS"):
+                performSegueWithIdentifier("showPrivateTransportInfoSegue", sender: selectedCell)
             //case ("TRA", _):
             //    performSegueWithIdentifier("showFlightInfoSegue", sender: selectedCell)
             default:

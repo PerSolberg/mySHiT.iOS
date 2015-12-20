@@ -37,8 +37,14 @@ class GenericTransport: TripElement {
     override var startTime:NSDate? {
         return departureTime
     }
+    override var startTimeZone:String? {
+        return departureTimeZone
+    }
     override var endTime:NSDate? {
         return arrivalTime
+    }
+    override var endTimeZone:String? {
+        return arrivalTimeZone
     }
     override var title: String? {
         return companyName

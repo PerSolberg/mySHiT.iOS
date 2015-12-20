@@ -34,7 +34,7 @@ extension UIView
 
     
     func addDictionaryAsGrid(dictionary: NSDictionary, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
-        print("Adding stuff here")
+        //print("Adding stuff here")
         if dictionary.count < 1 {
             print("Dictionary empty, returning")
             return
@@ -107,8 +107,7 @@ extension UIView
                 valueField.editable = false
                 valueField.selectable = true
                 valueField.scrollEnabled = false
-                valueField.textContainerInset = UIEdgeInsetsZero
-                valueField.textContainer.lineFragmentPadding = 0.0
+                //valueField.textContainerInset = UIEdgeInsetsZero
                 valueField.setContentHuggingPriority(horisontalHuggingForValue, forAxis: .Horizontal)
                 valueField.setContentHuggingPriority(verticalHuggingForValue, forAxis: .Vertical)
                 if value.isKindOfClass(NSAttributedString) {
@@ -120,6 +119,15 @@ extension UIView
                 } else {
                     print("Unsupported data type for entry")
                 }
+                var baselineShift:CGFloat = 0.0
+                if let valueFont = valueField.font {
+                    //print("label font: line height=\(label.font.lineHeight), leading=\(label.font.leading), x height=\(label.font.xHeight), ascender=\(label.font.ascender)")
+                    //print("value font: line height=\(valueFont.lineHeight), leading=\(valueFont.leading), x height=\(valueFont.xHeight), ascender=\(valueFont.ascender)")
+                    //baselineShift = label.font.lineHeight - valueFont.lineHeight
+                    baselineShift = /*round*/(label.font.ascender - valueFont.ascender)
+                }
+                valueField.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
+                valueField.textContainer.lineFragmentPadding = 0.0
 
                 valueWrapper.addSubview(valueField)
                 valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .Leading, relatedBy: .Equal, toItem: valueWrapper, attribute: .Leading, multiplier: 1.0, constant: 0.0))

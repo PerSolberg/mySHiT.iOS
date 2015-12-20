@@ -89,15 +89,6 @@ class AlertListViewController: UITableViewController {
                 cell!.detailTextLabel!.text = ""
             } else {
                 let notification = notifications[indexPath.row]
-                var itemId: String = ""
-                /*
-                if let tripId = notification.userInfo!["TripID"] as? Int {
-                    itemId = itemId + (itemId == "" ? "" : ", ")  + "TripID = \(tripId)"
-                }
-                if let tripElementId = notification.userInfo!["TripElementID"] as? Int {
-                    itemId = itemId + (itemId == "" ? "" : ", ") + "TripElementID = \(tripElementId)"
-                }
-                */
 
                 let timeZoneName = notification.userInfo!["TimeZone"] as? String ?? "UTC"
                 dateFormatter.timeZone = NSTimeZone(name: timeZoneName )

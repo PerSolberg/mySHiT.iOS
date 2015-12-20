@@ -9,10 +9,10 @@
     watermarkImage.drawInRect(CGRect(backgroundImage.size.width - watermarkImage.size.width, backgroundImage.size.height - watermarkImage.size.height, watermarkImage.size.width, watermarkImage.size.height))
     let result = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-4) Tidssoner
+*4) Tidssoner
 5) Detaljskjermbilder for reiseelementer
-6) Hyperlinks for referansenumre
-
+6) Automatisk oppdatering ved endringer i databasen
+7) Automatisk overføring fra Oracle til shitt.no
 
 
 let inputBox = UITextField(frame: rect)
