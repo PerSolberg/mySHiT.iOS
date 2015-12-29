@@ -9,41 +9,45 @@
 import Foundation
 
 class AnnotatedTripElement: NSObject, NSCoding {
-    //var visible: Bool
-    //var section: TripElementListSection
-    //var tripElementData: NSDictionary
+    var modified: ChangeState
     var tripElement: TripElement
     
     struct PropertyKey {
-        //static let visibleKey = "visible"
-        //static let sectionKey = "section"
+        static let modifiedKey = "modified"
         static let tripElementKey = "tripElement"
     }
     
     // MARK: NSCoding
     func encodeWithCoder(aCoder: NSCoder) {
-        //aCoder.encodeObject(visible, forKey: PropertyKey.visibleKey)
-        //aCoder.encodeObject(section.rawValue, forKey: PropertyKey.sectionKey)
-        //aCoder.encodeObject(tripElementData, forKey: PropertyKey.tripElementKey)
+        aCoder.encodeObject(modified.rawValue, forKey: PropertyKey.modifiedKey)
         aCoder.encodeObject(tripElement, forKey: PropertyKey.tripElementKey)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        //let visible  = aDecoder.decodeObjectForKey(PropertyKey.visibleKey) as! Bool
-        //let section         = aDecoder.decodeObjectForKey(PropertyKey.sectionKey) as! TripElementListSection
-        //let tripElementData = aDecoder.decodeObjectForKey(PropertyKey.tripElementKey) as! NSDictionary
+        let _modified   = aDecoder.decodeObjectForKey(PropertyKey.modifiedKey) as? String
+        var modified:ChangeState = .Unchanged
+        if (_modified != nil) {
+            modified  = ChangeState(rawValue: _modified!)!
+        }
         let tripElement = aDecoder.decodeObjectForKey(PropertyKey.tripElementKey) as! TripElement
         
         // Must call designated initializer.
-        self.init(tripElement: tripElement)
+        self.init(tripElement: tripElement, modified: modified)
     }
     
     //init?(section: TripElementListSection, tripElement: NSDictionary) {
     init?(tripElement: TripElement) {
         // Initialize stored properties.
-        //self.visible = visible
-        //self.section = section
+        self.modified = .Unchanged
+        self.tripElement = tripElement
+        
+        super.init()
+    }
+
+    init?(tripElement: TripElement, modified: ChangeState) {
+        // Initialize stored properties.
+        self.modified = modified
         self.tripElement = tripElement
         
         super.init()

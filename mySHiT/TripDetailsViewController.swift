@@ -13,6 +13,8 @@ class TripDetailsViewController: UITableViewController {
     // MARK: Properties
     @IBOutlet var tripDetailsTable: UITableView!
     
+    var elementToRefresh: NSIndexPath?
+    
     // Passed from TripListViewController
     var tripCode:String?
     var tripSection:TripListSection?
@@ -61,6 +63,9 @@ class TripDetailsViewController: UITableViewController {
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
             }
+            if selectedElement.modified == .New || selectedElement.modified == .Changed {
+                elementToRefresh = indexPath
+            }
         }
         else {
             print("Trip Details: Preparing for unidentified segue")
@@ -96,7 +101,23 @@ class TripDetailsViewController: UITableViewController {
         tripDetailsTable.estimatedRowHeight = 40
         tripDetailsTable.rowHeight = UITableViewAutomaticDimension
     }
-    
+
+
+    override func viewDidAppear(animated: Bool) {
+        if let indexPath = elementToRefresh {
+            let s = getSectionById(indexPath.section)
+            let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
+            let rowIdx = s!.section.firstTripElement + indexPath.row
+            let tripElement = trip!.trip.elements![rowIdx].tripElement
+            
+            selectedElement.modified = .Unchanged
+            if let cell = tripDetailsTable.cellForRowAtIndexPath(indexPath), imgView = cell.viewWithTag(5) as? UIImageView {
+                imgView.image = tripElement.icon?.overlayBadge(selectedElement.modified)
+            }
+            elementToRefresh = nil
+        }
+    }
+
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -161,9 +182,7 @@ class TripDetailsViewController: UITableViewController {
             lblStartTime.text = tripElement.startInfo ?? "Unknown start"
             lblEndTime.text = tripElement.endInfo
             lblDesc.text = tripElement.detailInfo ?? "No details available"
-            imgView.image = tripElement.icon
-            
-            //cell!.imageView!.image = tripElement.icon
+            imgView.image = tripElement.icon?.overlayBadge(trip!.trip.elements![rowIdx].modified)
         } else {
             // ERROR!!!
         }

@@ -173,6 +173,35 @@ class TripElement: NSObject, NSCoding {
     
     
     // MARK: Methods
+    override func isEqual(object: AnyObject?) -> Bool {
+        if object_getClassName(self) != object_getClassName(object) {
+            return false
+        } else if let otherTripElement = object as? TripElement {
+            if self.type         != otherTripElement.type            { return false }
+            if self.subType      != otherTripElement.subType         { return false }
+            if self.id           != otherTripElement.id              { return false }
+            
+            if let myRefs = self.references, otherRefs = otherTripElement.references {
+                if myRefs.count != otherRefs.count { return false }
+                check_refs: for myRef in myRefs {
+                    for otherRef in otherRefs {
+                        if (otherRef == myRef) {
+                            continue check_refs
+                        }
+                    }
+                    return false
+                }
+            } else if (self.references != nil || otherTripElement.references != nil) {
+                return false
+            }
+            
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    
     func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
         return nil
     }

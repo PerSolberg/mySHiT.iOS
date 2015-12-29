@@ -17,6 +17,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     @IBOutlet var tripListTable: UITableView!
 
     var sections: [TripListSectionInfo]!
+    var tripToRefresh: NSIndexPath?
 
     // MARK: Archiving paths
     static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
@@ -27,6 +28,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     // MARK: Navigation
     @IBAction func unwindToMain(sender: UIStoryboardSegue)
     {
+        setBackgroundMessage("Retrieving your trips from SHiT")
         TripList.sharedList.getFromServer()
         return
     }
@@ -49,6 +51,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                     let s = getSectionById(indexPath.section)
                     
                     let selectedTrip = TripList.sharedList[s!.section.firstTrip + indexPath.row]!
+                    tripToRefresh = indexPath
                     destinationController.tripCode = selectedTrip.trip.code
                     destinationController.tripSection = s!.section.type
                 }
@@ -119,11 +122,48 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         dispatch_async(dispatch_get_main_queue(), {
             self.tripListTable.reloadData()
         })
+        
+        // Set up refresh
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = tripListTable.backgroundColor //UIColor.cyanColor()
+        refreshControl!.tintColor = UIColor.blueColor()  //whiteColor()
+        refreshControl!.addTarget(self, action: "reloadTripsFromServer", forControlEvents: .ValueChanged)
     }
 
 
+    override func viewDidAppear(animated: Bool) {
+        if let indexPath = tripToRefresh {
+            let s = getSectionById(indexPath.section)
+            let selectedTrip = TripList.sharedList[s!.section.firstTrip + indexPath.row]!
+            
+            selectedTrip.modified = .Unchanged
+            if let elements = selectedTrip.trip.elements {
+                for element in elements {
+                    if element.modified == .Changed {
+                        selectedTrip.modified = .Changed
+                        break
+                    }
+                }
+            }
+            //tripListTable.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
+            
+            if let cell = tableView.cellForRowAtIndexPath(indexPath), imgView = cell.viewWithTag(4) as? UIImageView {
+                imgView.image = selectedTrip.trip.icon?.overlayBadge(selectedTrip.modified)
+            }
+
+            tripToRefresh = nil
+        }
+    }
+    
+    
     func refreshTripList() {
+        refreshControl!.endRefreshing()
         print("TripListView: Refreshing list, probably because data were updated")
+        if (TripList.sharedList.count == 0) {
+            setBackgroundMessage("You have no SHiT trips yet.")
+        } else {
+            setBackgroundMessage(nil)
+        }
         classifyTrips()
         updateSections()
         dispatch_async(dispatch_get_main_queue(), {
@@ -132,10 +172,16 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         saveTrips()
     }
 
-    func logonComplete(notification:NSNotification) {
-        print("TripListView: Logon complete")
+    
+    func reloadTripsFromServer() {
+        setBackgroundMessage("Retrieving your trips from SHiT")
         TripList.sharedList.getFromServer()
         refreshTripList()
+    }
+
+    func logonComplete(notification:NSNotification) {
+        print("TripListView: Logon complete")
+        reloadTripsFromServer()
     }
 
 
@@ -201,8 +247,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             lblName.text = trip.title
             lblDates.text = trip.dateInfo
             lblDesc.text  = trip.detailInfo
-            imgView.image = trip.icon
-            //cell!.imageView!.image = trip.icon
+            
+            imgView.image = trip.icon?.overlayBadge(TripList.sharedList[rowIdx]!.modified)
             //cell!.colourSubviews()
         } else {
             // ERROR!!!
@@ -370,6 +416,23 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                 }
             }
         }
+    }
+    
+    
+    func setBackgroundMessage(messageText:String?) {
+        if let messageText = messageText {
+            let messageLabel = UILabel()
+
+            messageLabel.text = messageText
+            messageLabel.textAlignment = .Center
+            messageLabel.sizeToFit()
+            tripListTable.backgroundView = messageLabel
+        }
+        else
+        {
+            tripListTable.backgroundView = nil
+        }
+        
     }
     
     

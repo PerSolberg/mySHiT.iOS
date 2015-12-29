@@ -183,6 +183,40 @@ class GenericTransport: TripElement {
 
     
     // MARK: Methods
+    override func isEqual(object: AnyObject?) -> Bool {
+        if object_getClassName(self) != object_getClassName(object) {
+            return false
+        } else if let otherTransport = object as? GenericTransport {
+            if self.segmentId             != otherTransport.segmentId              { return false }
+            if self.segmentCode           != otherTransport.segmentCode            { return false }
+            if self.legNo                 != otherTransport.legNo                  { return false }
+            if self.departureTime         != otherTransport.departureTime          { return false }
+            if self.departureLocation     != otherTransport.departureLocation      { return false }
+            if self.departureStop         != otherTransport.departureStop          { return false }
+            if self.departureAddress      != otherTransport.departureAddress       { return false }
+            if self.departureTimeZone     != otherTransport.departureTimeZone      { return false }
+            if self.departureCoordinates  != otherTransport.departureCoordinates   { return false }
+            if self.departureTerminalCode != otherTransport.departureTerminalCode  { return false }
+            if self.departureTerminalName != otherTransport.departureTerminalName  { return false }
+            if self.arrivalTime           != otherTransport.arrivalTime            { return false }
+            if self.arrivalLocation       != otherTransport.arrivalLocation        { return false }
+            if self.arrivalStop           != otherTransport.arrivalStop            { return false }
+            if self.arrivalAddress        != otherTransport.arrivalAddress         { return false }
+            if self.arrivalTimeZone       != otherTransport.arrivalTimeZone        { return false }
+            if self.arrivalCoordinates    != otherTransport.arrivalCoordinates     { return false }
+            if self.arrivalTerminalCode   != otherTransport.arrivalTerminalCode    { return false }
+            if self.arrivalTerminalName   != otherTransport.arrivalTerminalName    { return false }
+            if self.routeNo               != otherTransport.routeNo                { return false }
+            if self.companyName           != otherTransport.companyName            { return false }
+            if self.companyPhone          != otherTransport.companyPhone           { return false }
+
+            return super.isEqual(object)
+        } else {
+            return false
+        }
+    }
+    
+    
     override func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
         if let departureTime = departureTime {
             let dateFormatter = NSDateFormatter()

@@ -120,6 +120,27 @@ class Hotel: TripElement {
     
     
     // MARK: Methods
+    override func isEqual(object: AnyObject?) -> Bool {
+        if object_getClassName(self) != object_getClassName(object) {
+            return false
+        } else if let otherHotel = object as? Hotel {
+            if self.checkInDate   != otherHotel.checkInDate       { return false }
+            if self.checkOutDate  != otherHotel.checkOutDate      { return false }
+            if self.hotelName     != otherHotel.hotelName         { return false }
+            if self.address       != otherHotel.address           { return false }
+            if self.postCode      != otherHotel.postCode          { return false }
+            if self.city          != otherHotel.city              { return false }
+            if self.phone         != otherHotel.phone             { return false }
+            if self.transferInfo  != otherHotel.transferInfo      { return false }
+            if self.timezone      != otherHotel.timezone          { return false }
+
+            return super.isEqual(object)
+        } else {
+            return false
+        }
+    }
+    
+    
     override func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
         if let checkInDate = checkInDate {
             let dateFormatter = NSDateFormatter()

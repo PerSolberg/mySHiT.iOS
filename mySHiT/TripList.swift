@@ -162,8 +162,26 @@ class TripList:NSObject, SequenceType, NSCoding {
         var newTripList = [AnnotatedTrip]()
         for svrItem in serverData {
             let newTrip = Trip(fromDictionary: svrItem as! NSDictionary)
-            newTripList.append( AnnotatedTrip(section: .Historic, trip: newTrip!)! )
+            newTripList.append( AnnotatedTrip(section: .Historic, trip: newTrip!, modified: .Unchanged)! )
         }
+
+        // Determine changes
+        if !trips.isEmpty {
+            for newTrip in newTripList {
+                let matchingOldTrips = trips.filter( { (t:AnnotatedTrip) -> Bool in
+                    return t.trip.id == newTrip.trip.id
+                })
+                if matchingOldTrips.isEmpty {
+                    newTrip.modified = .New
+                } else {
+                    newTrip.trip.compareTripElements(matchingOldTrips[0].trip)
+                    if !newTrip.trip.isEqual(matchingOldTrips[0].trip) {
+                        newTrip.modified = .Changed
+                    }
+                }
+            }
+        }
+
         trips =  newTripList
     }
     

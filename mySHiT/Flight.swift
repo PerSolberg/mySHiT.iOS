@@ -66,4 +66,21 @@ class Flight: GenericTransport {
         airlineCode = elementData["companyCode"] as? String
         setNotification()
     }
+    
+    
+    // MARK: Methods
+    override func isEqual(object: AnyObject?) -> Bool {
+        if object_getClassName(self) != object_getClassName(object) {
+            return false
+        } else if let otherFlight = object as? Flight {
+            if self.airlineCode           != otherFlight.airlineCode          { return false }
+            
+            return super.isEqual(object)
+        } else {
+            return false
+        }
+    }
+    
+    
+
 }

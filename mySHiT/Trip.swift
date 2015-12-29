@@ -112,15 +112,18 @@ class Trip: NSObject, NSCoding {
 
     // MARK: Factory
     class func createFromDictionary( elementData: NSDictionary! ) -> Trip? {
-        let tripType = elementData["type"] as? String ?? ""
+        //let tripType = elementData["type"] as? String ?? ""
         
         var trip: Trip?
+        trip = Trip(fromDictionary: elementData)
+        /*
         switch (tripType) {
         case (_):
             trip = Trip(fromDictionary: elementData)
         default:
             trip = Trip(fromDictionary: elementData)
         }
+        */
         
         return trip
     }
@@ -180,6 +183,52 @@ class Trip: NSObject, NSCoding {
     
 
     // MARK: Methods
+    override func isEqual(object: AnyObject?) -> Bool {
+        //print("Comparing objects: self.class = \(object_getClassName(self)), object.class = \(object_getClassName(object!))")
+        //print("Comparing objects: self.class = \(_stdlib_getDemangledTypeName(self)), object.class = \(_stdlib_getDemangledTypeName(object!))")
+        if object_getClassName(self) != object_getClassName(object) {
+            return false
+        } else if let otherTrip = object as? Trip {
+            if self.id              != otherTrip.id              { return false }
+            if self.startDate       != otherTrip.startDate       { return false }
+            if self.endDate         != otherTrip.endDate         { return false }
+            if self.tripDescription != otherTrip.tripDescription { return false }
+            if self.code            != otherTrip.code            { return false }
+            if self.name            != otherTrip.name            { return false }
+            if self.type            != otherTrip.type            { return false }
+            if let elements = elements {
+                for e in elements {
+                    if (e.modified == .New || e.modified == .Changed) { return false }
+                }
+            }
+            return true
+        } else {
+            return false
+        }
+    }
+
+
+    func compareTripElements(otherTrip: Trip) {
+        if elements == nil || otherTrip.elements == nil {
+            return
+        }
+
+        // Determine changes
+        for element in elements! {
+             let matchingOtherElements = otherTrip.elements!.filter( { (e:AnnotatedTripElement) -> Bool in
+                    return e.tripElement.id == element.tripElement.id
+                })
+                if matchingOtherElements.isEmpty {
+                    element.modified = .New
+                } else {
+                    if !element.tripElement.isEqual(matchingOtherElements[0].tripElement) {
+                        element.modified = .Changed
+                    }
+                }
+            }
+    }
+    
+    
     func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
         if let departureTime = startTime {
             let dateFormatter = NSDateFormatter()
