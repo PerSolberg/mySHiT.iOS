@@ -314,9 +314,11 @@ class Trip: NSObject, NSCoding {
             if let error = error {
                 //If there was an error, log it
                 print("Error : \(error.description)")
+                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
             } else if let error = responseDictionary["error"] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
+                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 print("Trip details retrieved from server")
@@ -327,6 +329,7 @@ class Trip: NSObject, NSCoding {
                     else {
                         let serverData = (responseDictionary["results"] as! NSArray)[0] as! NSDictionary
                         if let newTrip = Trip.createFromDictionary(serverData) {
+                            newTrip.compareTripElements(self)
                             self.id              = newTrip.id
                             self.startDate       = newTrip.startDate
                             self.endDate         = newTrip.endDate

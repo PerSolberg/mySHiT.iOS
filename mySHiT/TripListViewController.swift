@@ -28,12 +28,19 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     // MARK: Navigation
     @IBAction func unwindToMain(sender: UIStoryboardSegue)
     {
-        setBackgroundMessage("Retrieving your trips from SHiT")
+        tripListTable.setBackgroundMessage("Retrieving your trips from SHiT")
         TripList.sharedList.getFromServer()
         return
     }
     
 
+    @IBAction func openSettings(sender: AnyObject) {
+        if let appSettings = NSURL(string: UIApplicationOpenSettingsURLString) {
+            UIApplication.sharedApplication().openURL(appSettings)
+        }
+    }
+    
+    
     // Prepare for navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
@@ -93,7 +100,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "logonComplete:", name:"logonSuccessful", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripList", name: "RefreshTripList", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripList", name: "dataRefreshed", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleNetworkError", name: "networkError", object: nil)
         
+        /*
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
             
@@ -106,6 +115,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             //Present alert
             self.presentViewController(alert, animated: true, completion: nil)
         }
+        */
 
         // Load data & check if section list is complete (if not, add missing elements)
         var sectionList = loadTrips()
@@ -160,9 +170,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         refreshControl!.endRefreshing()
         print("TripListView: Refreshing list, probably because data were updated")
         if (TripList.sharedList.count == 0) {
-            setBackgroundMessage("You have no SHiT trips yet.")
+            tripListTable.setBackgroundMessage("You have no SHiT trips yet")
         } else {
-            setBackgroundMessage(nil)
+            tripListTable.setBackgroundMessage(nil)
         }
         classifyTrips()
         updateSections()
@@ -173,12 +183,30 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 
     
+    func handleNetworkError() {
+        refreshControl!.endRefreshing()
+        print("TripListView: End refresh after network error")
+
+        // Notify user
+        let alert = UIAlertController(title: "Alert", message: "Error connecting to SHiT, please check your Internet connection", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
+
+        if (TripList.sharedList.count == 0) {
+            tripListTable.setBackgroundMessage("Network unavailable, please refresh when network is available again")
+        } else {
+            tripListTable.setBackgroundMessage(nil)
+        }
+    }
+    
+    
     func reloadTripsFromServer() {
-        setBackgroundMessage("Retrieving your trips from SHiT")
+        tripListTable.setBackgroundMessage("Retrieving your trips from SHiT")
         TripList.sharedList.getFromServer()
-        refreshTripList()
+        //refreshTripList()
     }
 
+    
     func logonComplete(notification:NSNotification) {
         print("TripListView: Logon complete")
         reloadTripsFromServer()
@@ -417,24 +445,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             }
         }
     }
-    
-    
-    func setBackgroundMessage(messageText:String?) {
-        if let messageText = messageText {
-            let messageLabel = UILabel()
 
-            messageLabel.text = messageText
-            messageLabel.textAlignment = .Center
-            messageLabel.sizeToFit()
-            tripListTable.backgroundView = messageLabel
-        }
-        else
-        {
-            tripListTable.backgroundView = nil
-        }
-        
-    }
-    
     
     func getSectionById(sectionNo:Int) -> (index: Int, section:TripListSectionInfo, itemCount:Int)? {
         // Find section in section list

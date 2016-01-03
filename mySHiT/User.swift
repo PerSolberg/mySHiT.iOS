@@ -85,14 +85,12 @@ class User {
         rsTransGetUser.parameters = ["userName":userName,"password":urlsafePassword]
         rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
             if let error = error {
-                //dispatch_async(dispatch_get_main_queue(), {
-                    print("Error : \(error.description)")
-                //})
+                print("Error : \(error.description)")
+                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
             } else if let error = responseDictionary["error"] {
-                //dispatch_async(dispatch_get_main_queue(), {
-                    let errMsg = error as! String
-                    print("Error : \(errMsg)")
-                //})
+                let errMsg = error as! String
+                print("Error : \(errMsg)")
+                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
             } else {
                 User.sharedUser.userName = userName
                 User.sharedUser.password = password
@@ -102,7 +100,8 @@ class User {
             }
         })
     }
-    
+
+
     func logout() {
         // Must clear password first, otherwise the missing user name will prevent deleting the password
         password = nil

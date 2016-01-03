@@ -10,3 +10,4 @@
 "Current" = "Current";
 "Historic" = "Historic";
 "%@ departs in %@, at %@" = "%@ departs in %@, at %@";
+"SHiT trip '%@' starts in %@ (%@)" = "SHiT trip '%@' starts in %@ (%@)";

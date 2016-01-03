@@ -74,7 +74,7 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
             
             //If host is not reachable, display a UIAlertController informing the user
-            let alert = UIAlertController(title: "Alert", message: "You are not connected to the Internet", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Alert", message: "Unable to connect to SHiT, please check your Internet connection", preferredStyle: UIAlertControllerStyle.Alert)
             
             //Add alert action
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))

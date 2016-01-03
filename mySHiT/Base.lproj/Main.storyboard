@@ -133,9 +133,15 @@
                         </connections>
                     </tableView>
                     <toolbarItems>
-                        <barButtonItem title="Alerts" id="B6o-Fn-LSu">
+                        <barButtonItem image="Alerts" id="B6o-Fn-LSu">
                             <connections>
                                 <segue destination="tk8-Nj-BWl" kind="show" id="3Z3-xK-Nfh"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="ifa-xy-TYe"/>
+                        <barButtonItem image="Settings" id="ndL-y6-uAU">
+                            <connections>
+                                <action selector="openSettings:" destination="eJl-k3-6xS" id="vim-r0-itp"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
@@ -233,9 +239,15 @@
                         </connections>
                     </tableView>
                     <toolbarItems>
-                        <barButtonItem title="Alerts" id="5aY-XX-BGY">
+                        <barButtonItem image="Alerts" id="5aY-XX-BGY">
                             <connections>
                                 <segue destination="tk8-Nj-BWl" kind="show" id="l9F-9B-NNf"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="ajC-o6-d9h"/>
+                        <barButtonItem image="Settings" id="jNL-GX-Fex">
+                            <connections>
+                                <action selector="openSettings:" destination="f3k-6O-YsJ" id="G30-xH-q74"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
@@ -1001,6 +1013,10 @@ To access your travel details, please log on using the user name and password pr
             <point key="canvasLocation" x="199" y="432"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Alerts" width="25" height="25"/>
+        <image name="Settings" width="25" height="25"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="l9F-9B-NNf"/>
     </inferredMetricsTieBreakers>

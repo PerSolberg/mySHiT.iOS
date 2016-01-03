@@ -27,7 +27,13 @@ class TripDetailsViewController: UITableViewController {
 
 
     // MARK: Navigation
+    @IBAction func openSettings(sender: AnyObject) {
+        if let appSettings = NSURL(string: UIApplicationOpenSettingsURLString) {
+            UIApplication.sharedApplication().openURL(appSettings)
+        }
+    }
     
+        
     // Prepare for navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
@@ -86,6 +92,7 @@ class TripDetailsViewController: UITableViewController {
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "RefreshTripElements", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "dataRefreshed", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleNetworkError", name: "networkError", object: nil)
 
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip    
@@ -100,6 +107,12 @@ class TripDetailsViewController: UITableViewController {
         }
         tripDetailsTable.estimatedRowHeight = 40
         tripDetailsTable.rowHeight = UITableViewAutomaticDimension
+        
+        // Set up refresh
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = tripDetailsTable.backgroundColor
+        refreshControl!.tintColor = UIColor.blueColor()  //whiteColor()
+        refreshControl!.addTarget(self, action: "reloadTripDetailsFromServer", forControlEvents: .ValueChanged)
     }
 
 
@@ -258,8 +271,48 @@ class TripDetailsViewController: UITableViewController {
     
     
     // MARK: Functions
+    func reloadTripDetailsFromServer() {
+        print("Reloading trip details")
+        tripDetailsTable.setBackgroundMessage("Retrieving trip details from SHiT")
+        if let trip = TripList.sharedList.trip(byCode: tripCode!) {
+            self.trip = trip
+            trip.trip.loadDetails()
+        }
+    }
+    
+
+    func handleNetworkError() {
+        refreshControl!.endRefreshing()
+        print("TripListView: End refresh after network error")
+        
+        // Notify user
+        let alert = UIAlertController(title: "Alert", message: "Error connecting to SHiT, please check your Internet connection", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
+        
+        if let trip = TripList.sharedList.trip(byCode: tripCode!) {
+            if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
+                tripDetailsTable.setBackgroundMessage("Network unavailable, please refresh when network is available again")
+            } else {
+                tripDetailsTable.setBackgroundMessage(nil)
+            }
+        }
+
+    }
+    
+    
     func refreshTripElements() {
+        if let refreshControl = refreshControl {
+            refreshControl.endRefreshing()
+        }
         print("Refreshing trip details - probably because data were refreshed")
+        if let trip = TripList.sharedList.trip(byCode: tripCode!) {
+            if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
+                tripDetailsTable.setBackgroundMessage("No details available yet")
+            } else {
+                tripDetailsTable.setBackgroundMessage(nil)
+            }
+        }
         updateSections()
         dispatch_async(dispatch_get_main_queue(), {
             self.title = self.trip?.trip.name

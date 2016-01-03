@@ -33,7 +33,7 @@
 "rbz-MP-1nn.text" = "Resenamn";
 
 /* Class = "UITextView"; text = "Welcome to SHiT\n\nTo access your travel details, please log on using the user name and password provided in your welcome letter."; ObjectID = "uxc-5B-TQu"; */
-"uxc-5B-TQu.text" = "Välkommen till SHiT\n\nFör att se information om dina resor, var god att logga inn med användarnamnet och lösenordet du fick i ditt .";
+"uxc-5B-TQu.text" = "Välkommen till SHiT\n\nFör att se information om dina resor, var god att logga inn med användarnamnet och lösenordet du fick i ditt välkomstbrev.";
 
 /* Class = "UILabel"; text = "Description"; ObjectID = "yie-iv-QDP"; */
 "yie-iv-QDP.text" = "Beskrivning";

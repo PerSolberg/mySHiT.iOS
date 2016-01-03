@@ -139,10 +139,12 @@ class TripList:NSObject, SequenceType, NSCoding {
         rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
             if let error = error {
                 //If there was an error, log it
-                    print("Error : \(error.description)")
+                print("Error : \(error.description)")
+                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
             } else if let error = responseDictionary["error"] {
-                    let errMsg = error as! String
-                    print("Error : \(errMsg)")
+                let errMsg = error as! String
+                print("Error : \(errMsg)")
+                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 let serverData = responseDictionary["results"] as! NSArray
