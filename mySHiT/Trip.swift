@@ -161,15 +161,15 @@ class Trip: NSObject, NSCoding {
     
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
-        id = elementData["id"] as! Int
-        startDate = ServerDate.convertServerDate(elementData["startDate"] as! String, timeZoneName: nil)
-        endDate = ServerDate.convertServerDate(elementData["endDate"] as! String, timeZoneName: nil)
-        tripDescription = elementData["description"] as? String
-        code = elementData["code"] as? String
-        name = elementData["name"] as? String
-        type = elementData["type"] as? String
+        id = elementData[Constant.JSON.tripId] as! Int  // "id"
+        startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
+        endDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripEndDate] as! String, timeZoneName: nil)
+        tripDescription = elementData[Constant.JSON.tripDescription] as? String
+        code = elementData[Constant.JSON.tripCode] as? String
+        name = elementData[Constant.JSON.tripName] as? String
+        type = elementData[Constant.JSON.tripType] as? String
         //elements = elementData["elements"] as? NSArray
-        if let tripElements = elementData["elements"] as? NSArray {
+        if let tripElements = elementData[Constant.JSON.tripElements] as? NSArray {
             elements = [AnnotatedTripElement]()
             for svrElement in tripElements {
                 if let tripElement = TripElement.createFromDictionary(svrElement as! NSDictionary) {
@@ -266,7 +266,7 @@ class Trip: NSObject, NSCoding {
                 let startTimeText = startTime(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
                 let now = NSDate()
                 let dcf = NSDateComponentsFormatter()
-                let genericAlertMessage = NSLocalizedString("SHiT trip '%@' starts in %@ (%@)", comment: "Some dummy comment")
+                let genericAlertMessage = NSLocalizedString(Constant.msg.tripAlertMessage, comment: "Some dummy comment")
                 
                 dcf.unitsStyle = .Short
                 dcf.zeroFormattingBehavior = .DropAll
@@ -313,21 +313,21 @@ class Trip: NSObject, NSCoding {
         rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
             if let error = error {
                 //If there was an error, log it
-                print("Error : \(error.description)")
-                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
-            } else if let error = responseDictionary["error"] {
+                print("Error : \(error.domain)")
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
+            } else if let error = responseDictionary[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 print("Trip details retrieved from server")
-                if let tripsFound = responseDictionary["count"] as? Int {
+                if let tripsFound = responseDictionary[Constant.JSON.queryCount] as? Int {
                     if tripsFound != 1 {
                         print("ERROR: Found \(tripsFound) for trip code \(self.code)")
                     }
                     else {
-                        let serverData = (responseDictionary["results"] as! NSArray)[0] as! NSDictionary
+                        let serverData = (responseDictionary[Constant.JSON.queryResults] as! NSArray)[0] as! NSDictionary
                         if let newTrip = Trip.createFromDictionary(serverData) {
                             newTrip.compareTripElements(self)
                             self.id              = newTrip.id
@@ -343,7 +343,7 @@ class Trip: NSObject, NSCoding {
                         //let tripName = serverData["name"] as! String
                         //let srvElementList = serverData["elements"] as? NSArray ?? NSArray()
                         //self.copyServerData(srvElementList)
-                        NSNotificationCenter.defaultCenter().postNotificationName("dataRefreshed", object: self)
+                        NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.tripElementsRefreshed, object: self)
                         /*
                         dispatch_async(dispatch_get_main_queue(), {
                             self.title = tripName

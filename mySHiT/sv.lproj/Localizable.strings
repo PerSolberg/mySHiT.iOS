@@ -9,5 +9,29 @@
 "Upcoming" = "Nästa";
 "Current" = "Nuvarande";
 "Historic" = "Historiska";
-"%@ departs in %@, at %@" = "%@ avgår om %@, kl. %@";
+
+// retrievingTrips
+"Retrieving your trips from SHiT" = "Hämtar dina resor från SHiT";
+// tripAlertMessage
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT-resa '%@' börjar om %@ (%@)";
+// transportAlertMessage
+"%@ departs in %@, at %@" = "%@ avgår om %@, kl. %@";
+// noDetailsAvailable
+"No details available yet" = "Inga detaljer än";
+// networkUnavailable
+"Network unavailable, please refresh when network is available again" = "Nettvärk otillgängligt, försök igen senare";
+// connectErrorTitle
+"Connection Error" = "Uppkopplingsfel";
+// connectErrorText
+"Could not connect to SHiT, please check your Internet connection" = "Kunde inte koppla till SHiT, var god kontrollera Internett-anslutningen";
+// logonFailureTitle
+"Logon failed" = "Kunde inte logga in";
+// logonFailureText
+"Please check your user name and password" = "Var god kontrollera användarnamn och lösenord";
+// alertBoxTitle
+"Alert" = "Varning";
+// noTrips
+"You have no SHiT trips yet" = "Du har inga SHiT-resor";
+// unknownElement
+"SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT! Vi ber om ursäkt, men klienten känner inte igen den här typen reseelement. Av den anledning kan vi tyvärr inte presentera informationen på ett gott sätt, men nedanför hittar ni rådata från SHiT-tjänsten.";
+

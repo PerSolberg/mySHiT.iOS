@@ -139,18 +139,18 @@ class TripList:NSObject, SequenceType, NSCoding {
         rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
             if let error = error {
                 //If there was an error, log it
-                print("Error : \(error.description)")
-                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
-            } else if let error = responseDictionary["error"] {
+                print("Error : \(error.domain)")
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
+            } else if let error = responseDictionary[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
-                let serverData = responseDictionary["results"] as! NSArray
+                let serverData = responseDictionary[Constant.JSON.queryResults] as! NSArray
                 self.copyServerData(serverData)
                 print("TripList: Server data received, notifying view controllers")
-                NSNotificationCenter.defaultCenter().postNotificationName("dataRefreshed", object: self)
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.tripsRefreshed, object: self)
 
             }
         })

@@ -44,22 +44,22 @@ class TripDetailsViewController: UITableViewController {
             let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
             
             switch (segueId) {
-            case "showFlightInfoSegue":
+            case Constant.segue.showFlightInfo:
                 let destinationController = segue.destinationViewController as! FlightDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
-            case "showHotelInfoSegue":
+            case Constant.segue.showHotelInfo:
                 let destinationController = segue.destinationViewController as! HotelDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
-            case "showScheduledTransportInfoSegue":
+            case Constant.segue.showScheduledTransport:
                 let destinationController = segue.destinationViewController as! ScheduledTransportDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
-            case "showPrivateTransportInfoSegue":
+            case Constant.segue.showPrivateTransport:
                 let destinationController = segue.destinationViewController as! PrivateTransportDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
@@ -273,7 +273,7 @@ class TripDetailsViewController: UITableViewController {
     // MARK: Functions
     func reloadTripDetailsFromServer() {
         print("Reloading trip details")
-        tripDetailsTable.setBackgroundMessage("Retrieving trip details from SHiT")
+        tripDetailsTable.setBackgroundMessage("Retrieving trip details from SHiT")   /* LOCALISE */
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.loadDetails()
@@ -283,21 +283,27 @@ class TripDetailsViewController: UITableViewController {
 
     func handleNetworkError() {
         refreshControl!.endRefreshing()
-        print("TripListView: End refresh after network error")
+        print("TripDetailsView: End refresh after network error")
         
         // Notify user
-        let alert = UIAlertController(title: "Alert", message: "Error connecting to SHiT, please check your Internet connection", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+        if self.isViewLoaded() && view.window != nil {
+            dispatch_async(dispatch_get_main_queue(), {
+                let alert = UIAlertController(
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
+                    message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
+                    preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
+            })
+        }
         
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage("Network unavailable, please refresh when network is available again")
+                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: "Some dummy comment"))
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }
         }
-
     }
     
     
@@ -308,7 +314,7 @@ class TripDetailsViewController: UITableViewController {
         print("Refreshing trip details - probably because data were refreshed")
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage("No details available yet")
+                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noDetailsAvailable, comment: "Some dummy comment"))
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }

@@ -40,7 +40,9 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         userNameTextField.text = User.sharedUser.userName
         passwordTextField.text = User.sharedUser.password
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "logonComplete:", name:"logonSuccessful", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "logonComplete:", name: Constant.notification.logonSuccessful, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "logonFailed:", name: Constant.notification.logonFailed, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "connectionFailed:", name: Constant.notification.networkError, object: nil)
 
         controlLogonButton()
         //api.delegate = self;
@@ -70,11 +72,15 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         //messageTextView.text = "Current password = \(passwordTextField.text)"
 
         //check to see if host is reachable
+        /*
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
             
             //If host is not reachable, display a UIAlertController informing the user
-            let alert = UIAlertController(title: "Alert", message: "Unable to connect to SHiT, please check your Internet connection", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
+                message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
+                preferredStyle: UIAlertControllerStyle.Alert)
             
             //Add alert action
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
@@ -83,6 +89,7 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
             self.presentViewController(alert, animated: true, completion: nil)
             
         }
+        */
         
         User.sharedUser.logon(userName: self.userNameTextField.text!, password: self.passwordTextField.text!)
     }
@@ -91,6 +98,40 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     // MARK: Notifications
     func logonComplete(notification:NSNotification) {
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    func logonFailed(notification:NSNotification) {
+        print("LogonViewController: logonFailed")
+        dispatch_async(dispatch_get_main_queue(), {
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.logonFailureTitle, comment: "Some dummy comment"),
+                message: NSLocalizedString(Constant.msg.logonFailureText, comment: "Some dummy comment"),
+                preferredStyle: UIAlertControllerStyle.Alert)
+            
+            //Add alert action
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+            
+            //Present alert
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
+    
+    
+    func connectionFailed(notification:NSNotification) {
+        print("LogonViewController: connectionFailed")
+        dispatch_async(dispatch_get_main_queue(), {
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.connectErrorTitle, comment: "Some dummy comment"),
+                message: NSLocalizedString(Constant.msg.connectErrorText, comment: "Some dummy comment"),
+                preferredStyle: UIAlertControllerStyle.Alert)
+            
+            //Add alert action
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+            
+            //Present alert
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
     }
     
     

@@ -5,9 +5,35 @@
   Created by Per Solberg on 2015-10-17.
   Copyright © 2015 Per Solberg. All rights reserved.
 */
-"Future" = "Future";
-"Upcoming" = "Upcoming";
 "Current" = "Current";
+"Future" = "Future";
 "Historic" = "Historic";
-"%@ departs in %@, at %@" = "%@ departs in %@, at %@";
+"Upcoming" = "Upcoming";
+
+// retrievingTrips
+"Retrieving your trips from SHiT" = "Retrieving your trips from SHiT";
+// tripAlertMessage
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT trip '%@' starts in %@ (%@)";
+// transportAlertMessage
+"%@ departs in %@, at %@" = "%@ departs in %@, at %@";
+// noDetailsAvailable
+"No details available yet" = "No details available yet";
+// networkUnavailable
+"Network unavailable, please refresh when network is available again" = "Network unavailable, please refresh when network is available again";
+// connectError
+"Error connecting to SHiT, please check your Internet connection" = "Error connecting to SHiT, please check your Internet connection";
+// connectErrorTitle
+"Connection Error" = "Connection Error";
+// connectErrorText
+"Could not connect to SHiT, please check your Internet connection" = "Could not connect to SHiT, please check your Internet connection";
+// logonFailureTitle
+"Logon failed" = "Logon failed";
+// logonFailureText
+"Please check your user name and password" = "Please check your user name and password";
+// alertBoxTitle
+"Alert" = "Alert";
+// noTrips
+"You have no SHiT trips yet" = "You have no SHiT trips yet";
+// unknownElement
+"SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server.";
+

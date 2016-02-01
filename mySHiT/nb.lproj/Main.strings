@@ -2,23 +2,89 @@
 /* Class = "UILabel"; text = "Dates"; ObjectID = "0X5-nN-fip"; */
 "0X5-nN-fip.text" = "Datoer";
 
+/* Class = "UILabel"; text = "Departure"; ObjectID = "5Iw-uL-UdO"; */
+"5Iw-uL-UdO.text" = "Avgang";
+
+/* Class = "UILabel"; text = "Transfer Info"; ObjectID = "7xR-iJ-vOd"; */
+"7xR-iJ-vOd.text" = "Transfer Info"; /* TODO */
+
+/* Class = "UILabel"; text = "References"; ObjectID = "8WV-Mr-ZMC"; */
+"8WV-Mr-ZMC.text" = "Referanser";
+
+/* Class = "UILabel"; text = "Airline"; ObjectID = "8Zl-dL-TkN"; */
+"8Zl-dL-TkN.text" = "Flyselskap";
+
 /* Class = "UITextField"; placeholder = "User name"; ObjectID = "AmK-4j-lCV"; */
 "AmK-4j-lCV.placeholder" = "Brukernavn";
 
 /* Class = "UILabel"; text = "User name"; ObjectID = "C8I-hV-1aV"; */
 "C8I-hV-1aV.text" = "Brukernavn";
 
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet, ..."; ObjectID = "Efy-PK-MQr"; */
+"Efy-PK-MQr.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UILabel"; text = "Phone"; ObjectID = "IOW-yQ-abk"; */
+"IOW-yQ-abk.text" = "Telefon";
+
+/* Class = "UILabel"; text = "Arrival"; ObjectID = "Ixw-Pa-yga"; */
+"Ixw-Pa-yga.text" = "Ankomst";
+
+/* Class = "UILabel"; text = "Hotel"; ObjectID = "J1z-Au-C2G"; */
+"J1z-Au-C2G.text" = "Hotell";
+
 /* Class = "UITextView"; text = "Description"; ObjectID = "JMV-Gy-34V"; */
 "JMV-Gy-34V.text" = "Beskrivelse";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "LB8-v3-BHw"; */
+"LB8-v3-BHw.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UILabel"; text = "Departure"; ObjectID = "M51-6C-a1u"; */
+"M51-6C-a1u.text" = "Avreise";
+
+/* Class = "UIViewController"; title = "Hotel Details"; ObjectID = "M5Q-7t-65k"; */
+"M5Q-7t-65k.title" = "Hotelldetaljer";
 
 /* Class = "UITextField"; placeholder = "Password"; ObjectID = "M9c-wV-gJe"; */
 "M9c-wV-gJe.placeholder" = "Passord";
 
+/* Class = "UILabel"; text = "Arrival"; ObjectID = "MY1-ds-3uA"; */
+"MY1-ds-3uA.text" = "Ankomst";
+
+/* Class = "UIViewController"; title = "Flight Details"; ObjectID = "O3H-bw-HTi"; */
+"O3H-bw-HTi.title" = "Flydetaljer";
+
+/* Class = "UILabel"; text = "Company"; ObjectID = "Pte-yh-bx1"; */
+"Pte-yh-bx1.text" = "Selskap";
+
 /* Class = "UITextView"; text = "Description"; ObjectID = "Qtd-Ax-N5h"; */
 "Qtd-Ax-N5h.text" = "Beskrivelse";
 
+/* Class = "UILabel"; text = "Flight #"; ObjectID = "TGs-b0-VHE"; */
+"TGs-b0-VHE.text" = "Flight #";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "U0c-aw-wMn"; */
+"U0c-aw-wMn.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UILabel"; text = "Check-In"; ObjectID = "WRf-eZ-bEY"; */
+"WRf-eZ-bEY.text" = "Innsjekking";
+
+/* Class = "UILabel"; text = "Departure"; ObjectID = "WYI-cG-pEY"; */
+"WYI-cG-pEY.text" = "Avreise";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "Z0h-4l-70L"; */
+"Z0h-4l-70L.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UILabel"; text = "Phone"; ObjectID = "ZNV-NZ-Cwr"; */
+"ZNV-NZ-Cwr.text" = "Telefon";
+
 /* Class = "UILabel"; text = "Trip Name"; ObjectID = "aXh-27-7HO"; */
 "aXh-27-7HO.text" = "Reisenavn";
+
+/* Class = "UILabel"; text = "Arrival"; ObjectID = "dEe-j1-Y3O"; */
+"dEe-j1-Y3O.text" = "Ankomst";
+
+/* Class = "UILabel"; text = "Check-Out"; ObjectID = "eS6-2s-LVJ"; */
+"eS6-2s-LVJ.text" = "Utsjekking";
 
 /* Class = "UIButton"; normalTitle = "Log on"; ObjectID = "eVD-AU-hnc"; */
 "eVD-AU-hnc.normalTitle" = "Logg på";
@@ -32,14 +98,51 @@
 /* Class = "UITableViewController"; title = "Trip Details"; ObjectID = "f3k-6O-YsJ"; */
 "f3k-6O-YsJ.title" = "Reisedetaljer";
 
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "fNW-8O-8Ck"; */
+"fNW-8O-8Ck.text" = "Lorem ipsum dolor sit er elit lamet.";
+
 /* Class = "UILabel"; text = "Password"; ObjectID = "gGG-YR-B8p"; */
 "gGG-YR-B8p.text" = "Passord";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "hI6-tN-mM9"; */
+"hI6-tN-mM9.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "hgE-ae-Cg3"; */
+"hgE-ae-Cg3.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "hmm-4y-7wR"; */
+"hmm-4y-7wR.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UIViewController"; title = "Unknown Details"; ObjectID = "mDV-4p-VuG"; */
+"mDV-4p-VuG.title" = "Ukjente detaljer";
+
+/* Class = "UILabel"; text = "Company"; ObjectID = "mDx-kA-DAj"; */
+"mDx-kA-DAj.text" = "Selskap";
+
+/* Class = "UILabel"; text = "Reference"; ObjectID = "mYM-tP-isl"; */
+"mYM-tP-isl.text" = "Referanse";
 
 /* Class = "UILabel"; text = "End Date"; ObjectID = "nmN-QJ-XGj"; */
 "nmN-QJ-XGj.text" = "Sluttdato";
 
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet..."; ObjectID = "oan-2q-PBO"; */
+"oan-2q-PBO.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UILabel"; text = "References"; ObjectID = "qNl-2c-Qgr"; */
+"qNl-2c-Qgr.text" = "Referanser";
+
+/* Class = "UILabel"; text = "Reference"; ObjectID = "tzP-sf-wU2"; */
+"tzP-sf-wU2.text" = "Referanse";
+
 /* Class = "UITextView"; text = "Welcome to SHiT\n\nTo access your travel details, please log on using the user name and password provided in your welcome letter."; ObjectID = "uxc-5B-TQu"; */
 "uxc-5B-TQu.text" = "Velkommen til SHiT\n\nFor å få tilgang til dine reiseopplysninger, vennligst logg på med brukernavnet og passordet du mottok i velkomstbrevet.";
 
+/* Class = "UILabel"; text = "Route #"; ObjectID = "xCO-Ww-d6y"; */
+"xCO-Ww-d6y.text" = "Linjenr.";
+
 /* Class = "UILabel"; text = "Element Name"; ObjectID = "yVI-Ug-gZJ"; */
 "yVI-Ug-gZJ.text" = "Elementnavn";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet."; ObjectID = "zkl-d5-RHg"; */
+"zkl-d5-RHg.text" = "Lorem ipsum dolor sit er elit lamet.";
+

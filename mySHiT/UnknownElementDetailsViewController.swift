@@ -42,7 +42,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
-        messageTextView.text = NSLocalizedString("SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server.", comment: "Some dummy comment")
+        messageTextView.text = NSLocalizedString(Constant.msg.unknownElement, comment: "Some dummy comment")
 
         if let serverElements = tripElement?.tripElement.serverData {
             topView.addDictionaryAsGrid(serverElements, horisontalHuggingForLabel: 251.0, verticalHuggingForLabel: 251.0, horisontalHuggingForValue: 249.0, verticalHuggingForValue: 249.0, constrainValueFieldWidthToView: nil)

@@ -28,7 +28,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     // MARK: Navigation
     @IBAction func unwindToMain(sender: UIStoryboardSegue)
     {
-        tripListTable.setBackgroundMessage("Retrieving your trips from SHiT")
+        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
         TripList.sharedList.getFromServer()
         return
     }
@@ -48,10 +48,10 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
         if let segueId = segue.identifier {
             switch (segueId) {
-            case "logoutSegue":
+            case Constant.segue.logout:
                 logout()
             
-            case "tripDetails":
+            case Constant.segue.showTripDetails:
                 let destinationController = segue.destinationViewController as! TripDetailsViewController
                 if let selectedTripCell = sender as? UITableViewCell {
                     let indexPath = tableView.indexPathForCell(selectedTripCell)!
@@ -97,10 +97,10 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         print("Trip List View loaded")
         print("Current language = \(NSLocale.currentLocale().objectForKey(NSLocaleLanguageCode)!)")
         super.viewDidLoad()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "logonComplete:", name:"logonSuccessful", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripList", name: "RefreshTripList", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripList", name: "dataRefreshed", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleNetworkError", name: "networkError", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "logonComplete:", name: Constant.notification.logonSuccessful, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripList", name: Constant.notification.refreshTripList, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripList", name: Constant.notification.tripsRefreshed, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleNetworkError", name: Constant.notification.networkError, object: nil)
         
         /*
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
@@ -140,8 +140,23 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         refreshControl!.addTarget(self, action: "reloadTripsFromServer", forControlEvents: .ValueChanged)
     }
 
-
+    func showLogonScreen(animated animated: Bool) {
+        // Get login screen from storyboard and present it
+        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
+        let logonVC = storyboard.instantiateViewControllerWithIdentifier("logonScreen") as! LogonViewController
+        view.window!.makeKeyAndVisible()
+        view.window!.rootViewController?.presentViewController(logonVC, animated: true, completion: nil)
+    }
+    
     override func viewDidAppear(animated: Bool) {
+        print("TripList view appeared")
+        if !User.sharedUser.hasCredentials() {
+            // Show login view
+            print("Show logon screen")
+            showLogonScreen(animated: false)
+        }
+
+        print("Normal processing")
         if let indexPath = tripToRefresh {
             let s = getSectionById(indexPath.section)
             let selectedTrip = TripList.sharedList[s!.section.firstTrip + indexPath.row]!
@@ -170,7 +185,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         refreshControl!.endRefreshing()
         print("TripListView: Refreshing list, probably because data were updated")
         if (TripList.sharedList.count == 0) {
-            tripListTable.setBackgroundMessage("You have no SHiT trips yet")
+            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: "Some dummy comment"))
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
@@ -187,13 +202,22 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         refreshControl!.endRefreshing()
         print("TripListView: End refresh after network error")
 
-        // Notify user
-        let alert = UIAlertController(title: "Alert", message: "Error connecting to SHiT, please check your Internet connection", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+        // First check if this view is currently active, if not, skip the alert
+        if self.isViewLoaded() && view.window != nil {
+            print("TripListView: Present error message")
+            // Notify user
+            dispatch_async(dispatch_get_main_queue(), {
+                let alert = UIAlertController(
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
+                    message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
+                    preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
+            })
+        }
 
         if (TripList.sharedList.count == 0) {
-            tripListTable.setBackgroundMessage("Network unavailable, please refresh when network is available again")
+            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: "Some dummy comment"))
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
@@ -201,7 +225,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
     
     func reloadTripsFromServer() {
-        tripListTable.setBackgroundMessage("Retrieving your trips from SHiT")
+        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
         TripList.sharedList.getFromServer()
         //refreshTripList()
     }

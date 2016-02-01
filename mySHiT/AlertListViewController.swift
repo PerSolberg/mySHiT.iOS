@@ -85,7 +85,7 @@ class AlertListViewController: UITableViewController {
 
         if let notifications = UIApplication.sharedApplication().scheduledLocalNotifications {
             if indexPath.row >= notifications.count {
-                cell!.textLabel!.text = "Unknown notification! Deleted?"
+                cell!.textLabel!.text = "Unknown notification! Deleted?"  /* LOCALISE */
                 cell!.detailTextLabel!.text = ""
             } else {
                 let notification = notifications[indexPath.row]

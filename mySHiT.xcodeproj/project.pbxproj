@@ -52,6 +52,7 @@
 		85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */; };
 		85FEFC801BCA7F4000D8E38E /* UIImageView+RSNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */; };
 		85FEFC841BCBFA6B00D8E38E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 85FEFC831BCBFA6B00D8E38E /* Settings.bundle */; };
+		85FFD37B1C5000840083C72B /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FFD37A1C5000840083C72B /* Constant.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,7 +93,6 @@
 		856D665F1BD7CE3C00C62D79 /* Development tips */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Development tips"; sourceTree = "<group>"; };
 		856D66611BD824E300C62D79 /* SecurityWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecurityWrapper.swift; sourceTree = "<group>"; };
 		859D44161BD4EC7E0068E5B3 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		85A839BE1C37F0AD0085DDF3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		85ABD35B1BD58EA100B26F07 /* TripDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripDetailsViewController.swift; sourceTree = "<group>"; };
 		85ABD35D1BD5987500B26F07 /* AnnotatedTripElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnotatedTripElement.swift; sourceTree = "<group>"; };
 		85ABD35F1BD59A5E00B26F07 /* TripElementListSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripElementListSection.swift; sourceTree = "<group>"; };
@@ -130,6 +130,7 @@
 		85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+RSNetworking.swift"; sourceTree = "<group>"; };
 		85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+RSNetworking.swift"; sourceTree = "<group>"; };
 		85FEFC831BCBFA6B00D8E38E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		85FFD37A1C5000840083C72B /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +228,7 @@
 				85FEFC741BCA7F4000D8E38E /* RSNetworking */,
 				85FEFC3E1BC7FCF800D8E38E /* AppDelegate.swift */,
 				85F6A5231BEECA2C00141938 /* GUI.storyboard */,
+				85FFD37A1C5000840083C72B /* Constant.swift */,
 				855F33581BDEE853002CB89B /* AlertListViewController.swift */,
 				851173871BE371D8008FE3BE /* FlightDetailsViewController.swift */,
 				8507431C1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift */,
@@ -341,11 +343,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0700;
-				ORGANIZATIONNAME = "Per Solberg";
+				ORGANIZATIONNAME = "&More AS";
 				TargetAttributes = {
 					85FEFC3A1BC7FCF800D8E38E = {
 						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = F4YSQGFS7B;
+						DevelopmentTeam = LF3HBMECXF;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 0;
+							};
+						};
 					};
 					85FEFC4E1BC7FCF900D8E38E = {
 						CreatedOnToolsVersion = 7.0;
@@ -420,6 +427,7 @@
 				85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */,
 				85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */,
 				85C52A181BD3004F00F625B5 /* AnnotatedTrip.swift in Sources */,
+				85FFD37B1C5000840083C72B /* Constant.swift in Sources */,
 				856D665C1BD7025400C62D79 /* Trip.swift in Sources */,
 				85C52A201BD44E1A00F625B5 /* UpcomingTrips.swift in Sources */,
 				85ABD35C1BD58EA100B26F07 /* TripDetailsViewController.swift in Sources */,
@@ -502,7 +510,6 @@
 				85FEFC431BC7FCF800D8E38E /* Base */,
 				85C52A141BD2DC1000F625B5 /* sv */,
 				85179B4B1BDD9F670097F571 /* nb */,
-				85A839BE1C37F0AD0085DDF3 /* en */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -523,6 +530,7 @@
 		85FEFC611BC7FCF900D8E38E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"ALTERNATE_GROUP[sdk=*]" = "$(INSTALL_GROUP)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -568,6 +576,7 @@
 		85FEFC621BC7FCF900D8E38E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"ALTERNATE_OWNER[sdk=*]" = "$(INSTALL_OWNER)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -611,7 +620,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = mySHiT/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiT;
+				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -625,7 +634,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = mySHiT/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiT;
+				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};

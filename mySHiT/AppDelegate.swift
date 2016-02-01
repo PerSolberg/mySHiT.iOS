@@ -16,10 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound], categories: nil))
-        if !User.sharedUser.hasCredentials() {
-            // Show login view
-            showLogonScreen(animated: true)
-        }
         return true
     }
 
@@ -57,6 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func showLogonScreen(animated animated: Bool) {
         // Get login screen from storyboard and present it
+        print("AppDelegate: showLogonScreen")
         let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
         let logonVC = storyboard.instantiateViewControllerWithIdentifier("logonScreen") as! LogonViewController
         window!.makeKeyAndVisible()
@@ -64,6 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func logout() {
+        print("AppDelegate: logout")
         // Remove data from singleton (where all my app data is stored)
         // [AppData clearData];
     

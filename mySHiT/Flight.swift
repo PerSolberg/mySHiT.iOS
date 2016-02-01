@@ -9,6 +9,9 @@
 import Foundation
 
 class Flight: GenericTransport {
+    static let RefType_ETicketNo  = "ETKT"
+    static let RefType_Amadeus    = "Amadeus"
+    
     // MARK: Properties
     var airlineCode: String?
     
@@ -36,9 +39,14 @@ class Flight: GenericTransport {
         if let references = references {
             var refList: String = ""
             for ref in references {
+                if ref[TripElement.RefTag_Type] != Flight.RefType_ETicketNo {
+                    refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_Type]! + ": " + ref[TripElement.RefTag_RefNo]!
+                }
+                /*
                 if ref["type"] != "ETKT" {
                     refList = refList + (refList == "" ? "" : ", ") + ref["type"]! + ": " + ref["refNo"]!
                 }
+                */
             }
             return refList
         }
@@ -63,7 +71,7 @@ class Flight: GenericTransport {
     
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
-        airlineCode = elementData["companyCode"] as? String
+        airlineCode = elementData[Constant.JSON.airlineCompanyCode] as? String
         setNotification()
     }
     

@@ -10,6 +10,10 @@ import Foundation
 import UIKit
 
 class TripElement: NSObject, NSCoding {
+    static let RefTag_Type      = "type"
+    static let RefTag_RefNo     = "refNo"
+    static let RefTag_LookupURL = "urlLookup"
+    
     var type: String!
     var subType: String!
     var id: Int!
@@ -102,8 +106,8 @@ class TripElement: NSObject, NSCoding {
     
     // MARK: Factory
     class func createFromDictionary( elementData: NSDictionary! ) -> TripElement? {
-        let elemType = elementData["type"] as? String ?? ""
-        let elemSubType = elementData["subType"] as? String ?? ""
+        let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
+        let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
 
         var elem: TripElement?
         switch (elemType, elemSubType) {
@@ -163,10 +167,10 @@ class TripElement: NSObject, NSCoding {
     
     
     required init?(fromDictionary elementData: NSDictionary!) {
-        id = elementData["id"] as! Int
-        type = elementData["type"] as? String
-        subType = elementData["subType"] as? String
-        references = elementData["references"] as? [ [String:String] ]
+        id = elementData[Constant.JSON.elementId] as! Int
+        type = elementData[Constant.JSON.elementType] as? String
+        subType = elementData[Constant.JSON.elementSubType] as? String
+        references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
         
         serverData = elementData
     }

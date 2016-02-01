@@ -40,32 +40,6 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Hide historic data</string>
-			<key>Key</key>
-			<string>hide_historic_data</string>
-			<key>DefaultValue</key>
-			<integer>0</integer>
-			<key>Titles</key>
-			<array>
-				<string>Never</string>
-				<string>Immediately</string>
-				<string>After 1 day</string>
-				<string>After 7 days</string>
-				<string>After 30 days</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<integer>-1</integer>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>7</integer>
-				<integer>30</integer>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
 			<string>Upcoming trips</string>
 			<key>Key</key>
 			<string>upcoming_trips</string>
@@ -172,7 +146,7 @@
 			<key>Key</key>
 			<string>leg_notification_leadtime</string>
 			<key>DefaultValue</key>
-			<string></string>
+			<integer>30</integer>
 		</dict>
 	</array>
 </dict>

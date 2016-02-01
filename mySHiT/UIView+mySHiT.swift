@@ -69,7 +69,7 @@ extension UIView
         
         var firstValueField: UIView?
         for (key, value) in dictionary {
-            print("Entry: Key = \(key), value = \(value)")
+            //print("Entry: Key = \(key), value = \(value)")
             if value.isKindOfClass(NSNull) {
                 // Empty element - ignore
                 continue
@@ -163,7 +163,7 @@ extension UIView
         if let selfAsScrollView = self as? UIScrollView {
             print("Adding to scroll view - setting size")
             verticalStackView.layoutIfNeeded()
-            print("Scroll view content size = \(verticalStackView.bounds.size), frame = \(verticalStackView.frame), indicators H/V = \(selfAsScrollView.showsHorizontalScrollIndicator)/\(selfAsScrollView.showsVerticalScrollIndicator)")
+            //print("Scroll view content size = \(verticalStackView.bounds.size), frame = \(verticalStackView.frame), indicators H/V = \(selfAsScrollView.showsHorizontalScrollIndicator)/\(selfAsScrollView.showsVerticalScrollIndicator)")
             selfAsScrollView.contentSize = verticalStackView.bounds.size
         }
     }
@@ -201,7 +201,7 @@ extension UIView
         
         var firstValueField: UIView?
         for value in array {
-            print("Entry: \(value)")
+            //print("Entry: \(value)")
             if value.isKindOfClass(NSNull) {
                 // Empty element - ignore
                 continue

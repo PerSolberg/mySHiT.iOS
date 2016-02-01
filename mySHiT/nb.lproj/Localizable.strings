@@ -9,5 +9,31 @@
 "Upcoming" = "Forestående";
 "Current" = "Aktiv";
 "Historic" = "Historiske";
-"%@ departs in %@, at %@" = "%@ går om %@, kl. %@";
+
+// retrievingTrips
+"Retrieving your trips from SHiT" = "Henter reisene dine fra SHiT";
+// tripAlertMessage
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT-reise '%@' begynner om %@ (%@)";
+// transportAlertMessage
+"%@ departs in %@, at %@" = "%@ går om %@, kl. %@";
+// noDetailsAvailable
+"No details available yet" = "Ingen detaljer tilgjengelig ennå";
+// networkUnavailable
+"Network unavailable, please refresh when network is available again" = "Nettverk utilgjengelig, prøv igjen senere";
+// connectError
+"Error connecting to SHiT, please check your Internet connection" = "Kunne ikke koble til SHiT, vennligst sjekk Internett-forbindelsen";
+// connectErrorTitle
+"Connection Error" = "Oppkoblingsfeil";
+// connectErrorText
+"Could not connect to SHiT, please check your Internet connection" = "Kunne ikke koble til SHiT, vennligst sjekk Internett-forbindelsen";
+// logonFailureTitle
+"Logon failed" = "Kunne ikke logge på";
+// logonFailureText
+"Please check your user name and password" = "Vennligst kontroller brukernavn og passord";
+
+// alertBoxTitle
+"Alert" = "Advarsel";
+// noTrips
+"You have no SHiT trips yet" = "Du har ingen SHiT-reiser";
+// unknownElement
+"SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT! Vi beklager men klienten kjenner ikke igjen denne typen element. Vi kan derfor ikke presentere informasjonen på en god måte, men her er rådata fra SHiT-tjeneren.";

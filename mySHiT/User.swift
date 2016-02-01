@@ -85,18 +85,18 @@ class User {
         rsTransGetUser.parameters = ["userName":userName,"password":urlsafePassword]
         rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
             if let error = error {
-                print("Error : \(error.description)")
-                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
-            } else if let error = responseDictionary["error"] {
+                print("Network error : \(error.domain)")
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
+            } else if let error = responseDictionary[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                print("Error : \(errMsg)")
-                NSNotificationCenter.defaultCenter().postNotificationName("networkError", object: self)
+                print("Server error : \(errMsg)")
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.logonFailed, object: self)
             } else {
                 User.sharedUser.userName = userName
                 User.sharedUser.password = password
-                self.srvCommonName = responseDictionary["commonName"] as? String
-                self.srvFullName = responseDictionary["fullName"] as? String
-                NSNotificationCenter.defaultCenter().postNotificationName("logonSuccessful", object: self)
+                self.srvCommonName = responseDictionary[Constant.JSON.userCommonName] as? String
+                self.srvFullName = responseDictionary[Constant.JSON.userFullName] as? String
+                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.logonSuccessful, object: self)
             }
         })
     }

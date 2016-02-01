@@ -48,7 +48,7 @@ class Hotel: TripElement {
         if let references = references {
             var refList: String = ""
             for ref in references {
-                refList = refList + (refList == "" ? "" : ", ") + ref["refNo"]!
+                refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_RefNo]!
             }
             return refList
         }
@@ -103,19 +103,19 @@ class Hotel: TripElement {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
         
-        if let checkInDateText = elementData["checkIn"] as? String {
+        if let checkInDateText = elementData[Constant.JSON.hotelCheckIn] as? String {
             checkInDate = ServerDate.convertServerDate(checkInDateText, timeZoneName: timezone)
         }
-        if let checkOutDateText = elementData["checkOut"] as? String {
+        if let checkOutDateText = elementData[Constant.JSON.hotelCheckOut] as? String {
             checkOutDate = ServerDate.convertServerDate(checkOutDateText, timeZoneName: timezone)
         }
         
-        hotelName = elementData["hotelName"] as? String
-        address = elementData["address"] as? String
-        postCode = elementData["postCode"] as? String
-        city = elementData["city"] as? String
-        phone = elementData["phone"] as? String
-        transferInfo = elementData["transferInfo"] as? String
+        hotelName = elementData[Constant.JSON.hotelName] as? String
+        address = elementData[Constant.JSON.hotelAddress] as? String
+        postCode = elementData[Constant.JSON.hotelPostCode] as? String
+        city = elementData[Constant.JSON.hotelCity] as? String
+        phone = elementData[Constant.JSON.hotelPhone] as? String
+        transferInfo = elementData[Constant.JSON.hotelTransferInfo] as? String
     }
     
     

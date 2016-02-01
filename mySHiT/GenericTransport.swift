@@ -59,7 +59,7 @@ class GenericTransport: TripElement {
         if let references = references {
             var refList: String = ""
             for ref in references {
-                refList = refList + (refList == "" ? "" : ", ") + ref["refNo"]!
+                refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_RefNo]!
             }
             return refList
         }
@@ -151,34 +151,34 @@ class GenericTransport: TripElement {
     
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
-        segmentId = elementData["segmentId"] as? Int
-        segmentCode = elementData["segmentCode"] as? String
-        legNo = elementData["legNo"] as? Int
-        departureLocation = elementData["departureLocation"] as? String
-        departureStop = elementData["departureStop"] as? String
-        departureAddress = elementData["departureAddress"] as? String
-        departureTimeZone = elementData["departureTimezone"] as? String
-        if let departureTimeText = elementData["departureTime"] as? String {
+        segmentId = elementData[Constant.JSON.transportSegmentId] as? Int
+        segmentCode = elementData[Constant.JSON.transportSegmentCode] as? String
+        legNo = elementData[Constant.JSON.transportLegNo] as? Int
+        departureLocation = elementData[Constant.JSON.transportDeptLocation] as? String
+        departureStop = elementData[Constant.JSON.transportDeptStop] as? String
+        departureAddress = elementData[Constant.JSON.transportDeptAddress] as? String
+        departureTimeZone = elementData[Constant.JSON.transportDeptTimezone] as? String
+        if let departureTimeText = elementData[Constant.JSON.transportDeptTime] as? String {
             departureTime = ServerDate.convertServerDate(departureTimeText, timeZoneName: departureTimeZone)
         }
-        departureCoordinates = elementData["departureCoordinates"] as? String
-        departureTerminalCode = elementData["departureTerminalCode"] as? String
-        departureTerminalName = elementData["departureTerminalName"] as? String
+        departureCoordinates = elementData[Constant.JSON.transportDeptCoordinates] as? String
+        departureTerminalCode = elementData[Constant.JSON.transportDeptTerminalCode] as? String
+        departureTerminalName = elementData[Constant.JSON.transportDeptTerminalName] as? String
         
-        arrivalLocation = elementData["arrivalLocation"] as? String
-        arrivalStop = elementData["arrivalStop"] as? String
-        arrivalAddress = elementData["arrivalAddress"] as? String
-        arrivalTimeZone = elementData["arrivalTimezone"] as? String
-        if let arrivalTimeText = elementData["arrivalTime"] as? String {
+        arrivalLocation = elementData[Constant.JSON.transportArrLocation] as? String
+        arrivalStop = elementData[Constant.JSON.transportArrStop] as? String
+        arrivalAddress = elementData[Constant.JSON.transportArrAddress] as? String
+        arrivalTimeZone = elementData[Constant.JSON.transportArrTimezone] as? String
+        if let arrivalTimeText = elementData[Constant.JSON.transportArrTime] as? String {
             arrivalTime = ServerDate.convertServerDate(arrivalTimeText, timeZoneName: arrivalTimeZone)
         }
-        arrivalCoordinates = elementData["arrivalCoordinates"] as? String
-        arrivalTerminalCode = elementData["arrivalTerminalCode"] as? String
-        arrivalTerminalName = elementData["arrivalTerminalName"] as? String
+        arrivalCoordinates = elementData[Constant.JSON.transportArrCoordinates] as? String
+        arrivalTerminalCode = elementData[Constant.JSON.transportArrTerminalCode] as? String
+        arrivalTerminalName = elementData[Constant.JSON.transportArrTerminalName] as? String
         
-        routeNo = elementData["routeNo"] as? String
-        companyName = elementData["company"] as? String
-        companyPhone = elementData["companyPhone"] as? String
+        routeNo = elementData[Constant.JSON.transportRouteNo] as? String
+        companyName = elementData[Constant.JSON.transportCompany] as? String
+        companyPhone = elementData[Constant.JSON.transportCompanyPhone] as? String
     }
 
     
@@ -268,7 +268,7 @@ class GenericTransport: TripElement {
                 let startTimeText = startTime(dateStyle: .NoStyle, timeStyle: .ShortStyle)
                 let now = NSDate()
                 let dcf = NSDateComponentsFormatter()
-                let genericAlertMessage = NSLocalizedString("%@ departs in %@, at %@", comment: "Some dummy comment")
+                let genericAlertMessage = NSLocalizedString(Constant.msg.transportAlertMessage, comment: "Some dummy comment")
 
                 dcf.unitsStyle = .Short
                 dcf.zeroFormattingBehavior = .DropAll

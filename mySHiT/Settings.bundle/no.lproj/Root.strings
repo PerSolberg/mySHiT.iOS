@@ -1,31 +1,39 @@
+/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+
 "User Info" = "Brukerinformasjon";
 "User Name" = "Brukernavn";
-"Password" = "Passord";
+
 "Miscellaneous" = "Diverse";
-"Hide historic data" = "Skjul historiske data";
-"Never" = "Aldri";
-"Immediately" = "Umiddelbart";
-"After 1 day" = "Etter 1 dag";
-"After 7 days" = "Etter 7 dager";
-"After 30 days" = "Etter 30 dager";
+
 "Upcoming trips" = "Forestående turer";
 "Next trip only" = "Kun neste tur";
 "Starting within 7 days" = "Starter innen 7 dager";
 "Starting within 30 days" = "Starter innen 30 dager";
 "Next + within 7 days" = "Neste + innen 7 dager";
 "Next + within 30 days" = "Neste + innen 30 dager";
-"future" = "Fremtidige";
+
+"Notifications" = "Varsler";
+"Lead time can be set for trips (only one notification per trip), departures (start of travel, e.g. outward flight and return flight) and legs (i.e., connections)" = "Ledetid for varsler kan settes for reiser (kun ett varsel pr. reise), avreiser (start på utreise, hjemreise e.l.) og avganger (flyforbindelser og tilsvarende)";
+
 "Before trip" = "Før reisestart";
-"Before departure" = "Før avreise";
-"Before next leg" = "Før avgang";
 "Off" = "Av";
-"15 minutes" = "15 minutter";
-"30 minutes" = "30 minutter";
-"45 minutes" = "45 minutter";
-"1 hour" = "1 time";
-"2 hours" = "2 timer";
-"4 hours" = "4 timer";
 "6 hours" = "6 timer";
 "12 hours" = "12 timer";
 "24 hours" = "24 timer";
 "2 days" = "2 dager";
+
+"Before departure" = "Før avreise";
+//"Off" = "Av";
+"30 minutes" = "30 minutter";
+"1 hour" = "1 time";
+"2 hours" = "2 timer";
+"4 hours" = "4 timer";
+
+"Before next leg" = "Før avgang";
+//"Off" = "Av";
+"15 minutes" = "15 minutter";
+//"30 minutes" = "30 minutter";
+"45 minutes" = "45 minutter";
+//"1 hour" = "1 time";
+
+
