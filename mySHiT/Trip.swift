@@ -215,17 +215,17 @@ class Trip: NSObject, NSCoding {
 
         // Determine changes
         for element in elements! {
-             let matchingOtherElements = otherTrip.elements!.filter( { (e:AnnotatedTripElement) -> Bool in
+            let matchingOtherElements = otherTrip.elements!.filter( { (e:AnnotatedTripElement) -> Bool in
                     return e.tripElement.id == element.tripElement.id
                 })
-                if matchingOtherElements.isEmpty {
-                    element.modified = .New
-                } else {
-                    if !element.tripElement.isEqual(matchingOtherElements[0].tripElement) {
-                        element.modified = .Changed
-                    }
+            if matchingOtherElements.isEmpty {
+                element.modified = .New
+            } else {
+                if !element.tripElement.isEqual(matchingOtherElements[0].tripElement) {
+                    element.modified = .Changed
                 }
             }
+        }
     }
     
     
@@ -293,6 +293,15 @@ class Trip: NSObject, NSCoding {
                     notification.category = "SHiT"
                     UIApplication.sharedApplication().scheduleLocalNotification(notification)
                 }
+            }
+        }
+    }
+
+    func refreshNotifications() {
+        setNotification()
+        if let elements = elements {
+            for e in elements {
+                e.tripElement.setNotification()
             }
         }
     }

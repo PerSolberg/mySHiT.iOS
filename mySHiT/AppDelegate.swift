@@ -14,12 +14,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        print("Application didFinishLaunchingWithOptions")
         // Override point for customization after application launch.
         application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound], categories: nil))
+        self.registerDefaultsFromSettingsBundle();
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "defaultsChanged:", name: NSUserDefaultsDidChangeNotification, object: nil)
         return true
     }
 
-    
+
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripList", object: self)
         NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripElements", object: self)
@@ -49,29 +52,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        print("Application applicationWillTerminate")
     }
 
-    func showLogonScreen(animated animated: Bool) {
-        // Get login screen from storyboard and present it
-        print("AppDelegate: showLogonScreen")
-        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
-        let logonVC = storyboard.instantiateViewControllerWithIdentifier("logonScreen") as! LogonViewController
-        window!.makeKeyAndVisible()
-        window!.rootViewController?.presentViewController(logonVC, animated: true, completion: nil)
-    }
-    
-    func logout() {
-        print("AppDelegate: logout")
-        // Remove data from singleton (where all my app data is stored)
-        // [AppData clearData];
-    
-        // Reset view controller (this will quickly clear all the views)
-        let storyboard: UIStoryboard = UIStoryboard(name:"MainStoryboard", bundle:nil)
-        let viewController: TripListViewController = storyboard.instantiateViewControllerWithIdentifier("mainView") as! TripListViewController
-        window!.rootViewController = viewController
-        showLogonScreen(animated:true)
+    func registerDefaultsFromSettingsBundle() {
+        guard let settingsBundle = NSBundle.mainBundle().URLForResource("Settings", withExtension:"bundle") else {
+            NSLog("Could not find Settings.bundle")
+            return;
+        }
+        
+        guard let settings = NSDictionary(contentsOfURL: settingsBundle.URLByAppendingPathComponent("Root.plist")) else {
+            NSLog("Could not find Root.plist in settings bundle")
+            return
+        }
+        
+        guard let preferences = settings.objectForKey("PreferenceSpecifiers") as? [[String: AnyObject]] else {
+            NSLog("Root.plist has invalid format")
+            return
+        }
+        
+        var defaultsToRegister = [String: AnyObject]()
+        for var p in preferences {
+            if let k = p["Key"] as? String, v = p["DefaultValue"] {
+                defaultsToRegister[k] = v
+            }
+        }
+        
+        NSUserDefaults.standardUserDefaults().registerDefaults(defaultsToRegister)
     }
 
-
+    func defaultsChanged(notification:NSNotification){
+        if let _ = notification.object as? NSUserDefaults {
+            print("Defaults changed - updating alerts...")
+            TripList.sharedList.refreshNotifications()
+        }
+    }
 }
 

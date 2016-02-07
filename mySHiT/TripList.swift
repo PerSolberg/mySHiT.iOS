@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class TripList:NSObject, SequenceType, NSCoding {
     //typealias Index = Array<AnnotatedTrip>.Index
@@ -185,6 +186,11 @@ class TripList:NSObject, SequenceType, NSCoding {
         }
 
         trips =  newTripList
+        
+        // Clear and refresh notifications to ensure there are no notifications from
+        // "deleted" trips or trip elements.
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        refreshNotifications()
     }
     
     
@@ -226,7 +232,14 @@ class TripList:NSObject, SequenceType, NSCoding {
     
     
     func clear() {
+        // Empty list and cancel all notifications
         trips = [AnnotatedTrip]()
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
     }
     
+    func refreshNotifications() {
+        for t in trips {
+            t.trip.refreshNotifications()
+        }
+    }
 }

@@ -502,20 +502,18 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
     func logout() {
-        // Empty memory structures an update keyed archive
+        // Empty memory structures, clear notification (part of clear) and update keyed archive
         TripList.sharedList.clear()
         sections = [TripListSectionInfo]()
         saveTrips()
         
+        // Refresh list to avoid previous user's trips "flashing" while loading trips for new user
+        dispatch_async(dispatch_get_main_queue(), {
+            self.tripListTable.reloadData()
+        })
+
         // Log out and clear credentials
         User.sharedUser.logout()
-
-        // Clear any scheduled notifications
-        if let notifications = UIApplication.sharedApplication().scheduledLocalNotifications {
-            for n in notifications {
-                UIApplication.sharedApplication().cancelLocalNotification(n)
-            }
-        }
     }
 }
 
