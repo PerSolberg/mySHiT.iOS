@@ -49,6 +49,7 @@ class User : NSObject, NSCoding {
     var password:String? {
         get {
             if let userName = userName {
+                print("Retrieving password for \(userName)")
                 return Keychain.stringForAccount(userName)
             } else {
                 return nil
@@ -56,10 +57,12 @@ class User : NSObject, NSCoding {
         }
         set(newPassword) {
             if let userName = userName, let newPassword = newPassword {
+                print("Setting password for \(userName)")
                 Keychain.setString(newPassword, forAccount: userName, synchronizable: true, background: true)
             } else if let userName = userName {
+                print("Deleting password for \(userName)")
                 Keychain.deleteAccount(userName)
-            }else {
+            } else {
                 print("Invalid user name or password")
             }
         }
