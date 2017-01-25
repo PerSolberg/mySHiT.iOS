@@ -31,7 +31,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     // MARK: Navigation
     
     // Prepare for navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         print("Flight Details: Preparing for segue '\(segue.identifier)'")
     }
@@ -51,13 +51,13 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
         //NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "RefreshTripElements", object: nil)
         //NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "dataRefreshed", object: nil)
 
-        departureLocationTextView.scrollEnabled = false
-        arrivalLocationTextView.scrollEnabled = false
+        departureLocationTextView.isScrollEnabled = false
+        arrivalLocationTextView.isScrollEnabled = false
         
         if let flightElement = tripElement?.tripElement as? Flight {
             flightNoTextField.text = (flightElement.airlineCode ?? "XX") + " " + (flightElement.routeNo ?? "***")
             airlineTextField.text = flightElement.companyName
-            departureTimeTextField.text = flightElement.startTime(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
+            departureTimeTextField.text = flightElement.startTime(dateStyle: .medium, timeStyle: .short)
             var locationInfo = flightElement.departureStop ?? flightElement.departureLocation ?? ""
             if let departureTerminal = flightElement.departureTerminalName {
                 locationInfo += (departureTerminal == "" ? "" : "\n" + departureTerminal)
@@ -66,10 +66,10 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
                 locationInfo += (departureAddress == "" ? "" : "\n" + departureAddress)
             }
             departureLocationTextView.text = locationInfo
-            departureLocationTextView.textContainerInset = UIEdgeInsetsZero
+            departureLocationTextView.textContainerInset = UIEdgeInsets.zero
             departureLocationTextView.textContainer.lineFragmentPadding = 0.0
 
-            arrivalTimeTextField.text = flightElement.endTime(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
+            arrivalTimeTextField.text = flightElement.endTime(dateStyle: .medium, timeStyle: .short)
             locationInfo = flightElement.arrivalStop ?? flightElement.arrivalLocation ?? ""
             if let arrivalTerminal = flightElement.arrivalTerminalName {
                 locationInfo += (arrivalTerminal == "" ? "" : "\n" + arrivalTerminal)
@@ -78,20 +78,20 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
                 locationInfo += (arrivalAddress == "" ? "" : "\n" + arrivalAddress)
             }
             arrivalLocationTextView.text = locationInfo
-            arrivalLocationTextView.textContainerInset = UIEdgeInsetsZero
+            arrivalLocationTextView.textContainerInset = UIEdgeInsets.zero
             arrivalLocationTextView.textContainer.lineFragmentPadding = 0.0
             
             if let refList = flightElement.references {
-                let horisontalHuggingLabel = flightNoLabel.contentHuggingPriorityForAxis(.Horizontal)
-                let horisontalHuggingValue = departureLocationTextView.contentHuggingPriorityForAxis(.Horizontal)
-                let verticalHuggingLabel = flightNoLabel.contentHuggingPriorityForAxis(.Vertical)
-                let verticalHuggingValue = departureLocationTextView.contentHuggingPriorityForAxis(.Vertical)
+                let horisontalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .horizontal)
+                let horisontalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .horizontal)
+                let verticalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .vertical)
+                let verticalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .vertical)
                 print("Hugging: Label(V) = \(verticalHuggingLabel), Label(H) = \(horisontalHuggingLabel), Value(V) = \(verticalHuggingValue), Value(H) = \(horisontalHuggingValue)")
                 let refDict = NSMutableDictionary()
                 for ref in refList {
-                    if let refType = ref["type"], refNo = ref["refNo"] {
+                    if let refType = ref["type"], let refNo = ref["refNo"] {
                         var refText:NSAttributedString?
-                        if let refUrl = ref["urlLookup"], url = NSURL(string: refUrl) {
+                        if let refUrl = ref["urlLookup"], let url = URL(string: refUrl) {
                             let hyperlinkText = NSMutableAttributedString(string: refNo)
                             hyperlinkText.addAttribute(NSLinkAttributeName, value: url, range: NSMakeRange(0, hyperlinkText.length))
                             refText = hyperlinkText
@@ -137,7 +137,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     func refreshTripElements() {
         print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name
             //self.tripDetailsTable.reloadData()
         })

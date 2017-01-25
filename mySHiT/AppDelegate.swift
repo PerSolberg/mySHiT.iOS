@@ -7,85 +7,363 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseInstanceID
+import FirebaseMessaging
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    let gcmMessageIDKey = "gcm.message_id"
+    var appSettings = Dictionary<AnyHashable, Any>()
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        // First save current app settings, so we can avoid refreshing when Firebase settings change
+        let defaults = UserDefaults.standard
+        appSettings[Constant.Settings.tripLeadTime] = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
+        appSettings[Constant.Settings.deptLeadTime] = Int(defaults.float(forKey: Constant.Settings.deptLeadTime))
+        appSettings[Constant.Settings.legLeadTime] = Int(defaults.float(forKey: Constant.Settings.legLeadTime))
+        appSettings[Constant.Settings.eventLeadTime] = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
+        
         print("Application didFinishLaunchingWithOptions")
         // Override point for customization after application launch.
-        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound], categories: nil))
+        application.registerUserNotificationSettings(UIUserNotificationSettings(types: [UIUserNotificationType.alert, UIUserNotificationType.badge, UIUserNotificationType.sound], categories: nil))
         self.registerDefaultsFromSettingsBundle();
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "defaultsChanged:", name: NSUserDefaultsDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+        
+        //NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: kFIRInstanceIDTokenRefreshNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.firInstanceIDTokenRefresh, object: nil)
+        
+        // Register with APNs
+        UIApplication.shared.registerForRemoteNotifications()
+        
+        // Initialise Firebase
+        FIRApp.configure();
+
+        // Not supporting iOS 10 yet
+        //if #available(iOS 10.0, *) {
+        //    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        //    UNUserNotificationCenter.current().requestAuthorization(options: authOptions, completionHandler: {_, _ in} )
+        //    UNUserNotificationCenter.current().delegate = self
+        //    FIRMessaging.messaging().remoteMessageDelegate = self
+        //} else {
+            let settings: UIUserNotificationSettings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+            application.registerUserNotificationSettings(settings)
+        //}
+        
+        application.registerForRemoteNotifications()
+        
+        if let firebaseToken = FIRInstanceID.instanceID().token() {
+            print("Firebase token = " + firebaseToken)
+            //self.forwardTokenToServer(tokenString: firebaseToken)
+        } else {
+            print("Firebase token not assigned yet")
+        }
         return true
     }
 
-
-    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripList", object: self)
-        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripElements", object: self)
+    // Handle remote notification registration.
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data){
+        // Forward the token to your server.
+        //self.enableRemoteNotificationFeatures()
+        
+        // Don't need this, handled by Firebase
+        //self.forwardTokenToServer(token: deviceToken)
     }
 
+    func application(_ application: UIApplication,
+                     didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        // The token is not currently available.
+        print("Remote notification support is unavailable due to error: \(error.localizedDescription)")
+        //self.disableRemoteNotificationFeatures()
+    }
 
-    func applicationWillResignActive(application: UIApplication) {
+    
+    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
+        print("Received notification: " + notification.description)
+        // if remote notification {
+        /*
+        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripList), object: self)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripElements), object: self)
+        */
+        // } else {
+        //    Show alert if application is active
+        // }
+
+        if (application.applicationState == .active /* UIApplicationStateActive */ ) {
+            let alertController = UIAlertController(title: notification.alertTitle, message: notification.alertBody, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
+            {
+                (result : UIAlertAction) -> Void in
+                print("You pressed OK")
+            }
+            alertController.addAction(okAction)
+            
+            AudioServicesPlaySystemSound(1005)
+            self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+
+    /*
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+        print("didReceiveRemoteNotification w/o completionHandler")
+        // TO DO: Handle remote notication
+        if let messageId = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageId)")
+        }
+        print(userInfo)
+    }
+    */
+    
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        if let messageId = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageId)")
+        }
+
+        // Update from server (should take place in background)
+        print("Remote notification received: Refreshing data")
+        TripList.sharedList.getFromServer(parentCompletionHandler: { 
+            completionHandler(UIBackgroundFetchResult.newData);
+        } )
+    }
+
+    //func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
+        print("Registered with Firebase")
+        FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
+        User.sharedUser.registerForPushNotifications()
+        TripList.sharedList.registerForPushNotifications()
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
 
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        FIRMessaging.messaging().disconnect()
+        print("Application in background, disconnected from Firebase")
     }
 
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     }
 
-    func applicationDidBecomeActive(application: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripList", object: self)
-        NSNotificationCenter.defaultCenter().postNotificationName("RefreshTripElements", object: self)
+        if (RSUtilities.isNetworkAvailable("www.shitt.no")) {
+            print("Network available, refreshing information from server")
+            TripList.sharedList.getFromServer()
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripList), object: self)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripElements), object: self)
     }
     
 
-    func applicationWillTerminate(application: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         print("Application applicationWillTerminate")
     }
 
     func registerDefaultsFromSettingsBundle() {
-        guard let settingsBundle = NSBundle.mainBundle().URLForResource("Settings", withExtension:"bundle") else {
+        guard let settingsBundle = Bundle.main.url(forResource: "Settings", withExtension:"bundle") else {
             NSLog("Could not find Settings.bundle")
             return;
         }
         
-        guard let settings = NSDictionary(contentsOfURL: settingsBundle.URLByAppendingPathComponent("Root.plist")) else {
+        guard let settings = NSDictionary(contentsOf: settingsBundle.appendingPathComponent("Root.plist")) else {
             NSLog("Could not find Root.plist in settings bundle")
             return
         }
         
-        guard let preferences = settings.objectForKey("PreferenceSpecifiers") as? [[String: AnyObject]] else {
+        guard let preferences = settings.object(forKey: "PreferenceSpecifiers") as? [[String: AnyObject]] else {
             NSLog("Root.plist has invalid format")
             return
         }
         
         var defaultsToRegister = [String: AnyObject]()
         for var p in preferences {
-            if let k = p["Key"] as? String, v = p["DefaultValue"] {
+            if let k = p["Key"] as? String, let v = p["DefaultValue"] {
                 defaultsToRegister[k] = v
             }
         }
         
-        NSUserDefaults.standardUserDefaults().registerDefaults(defaultsToRegister)
+        UserDefaults.standard.register(defaults: defaultsToRegister)
     }
 
-    func defaultsChanged(notification:NSNotification){
-        if let _ = notification.object as? NSUserDefaults {
-            print("Defaults changed - updating alerts...")
-            TripList.sharedList.refreshNotifications()
+    func defaultsChanged(_ notification:Notification){
+        if let defaults = notification.object as? UserDefaults {
+            //let defaults = UserDefaults.standard
+            let newTripLeadTime = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
+            let newDeptLeadTime = Int(defaults.float(forKey: Constant.Settings.deptLeadTime))
+            let newLegLeadTime = Int(defaults.float(forKey: Constant.Settings.legLeadTime))
+            let newEventLeadTime = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
+
+            let oldTripLeadTime = appSettings[Constant.Settings.tripLeadTime] as? Int
+            let oldDeptLeadTime = appSettings[Constant.Settings.deptLeadTime] as? Int
+            let oldLegLeadTime = appSettings[Constant.Settings.legLeadTime] as? Int
+            let oldEventLeadTime = appSettings[Constant.Settings.eventLeadTime] as? Int
+
+            if oldTripLeadTime != newTripLeadTime ||
+                oldDeptLeadTime != newDeptLeadTime ||
+                oldLegLeadTime != newLegLeadTime ||
+                oldEventLeadTime != newEventLeadTime {
+                print("SHiT Settings changed - updating alerts...")
+                print("Trip lead time: \(oldTripLeadTime) -> \(newTripLeadTime)")
+                print("Dept lead time: \(oldDeptLeadTime) -> \(newDeptLeadTime)")
+                print("Leg lead time: \(oldLegLeadTime) -> \(newLegLeadTime)")
+                print("Event lead time: \(oldEventLeadTime) -> \(newEventLeadTime)")
+                //print(defaults.dictionaryRepresentation())
+                TripList.sharedList.refreshNotifications()
+                
+                appSettings[Constant.Settings.tripLeadTime] = newTripLeadTime
+                appSettings[Constant.Settings.deptLeadTime] = newDeptLeadTime
+                appSettings[Constant.Settings.legLeadTime] = newLegLeadTime
+                appSettings[Constant.Settings.eventLeadTime] = newEventLeadTime
+            }
+        } else {
+            print("Defaults changed, but user defaults not available")
         }
+    }
+    
+    func tokenRefreshNotification( _ notification: Notification) {
+        /*
+        if let refreshedToken = FIRInstanceID.instanceID().token() {
+            print("New Firebase token = \(refreshedToken)")
+            forwardTokenToServer(tokenString: refreshedToken)
+        }
+        */
+        
+        connectToFirebase()
+    }
+    
+    func connectToFirebase() {
+        guard FIRInstanceID.instanceID().token() != nil else {
+            return
+        }
+        
+        // Terminate previous connection (if any)
+        FIRMessaging.messaging().disconnect()
+        
+        FIRMessaging.messaging().connect { (error) in
+            if error != nil {
+                print("Unable to connect to Firebase. \(error)")
+            } else {
+                print("Connected to Firebase")
+                FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
+
+                User.sharedUser.registerForPushNotifications()
+            }
+        }
+    }
+
+    
+    // Probably won't need this...
+    func forwardTokenToServer(token: Data) {
+        print("Register token with server")
+        let userCred = User.sharedUser.getCredentials()
+        
+        assert( userCred.name != nil );
+        assert( userCred.password != nil );
+        assert( userCred.urlsafePassword != nil );
+
+        var tokenString = ""
+        for i in 0..<token.count {
+            tokenString += String(format: "%02.2hhx", token[i] as CVarArg)
+        }
+        
+        //let tokenString = String(data: token, encoding: .utf8) ?? "Unable to print token"
+        print("Token: " + tokenString)
+        let webServiceRootPath = "device/"
+        let rsRequest: RSTransactionRequest = RSTransactionRequest()
+        //let tokenString = String(data:token, encoding: .utf8)
+        let tokenPayload = [ "userName":userCred.name!,
+                             "password":userCred.password!,
+                             "platform": "IOS",
+                             "env": "DEV",
+                             "key1": tokenString
+        ]
+        let rsRegisterToken: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"], payload: tokenPayload)
+    
+        //Set the parameters for the RSTransaction object
+        rsRegisterToken.path = webServiceRootPath
+        /*rsRegisterToken.parameters = [ "userName":userCred.name!,
+                                       "password":userCred.password!,
+                                       "platform": "IOS",
+                                       "env": "DEV",
+                                       "key1": token.base64EncodedString()
+                                     ]
+        */
+        //Send request
+        print("Send token registration request")
+        rsRequest.dictionaryFromRSTransaction(rsRegisterToken, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            if let error = error {
+                //If there was an error, log it
+                print("Token registration system error : \(error.localizedDescription)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let error = responseDictionary?[Constant.JSON.queryError] {
+                let errMsg = error as! String
+                print("Token registration server error : \(errMsg)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else {
+                //Set the tableData NSArray to the results returned from www.shitt.no
+                print("Token successfully registered with server")
+            }
+        })
+        print("Token registration submitted")
+    }
+
+    func forwardTokenToServer(tokenString: String) {
+        print("Register token with server")
+        let userCred = User.sharedUser.getCredentials()
+        
+        assert( userCred.name != nil );
+        assert( userCred.password != nil );
+        assert( userCred.urlsafePassword != nil );
+        
+        //let tokenString = String(data: token, encoding: .utf8) ?? "Unable to print token"
+        print("Token: " + tokenString)
+        let webServiceRootPath = "device/"
+        let rsRequest: RSTransactionRequest = RSTransactionRequest()
+        //let tokenString = String(data:token, encoding: .utf8)
+        let tokenPayload = [ "userName":userCred.name!,
+                             "password":userCred.password!,
+                             "platform": "IOS",
+                             "env": "DEV",
+                             "key1": tokenString
+        ]
+        let rsRegisterToken: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"], payload: tokenPayload)
+        
+        //Set the parameters for the RSTransaction object
+        rsRegisterToken.path = webServiceRootPath
+        //Send request
+        print("Send token registration request")
+        rsRequest.dictionaryFromRSTransaction(rsRegisterToken, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            if let error = error {
+                //If there was an error, log it
+                print("Token registration system error : \(error.localizedDescription)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let error = responseDictionary?[Constant.JSON.queryError] {
+                let errMsg = error as! String
+                print("Token registration server error : \(errMsg)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else {
+                //Set the tableData NSArray to the results returned from www.shitt.no
+                print("Token successfully registered with server")
+            }
+        })
+        print("Token registration submitted")
     }
 }
 

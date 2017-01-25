@@ -15,38 +15,38 @@ class RSURLRequest: NSObject {
     
     let dictKey = "results"
     
-    typealias dataFromURLCompletionClosure = ((NSURLResponse!, NSData!, NSError!) -> Void)
-    typealias stringFromURLCompletionClosure = ((NSURLResponse!, NSString!, NSError!) -> Void)
-    typealias dictionaryFromURLCompletionClosure = ((NSURLResponse!, NSDictionary!, NSError!) -> Void)
-    typealias imageFromURLCompletionClosure = ((NSURLResponse!, UIImage!, NSError!) -> Void)
+    typealias dataFromURLCompletionClosure = ((URLResponse?, Data?, NSError?) -> Void)
+    typealias stringFromURLCompletionClosure = ((URLResponse?, NSString?, NSError?) -> Void)
+    typealias dictionaryFromURLCompletionClosure = ((URLResponse?, NSDictionary?, NSError?) -> Void)
+    typealias imageFromURLCompletionClosure = ((URLResponse?, UIImage?, NSError?) -> Void)
     
     
-    func dataFromURL(url : NSURL, completionHandler handler: dataFromURLCompletionClosure) {
+    func dataFromURL(_ url : URL, completionHandler handler: @escaping dataFromURLCompletionClosure) {
         
-        let sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let request = NSURLRequest(URL:url)
-        let urlSession = NSURLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
+        let sessionConfiguration = URLSessionConfiguration.default
+        let request = URLRequest(url:url)
+        let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
         
         
-        _ = urlSession.dataTaskWithRequest(request, completionHandler: {(responseData: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+        _ = urlSession.dataTask(with: request, completionHandler: {(responseData: Data?, response: URLResponse?, error: NSError?) -> Void in
             
             handler(response,responseData,error)
-        }).resume();
+        } as! (Data?, URLResponse?, Error?) -> Void).resume();
         
     }
     
     
-    func stringFromURL(url : NSURL, completionHandler handler: stringFromURLCompletionClosure) {
-        dataFromURL(url, completionHandler: {(response: NSURLResponse!, responseData: NSData!, error: NSError!) -> Void in
+    func stringFromURL(_ url : URL, completionHandler handler: @escaping stringFromURLCompletionClosure) {
+        dataFromURL(url, completionHandler: {(response: URLResponse!, responseData: Data!, error: NSError!) -> Void in
             
-            let responseString = NSString(data: responseData, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue)
             handler(response,responseString,error)
-        })
+        } as! RSURLRequest.dataFromURLCompletionClosure)
     }
     
     
-    func dictionaryFromJsonURL(url : NSURL, completionHandler handler: dictionaryFromURLCompletionClosure) {
-        dataFromURL(url, completionHandler: {(response: NSURLResponse!, responseData: NSData!, error: NSError!) -> Void in
+    func dictionaryFromJsonURL(_ url : URL, completionHandler handler: @escaping dictionaryFromURLCompletionClosure) {
+        dataFromURL(url, completionHandler: {(response: URLResponse!, responseData: Data!, error: NSError!) -> Void in
             
             if error != nil {
                 handler(response,nil,error)
@@ -54,9 +54,9 @@ class RSURLRequest: NSObject {
             }
             
             var resultDictionary = NSMutableDictionary()
-            var jsonResponse: AnyObject?
+            var jsonResponse: Any?
             do {
-                jsonResponse  = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments)
+                jsonResponse  = try JSONSerialization.jsonObject(with: responseData, options: JSONSerialization.ReadingOptions.allowFragments)
             } catch {}
             
             if let jsonResponse = jsonResponse {
@@ -71,13 +71,13 @@ class RSURLRequest: NSObject {
             } else {
                 resultDictionary[self.dictKey] = ""
             }
-            handler(response,resultDictionary.copy() as! NSDictionary,error)
+            handler(response, (resultDictionary.copy() as! NSDictionary), error)
             
-        })
+        } as! RSURLRequest.dataFromURLCompletionClosure)
     }
     
-    func imageFromURL(url : NSURL, completionHandler handler: imageFromURLCompletionClosure) {
-        dataFromURL(url, completionHandler: {(response: NSURLResponse!, responseData: NSData!, error: NSError!) -> Void in
+    func imageFromURL(_ url : URL, completionHandler handler: @escaping imageFromURLCompletionClosure) {
+        dataFromURL(url, completionHandler: {(response: URLResponse!, responseData: Data!, error: NSError!) -> Void in
             
             if error != nil {
                 handler(response,nil,error)
@@ -85,8 +85,8 @@ class RSURLRequest: NSObject {
             }
             
             let image = UIImage(data: responseData)
-            handler(response,image?.copy() as! UIImage,error)
-        })
+            handler(response, (image?.copy() as! UIImage), error)
+        } as! RSURLRequest.dataFromURLCompletionClosure)
     }
     
     

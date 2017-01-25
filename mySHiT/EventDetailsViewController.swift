@@ -1,24 +1,26 @@
 //
-//  HotelDetailsViewController.swift
+//  EventDetailsViewController.swift
 //  mySHiT
 //
-//  Created by Per Solberg on 2015-10-30.
-//  Copyright © 2015 Per Solberg. All rights reserved.
+//  Created by Per Solberg on 2017-01-23.
+//  Copyright © 2017 &More AS. All rights reserved.
 //
+
+//import Foundation
 
 import UIKit
 
-class HotelDetailsViewController: UIViewController {
+class EventDetailsViewController: UIViewController {
     
     // MARK: Properties
     
-    @IBOutlet weak var hotelNameTextField: UITextField!
-    @IBOutlet weak var hotelAddressTextView: UITextView!
-    @IBOutlet weak var checkInTextField: UITextField!
-    @IBOutlet weak var checkOutTextField: UITextField!
+    @IBOutlet weak var venueNameTextField: UITextField!
+    @IBOutlet weak var venueAddressTextView: UITextView!
+    @IBOutlet weak var startTimeTextField: UITextField!
+    @IBOutlet weak var travelTimeTextField: UITextField!
     @IBOutlet weak var referenceTextField: UITextField!
-    @IBOutlet weak var phoneTextView: UITextView!
-    @IBOutlet weak var transferInfoTextView: UITextView!
+    @IBOutlet weak var venuePhoneTextField: UITextField!
+    @IBOutlet weak var accessInfoTextView: UITextView!
     // Passed from TripDetailsViewController
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
@@ -39,36 +41,36 @@ class HotelDetailsViewController: UIViewController {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Hotel Details View loaded")
+        print("Event Details View loaded")
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(HotelDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "RefreshTripElements"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(HotelDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "dataRefreshed"), object: nil)
         
         // Adjust text views to align them with text fields
-        hotelAddressTextView.textContainerInset = UIEdgeInsets.zero
-        hotelAddressTextView.textContainer.lineFragmentPadding = 0.0
-        transferInfoTextView.textContainerInset = UIEdgeInsets.zero
-        transferInfoTextView.textContainer.lineFragmentPadding = 0.0
-    
-        if let hotelElement = tripElement?.tripElement as? Hotel {
-            var fullAddress:String = hotelElement.address ?? ""
-            switch (hotelElement.postCode ?? "", hotelElement.city ?? "") {
+        venueAddressTextView.textContainerInset = UIEdgeInsets.zero
+        venueAddressTextView.textContainer.lineFragmentPadding = 0.0
+        accessInfoTextView.textContainerInset = UIEdgeInsets.zero
+        accessInfoTextView.textContainer.lineFragmentPadding = 0.0
+        
+        if let eventElement = tripElement?.tripElement as? Event {
+            var fullAddress:String = eventElement.venueAddress ?? ""
+            switch (eventElement.venuePostCode ?? "", eventElement.venueCity ?? "") {
             case ("", ""):
                 break
             case ("", _):
-                fullAddress += "\n" + hotelElement.city!
+                fullAddress += "\n" + eventElement.venueCity!
             case (_, ""):
-                fullAddress += "\n" + hotelElement.postCode!
+                fullAddress += "\n" + eventElement.venuePostCode!
             default:
-                fullAddress += "\n" + hotelElement.postCode! + " " + hotelElement.city!
+                fullAddress += "\n" + eventElement.venuePostCode! + " " + eventElement.venueCity!
             }
-            hotelNameTextField.text = hotelElement.hotelName
-            hotelAddressTextView.text = fullAddress
-            checkInTextField.text = hotelElement.startTime(dateStyle: .medium, timeStyle: .none)
-            checkOutTextField.text = hotelElement.endTime(dateStyle: .medium, timeStyle: .none)
-
-            if let refList = hotelElement.references {
+            venueNameTextField.text = eventElement.venueName
+            venueAddressTextView.text = fullAddress
+            startTimeTextField.text = eventElement.startTime(dateStyle: .none, timeStyle: .short)
+            travelTimeTextField.text = eventElement.travelTimeInfo
+            
+            if let refList = eventElement.references {
                 let references = NSMutableString()
                 var separator = ""
                 for ref in refList {
@@ -80,16 +82,16 @@ class HotelDetailsViewController: UIViewController {
                 }
                 referenceTextField.text = references as String
             }
-            phoneTextView.text = hotelElement.phone
-            transferInfoTextView.text = "Please see your welcome leaflet."
+            venuePhoneTextField.text = eventElement.venuePhone
+            accessInfoTextView.text = eventElement.accessInfo
         } else {
-            hotelNameTextField.text = "Unknown"
-            hotelAddressTextView.text = "Don't know where"
-            checkInTextField.text = "Don't know when"
-            checkOutTextField.text = "We'll leave again"
+            venueNameTextField.text = "Unknown"
+            venueAddressTextView.text = "Don't know where"
+            startTimeTextField.text = "Don't know when"
+            travelTimeTextField.text = "We'll leave again"
             referenceTextField.text = "Vera Lynn"
-            phoneTextView.text = "+1 (555) 123-4567"
-            transferInfoTextView.text = "Please see your welcome leaflet."
+            venuePhoneTextField.text = "+1 (555) 123-4567"
+            accessInfoTextView.text = "Please see your welcome leaflet."
         }
     }
     

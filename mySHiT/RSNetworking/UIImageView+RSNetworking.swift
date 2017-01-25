@@ -11,32 +11,32 @@ import UIKit
 
 extension UIImageView {
     
-    func setImageForURL(url: String, placeHolder: UIImage) -> Void{
+    func setImageForURL(_ url: String, placeHolder: UIImage) -> Void{
         
         self.image = placeHolder
         setImageForURL(url)
         
     }
     
-    func setImageForURL(urlStr: String) -> Void {
-        let url = NSURL(string: urlStr)
+    func setImageForURL(_ urlStr: String) -> Void {
+        let url = URL(string: urlStr)
     //    var url = NSURL.URLWithString(url)
         let client = RSURLRequest()
-        client.imageFromURL(url!, completionHandler: {(response : NSURLResponse!, image: UIImage!, error: NSError!) -> Void in
+        client.imageFromURL(url!, completionHandler: {(response : URLResponse?, image: UIImage?, error: Error?) -> Void in
             
             self.image = image
             })
     }
     
-    func setImageForRSTransaction(transaction:RSTransaction, placeHolder: UIImage) -> Void {
+    func setImageForRSTransaction(_ transaction:RSTransaction, placeHolder: UIImage) -> Void {
         self.image = placeHolder
         setImageForRSTransaction(transaction)
     }
     
-    func setImageForRSTransaction(transaction:RSTransaction) -> Void {
+    func setImageForRSTransaction(_ transaction:RSTransaction) -> Void {
         let RSRequest = RSTransactionRequest();
         
-        RSRequest.imageFromRSTransaction(transaction, completionHandler: {(response: NSURLResponse!, image: UIImage!, error: NSError!) -> Void in
+        RSRequest.imageFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, image: UIImage?, error: Error?) -> Void in
             self.image = image
             })
         

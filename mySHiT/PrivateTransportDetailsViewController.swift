@@ -30,7 +30,7 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     // MARK: Navigation
     
     // Prepare for navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         print("Flight Details: Preparing for segue '\(segue.identifier)'")
     }
@@ -86,7 +86,7 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
             if let valueFont = departureTextView.font {
                 baselineShift = (departureLabel.font.ascender - valueFont.ascender)
             }
-            departureTextView.scrollEnabled = false
+            departureTextView.isScrollEnabled = false
             departureTextView.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
             departureTextView.textContainer.lineFragmentPadding = 0.0
             
@@ -94,22 +94,22 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
             if let valueFont = arrivalTextView.font {
                 baselineShift = (arrivalLabel.font.ascender - valueFont.ascender)
             }
-            arrivalTextView.scrollEnabled = false
+            arrivalTextView.isScrollEnabled = false
             arrivalTextView.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
             arrivalTextView.textContainer.lineFragmentPadding = 0.0
             
             // Add references
             if let refList = transportElement.references {
-                let horisontalHuggingLabel = companyLabel.contentHuggingPriorityForAxis(.Horizontal)
-                let horisontalHuggingValue = companyTextField.contentHuggingPriorityForAxis(.Horizontal)
-                let verticalHuggingLabel = companyLabel.contentHuggingPriorityForAxis(.Vertical)
-                let verticalHuggingValue = companyTextField.contentHuggingPriorityForAxis(.Vertical)
+                let horisontalHuggingLabel = companyLabel.contentHuggingPriority(for: .horizontal)
+                let horisontalHuggingValue = companyTextField.contentHuggingPriority(for: .horizontal)
+                let verticalHuggingLabel = companyLabel.contentHuggingPriority(for: .vertical)
+                let verticalHuggingValue = companyTextField.contentHuggingPriority(for: .vertical)
                 print("Hugging: Label(V) = \(verticalHuggingLabel), Label(H) = \(horisontalHuggingLabel), Value(V) = \(verticalHuggingValue), Value(H) = \(horisontalHuggingValue)")
                 let refDict = NSMutableDictionary()
                 for ref in refList {
-                    if let refType = ref["type"], refNo = ref["refNo"] {
+                    if let refType = ref["type"], let refNo = ref["refNo"] {
                         var refText:NSAttributedString?
-                        if let refUrl = ref["urlLookup"], url = NSURL(string: refUrl) {
+                        if let refUrl = ref["urlLookup"], let url = URL(string: refUrl) {
                             let hyperlinkText = NSMutableAttributedString(string: refNo)
                             hyperlinkText.addAttribute(NSLinkAttributeName, value: url, range: NSMakeRange(0, hyperlinkText.length))
                             refText = hyperlinkText
@@ -151,7 +151,7 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     func refreshTripElements() {
         print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name
             //self.tripDetailsTable.reloadData()
         })

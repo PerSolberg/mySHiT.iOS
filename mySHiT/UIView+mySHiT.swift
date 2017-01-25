@@ -11,29 +11,29 @@ import UIKit
 
 extension UIView
 {
-    private func processSubviews(recurse: Bool, processChildrenFirst: Bool, level:Int, action : (view: UIView, level:Int) -> Void)
+    fileprivate func processSubviews(_ recurse: Bool, processChildrenFirst: Bool, level:Int, action : (_ view: UIView, _ level:Int) -> Void)
     {
         //print("Processing subviews for " + self.description)
         if !processChildrenFirst {
-            action(view: self, level:level)
+            action(self, level)
         }
         for view in subviews {
             view.processSubviews(recurse, processChildrenFirst: processChildrenFirst, level: level + 1, action: action)
         }
         if processChildrenFirst {
-            action(view: self, level:level)
+            action(self, level)
         }
     }
 
     
-    func processSubviews(recurse: Bool, processChildrenFirst: Bool, action : (view: UIView, level:Int) -> Void)
+    func processSubviews(_ recurse: Bool, processChildrenFirst: Bool, action : (_ view: UIView, _ level:Int) -> Void)
     {
         //print("Processing subviews for " + self.description)
         processSubviews(recurse, processChildrenFirst: processChildrenFirst, level: 1, action: action)
     }
 
     
-    func addDictionaryAsGrid(dictionary: NSDictionary, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
+    func addDictionaryAsGrid(_ dictionary: NSDictionary, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
         //print("Adding stuff here")
         if dictionary.count < 1 {
             print("Dictionary empty, returning")
@@ -50,72 +50,78 @@ extension UIView
         
         // Set up vertical stack view and add it to main view
         let verticalStackView = UIStackView()
-        verticalStackView.axis = .Vertical
-        verticalStackView.distribution = .Fill
-        verticalStackView.alignment = .Fill
+        verticalStackView.axis = .vertical
+        verticalStackView.distribution = .fill
+        verticalStackView.alignment = .fill
         verticalStackView.spacing = 8;
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-        verticalStackView.userInteractionEnabled = true
+        verticalStackView.isUserInteractionEnabled = true
         self.addSubview(verticalStackView)
             
         // Constrain vertical stack view to self
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Leading, relatedBy: .Equal, toItem: self, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Trailing , relatedBy: .Equal, toItem: self, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Top, relatedBy: .Equal, toItem: self, attribute: .Top, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .trailing , relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0))
         //if self.isKindOfClass(UIScrollView) {
             // If we're adding to a scroll view, we need to constrain the bottom, otherwise not
-            self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Bottom, relatedBy: .Equal, toItem: self, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+            self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0))
         //}
         
         var firstValueField: UIView?
         for (key, value) in dictionary {
             //print("Entry: Key = \(key), value = \(value)")
-            if value.isKindOfClass(NSNull) {
+            //if (value as AnyObject).isKind(of: NSNull) {
+            if (value is NSNull) {
                 // Empty element - ignore
                 continue
             }
 
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
-            label.userInteractionEnabled = true
+            label.isUserInteractionEnabled = true
             //label.font = flightNoTextField.font //flightNoLabel.font
-            label.contentMode = .Left
-            label.setContentHuggingPriority(horisontalHuggingForLabel, forAxis: .Horizontal)
-            label.setContentHuggingPriority(verticalHuggingForLabel, forAxis: .Vertical)
+            label.contentMode = .left
+            label.setContentHuggingPriority(horisontalHuggingForLabel, for: .horizontal)
+            label.setContentHuggingPriority(verticalHuggingForLabel, for: .vertical)
             label.text = key as? String
             
             // Set up text wrapper
             let valueWrapper = UIView()
             valueWrapper.translatesAutoresizingMaskIntoConstraints = false
-            valueWrapper.userInteractionEnabled = true
-            valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, forAxis: .Horizontal)
-            valueWrapper.setContentHuggingPriority(verticalHuggingForValue, forAxis: .Vertical)
+            valueWrapper.isUserInteractionEnabled = true
+            valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
+            valueWrapper.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
 
-            if value.isKindOfClass(NSArray) {
+//            if (value as AnyObject).isKind(of: NSArray) {
+            if (value is NSArray) {
                 // Handle arrays
                 valueWrapper.addArrayAsVerticalStack(value as! NSArray, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
-            } else if value.isKindOfClass(NSDictionary) {
+            //} else if (value as AnyObject).isKind(of: NSDictionary) {
+            } else if (value is NSDictionary) {
                 // Handle dictionary
                 valueWrapper.addDictionaryAsGrid(value as! NSDictionary, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
             } else {
                 // UITextView
                 let valueField = UITextView()
                 valueField.translatesAutoresizingMaskIntoConstraints = false
-                valueField.userInteractionEnabled = true
+                valueField.isUserInteractionEnabled = true
                 //value.font = flightNoTextField.font
-                valueField.userInteractionEnabled = true
-                valueField.editable = false
-                valueField.selectable = true
-                valueField.scrollEnabled = false
+                valueField.isUserInteractionEnabled = true
+                valueField.isEditable = false
+                valueField.isSelectable = true
+                valueField.isScrollEnabled = false
                 //valueField.textContainerInset = UIEdgeInsetsZero
-                valueField.setContentHuggingPriority(horisontalHuggingForValue, forAxis: .Horizontal)
-                valueField.setContentHuggingPriority(verticalHuggingForValue, forAxis: .Vertical)
-                if value.isKindOfClass(NSAttributedString) {
+                valueField.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
+                valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
+                //if (value as AnyObject).isKind(of: NSAttributedString) {
+                if (value is NSAttributedString) {
                     valueField.attributedText = value as! NSAttributedString
-                } else if value.isKindOfClass(NSString) {
+                //} else if (value as AnyObject).isKind(of: NSString) {
+                } else if (value is NSString) {
                     valueField.text = value as! String
-                } else if value.isKindOfClass(NSNumber) {
-                    valueField.text = String(value as! NSNumber)
+                //} else if (value as AnyObject).isKind(of: NSNumber) {
+                } else if (value is NSNumber) {
+                    valueField.text = String(describing: value as! NSNumber)
                 } else {
                     print("Unsupported data type for entry")
                 }
@@ -130,17 +136,17 @@ extension UIView
                 valueField.textContainer.lineFragmentPadding = 0.0
 
                 valueWrapper.addSubview(valueField)
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .Leading, relatedBy: .Equal, toItem: valueWrapper, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .Trailing , relatedBy: .Equal, toItem: valueField, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .Top, relatedBy: .Equal, toItem: valueWrapper, attribute: .Top, multiplier: 1.0, constant: 0.0))
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .Bottom, relatedBy: .Equal, toItem: valueField, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .leading, relatedBy: .equal, toItem: valueWrapper, attribute: .leading, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .trailing , relatedBy: .equal, toItem: valueField, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .top, relatedBy: .equal, toItem: valueWrapper, attribute: .top, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .bottom, relatedBy: .equal, toItem: valueField, attribute: .bottom, multiplier: 1.0, constant: 0.0))
             }
 
             let horisontalStackView = UIStackView(arrangedSubviews: [label , valueWrapper])
-            horisontalStackView.userInteractionEnabled = true
-            horisontalStackView.axis = .Horizontal
-            horisontalStackView.distribution = .Fill
-            horisontalStackView.alignment = .Top // .FirstBaseline
+            horisontalStackView.isUserInteractionEnabled = true
+            horisontalStackView.axis = .horizontal
+            horisontalStackView.distribution = .fill
+            horisontalStackView.alignment = .top // .FirstBaseline
             horisontalStackView.spacing = 8;
             horisontalStackView.translatesAutoresizingMaskIntoConstraints = false
                     
@@ -148,14 +154,14 @@ extension UIView
 
             // Constrain all value fields to same width
             if let firstValueField = firstValueField {
-                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .Width, relatedBy: .Equal, toItem: firstValueField, attribute: .Width, multiplier: 1.0, constant: 0)
+                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .width, relatedBy: .equal, toItem: firstValueField, attribute: .width, multiplier: 1.0, constant: 0)
                 verticalStackView.addConstraint(valueWidthConstraint)
             } else {
                 firstValueField = valueWrapper
             }
             // Constrain to "external" view
             if constrainValueFieldWidthToView != nil {
-                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .Width, relatedBy: .Equal, toItem: constrainValueFieldWidthToView, attribute: .Width, multiplier: 1.0, constant: 0)
+                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .width, relatedBy: .equal, toItem: constrainValueFieldWidthToView, attribute: .width, multiplier: 1.0, constant: 0)
                 rootView.addConstraint(valueWidthConstraint)
             }
         }
@@ -169,7 +175,7 @@ extension UIView
     }
 
 
-    func addArrayAsVerticalStack(array: NSArray, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
+    func addArrayAsVerticalStack(_ array: NSArray, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
         print("Adding array here")
         if array.count < 1 {
             print("Array empty, returning")
@@ -186,23 +192,24 @@ extension UIView
         
         // Set up vertical stack view and add it to main view
         let verticalStackView = UIStackView()
-        verticalStackView.axis = .Vertical
-        verticalStackView.distribution = .Fill
-        verticalStackView.alignment = .Fill
+        verticalStackView.axis = .vertical
+        verticalStackView.distribution = .fill
+        verticalStackView.alignment = .fill
         verticalStackView.spacing = 8;
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(verticalStackView)
         
         // Constrain vertical stack view to self
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Leading, relatedBy: .Equal, toItem: self, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Trailing , relatedBy: .Equal, toItem: self, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Top, relatedBy: .Equal, toItem: self, attribute: .Top, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .Bottom, relatedBy: .Equal, toItem: self, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .trailing , relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0))
         
         var firstValueField: UIView?
         for value in array {
             //print("Entry: \(value)")
-            if value.isKindOfClass(NSNull) {
+            //if (value as AnyObject).isKind(of: NSNull) {
+            if (value is NSNull) {
                 // Empty element - ignore
                 continue
             }
@@ -210,13 +217,15 @@ extension UIView
             // Set up text wrapper
             let valueWrapper = UIView()
             valueWrapper.translatesAutoresizingMaskIntoConstraints = false
-            valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, forAxis: .Horizontal)
-            valueWrapper.setContentHuggingPriority(verticalHuggingForValue, forAxis: .Vertical)
+            valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
+            valueWrapper.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
             
-            if value.isKindOfClass(NSArray) {
+            //if (value as AnyObject).isKind(of: NSArray) {
+            if (value is NSArray) {
                 // Handle arrays
                 valueWrapper.addArrayAsVerticalStack(value as! NSArray, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
-            } else if value.isKindOfClass(NSDictionary) {
+            //} else if (value as AnyObject).isKind(of: NSDictionary) {
+            } else if (value is NSDictionary) {
                 // Handle dictionary
                 valueWrapper.addDictionaryAsGrid(value as! NSDictionary, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
             } else {
@@ -224,39 +233,41 @@ extension UIView
                 let valueField = UITextView()
                 valueField.translatesAutoresizingMaskIntoConstraints = false
                 //value.font = flightNoTextField.font
-                valueField.userInteractionEnabled = true
-                valueField.editable = false
-                valueField.selectable = true
-                valueField.scrollEnabled = false
-                valueField.textContainerInset = UIEdgeInsetsZero
+                valueField.isUserInteractionEnabled = true
+                valueField.isEditable = false
+                valueField.isSelectable = true
+                valueField.isScrollEnabled = false
+                valueField.textContainerInset = UIEdgeInsets.zero
                 valueField.textContainer.lineFragmentPadding = 0.0
-                valueField.setContentHuggingPriority(horisontalHuggingForValue, forAxis: .Horizontal)
-                valueField.setContentHuggingPriority(verticalHuggingForValue, forAxis: .Vertical)
-                if value.isKindOfClass(NSString) {
+                valueField.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
+                valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
+                //if (value as AnyObject).isKind(of: NSString) {
+                if (value is NSString) {
                     valueField.text = value as! String
-                } else if value.isKindOfClass(NSNumber) {
-                    valueField.text = String(value as! NSNumber)
+                //} else if (value as AnyObject).isKind(of: NSNumber) {
+                } else if (value is NSNumber) {
+                    valueField.text = String(describing: value as! NSNumber)
                 }
                 
                 valueWrapper.addSubview(valueField)
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .Leading, relatedBy: .Equal, toItem: valueWrapper, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .Trailing , relatedBy: .Equal, toItem: valueField, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .Top, relatedBy: .Equal, toItem: valueWrapper, attribute: .Top, multiplier: 1.0, constant: 0.0))
-                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .Bottom, relatedBy: .Equal, toItem: valueField, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .leading, relatedBy: .equal, toItem: valueWrapper, attribute: .leading, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .trailing , relatedBy: .equal, toItem: valueField, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .top, relatedBy: .equal, toItem: valueWrapper, attribute: .top, multiplier: 1.0, constant: 0.0))
+                valueWrapper.addConstraint(NSLayoutConstraint(item: valueWrapper, attribute: .bottom, relatedBy: .equal, toItem: valueField, attribute: .bottom, multiplier: 1.0, constant: 0.0))
             }
             
             verticalStackView.addArrangedSubview(valueWrapper)
             
             // Constrain all value fields to same width
             if let firstValueField = firstValueField {
-                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .Width, relatedBy: .Equal, toItem: firstValueField, attribute: .Width, multiplier: 1.0, constant: 0)
+                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .width, relatedBy: .equal, toItem: firstValueField, attribute: .width, multiplier: 1.0, constant: 0)
                 verticalStackView.addConstraint(valueWidthConstraint)
             } else {
                 firstValueField = valueWrapper
             }
             // Constrain to "external" view
             if constrainValueFieldWidthToView != nil {
-                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .Width, relatedBy: .Equal, toItem: constrainValueFieldWidthToView, attribute: .Width, multiplier: 1.0, constant: 0)
+                let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .width, relatedBy: .equal, toItem: constrainValueFieldWidthToView, attribute: .width, multiplier: 1.0, constant: 0)
                 rootView.addConstraint(valueWidthConstraint)
             }
         }
@@ -271,11 +282,11 @@ extension UIView
     func colourSubviews() {
         self.processSubviews(true, processChildrenFirst: false, action: { (view, level) -> Void in
             print("\(level): \(view.debugDescription)")
-            let colors = [UIColor.yellowColor(), UIColor.lightGrayColor(), UIColor.blueColor(), UIColor.brownColor(), UIColor.grayColor(), UIColor.greenColor(), UIColor.magentaColor()]
+            let colors = [UIColor.yellow, UIColor.lightGray, UIColor.blue, UIColor.brown, UIColor.gray, UIColor.green, UIColor.magenta]
             if level < colors.count {
                 view.backgroundColor = colors[level]
             } else {
-                view.backgroundColor = UIColor.redColor()
+                view.backgroundColor = UIColor.red
             }
         })
     }

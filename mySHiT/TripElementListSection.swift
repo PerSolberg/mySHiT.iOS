@@ -30,17 +30,18 @@ class TripElementListSectionInfo: NSObject, NSCoding {
     }
     
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(visible, forKey: PropertyKey.visibleKey)
-        aCoder.encodeObject(title, forKey: PropertyKey.titleKey)
-        aCoder.encodeObject(firstTripElement, forKey: PropertyKey.firstTripElementKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(visible, forKey: PropertyKey.visibleKey)
+        aCoder.encode(title, forKey: PropertyKey.titleKey)
+        aCoder.encode(firstTripElement, forKey: PropertyKey.firstTripElementKey)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        let visible  = aDecoder.decodeObjectForKey(PropertyKey.visibleKey) as! Bool
-        let title = aDecoder.decodeObjectForKey(PropertyKey.titleKey) as! String
-        let firstTripElement = aDecoder.decodeIntegerForKey(PropertyKey.firstTripElementKey)
+        let visible  = aDecoder.decodeObject(forKey: PropertyKey.visibleKey) as! Bool
+        let title = aDecoder.decodeObject(forKey: PropertyKey.titleKey) as! String
+        //let firstTripElement = aDecoder.decodeInteger(forKey: PropertyKey.firstTripElementKey)
+        let firstTripElement = aDecoder.decodeObject(forKey: PropertyKey.firstTripElementKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.firstTripElementKey)
         
         // Must call designated initializer.
         self.init(visible: visible, title: title, firstTripElement: firstTripElement)

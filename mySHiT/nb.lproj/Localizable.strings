@@ -16,6 +16,8 @@
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT-reise '%@' begynner om %@ (%@)";
 // transportAlertMessage
 "%@ departs in %@, at %@" = "%@ går om %@, kl. %@";
+// eventAlertMessage
+"%@ starts in %@, at %@" = "%@ begynner om %@, at %@";
 // noDetailsAvailable
 "No details available yet" = "Ingen detaljer tilgjengelig ennå";
 // networkUnavailable
@@ -37,3 +39,33 @@
 "You have no SHiT trips yet" = "Du har ingen SHiT-reiser";
 // unknownElement
 "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT! Vi beklager men klienten kjenner ikke igjen denne typen element. Vi kan derfor ikke presentere informasjonen på en god måte, men her er rådata fra SHiT-tjeneren.";
+
+
+// Push notifications
+"NTF.INSERT.ADDRESS" = "%@: Adresseinformasjon oppdatert";
+"NTF.INSERT.BOOKING" = "%@: Ny booking lagt til";
+"NTF.INSERT.BOOKINGREF" = "%@: Ny booking-referanse lagt til";
+"NTF.INSERT.EVENT" = "%@: Nytt arrangement lagt til";
+"NTF.INSERT.HOTEL" = "%@: Ny hotellreservasjon lagt til";
+"NTF.INSERT.ITINERARY" = "%@: Reiserute oppdatert";
+"NTF.INSERT.TRIP" = "%@: Ny reise lagt til";
+"NTF.INSERT.USERPROFILE" = "Brukerprofil oppdatert";
+
+"NTF.UPDATE.ADDRESS" = "%@: Adresseinformasjon oppdatert";
+"NTF.UPDATE.BOOKING" = "%@: Booking oppdatert";
+"NTF.UPDATE.BOOKINGREF" = "%@: Booking-referanse oppdatert";
+"NTF.UPDATE.EVENT" = "%@: Arrangement oppdatert";
+"NTF.UPDATE.HOTEL" = "%@: Hotellreservasjon oppdatert";
+"NTF.UPDATE.ITINERARY" = "%@: Reiserute oppdatert";
+"NTF.UPDATE.TRIP" = "%@: Reise oppdatert";
+"NTF.UPDATE.USERPROFILE" = "Brukerprofil oppdatert";
+
+"NTF.DELETE.ADDRESS" = "%@: Adresseinformasjon oppdatert";
+"NTF.DELETE.BOOKING" = "%@: Booking fjernet";
+"NTF.DELETE.BOOKINGREF" = "%@: Booking-referanse fjernet";
+"NTF.DELETE.EVENT" = "%@: Arrangement fjernet";
+"NTF.DELETE.HOTEL" = "%@: Hotellreservasjon fjernet";
+"NTF.DELETE.ITINERARY" = "%@: Reiserute oppdatert";
+"NTF.DELETE.TRIP" = "%@: Reise oppdatert";
+"NTF.DELETE.USERPROFILE" = "Brukerprofil oppdatert";
+

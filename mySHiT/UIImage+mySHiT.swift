@@ -11,7 +11,7 @@ import UIKit
 
 extension UIImage
 {
-    func overlayBadge(modified : ChangeState) -> UIImage
+    func overlayBadge(_ modified : ChangeState) -> UIImage
     {
         var watermark : UIImage? = nil
         
@@ -23,13 +23,13 @@ extension UIImage
 
         if let watermark = watermark {
             UIGraphicsBeginImageContextWithOptions(self.size, false, 0.0)
-            self.drawInRect(CGRect(x: 0.0, y: 0.0, width: self.size.width, height: self.size.height))
-            watermark.drawInRect(CGRect(x: self.size.width - watermark
+            self.draw(in: CGRect(x: 0.0, y: 0.0, width: self.size.width, height: self.size.height))
+            watermark.draw(in: CGRect(x: self.size.width - watermark
                 .size.width, y:self.size.height - watermark.size.height, width: watermark.size.width, height: watermark.size.height))
             let result = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
 
-            return result
+            return result!
         } else {
             return self
         }

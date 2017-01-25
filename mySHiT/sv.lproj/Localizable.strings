@@ -16,6 +16,8 @@
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT-resa '%@' börjar om %@ (%@)";
 // transportAlertMessage
 "%@ departs in %@, at %@" = "%@ avgår om %@, kl. %@";
+// eventAlertMessage
+"%@ starts in %@, at %@" = "%@ börjar om %@, at %@";
 // noDetailsAvailable
 "No details available yet" = "Inga detaljer än";
 // networkUnavailable
@@ -34,4 +36,32 @@
 "You have no SHiT trips yet" = "Du har inga SHiT-resor";
 // unknownElement
 "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT! Vi ber om ursäkt, men klienten känner inte igen den här typen reseelement. Av den anledning kan vi tyvärr inte presentera informationen på ett gott sätt, men nedanför hittar ni rådata från SHiT-tjänsten.";
+
+// Push notifications
+"NTF.INSERT.ADDRESS" = "%@: Adressinformation uppdaterad";
+"NTF.INSERT.BOOKING" = "%@: Ny bokning lagd till";
+"NTF.INSERT.BOOKINGREF" = "%@: Ny bokningsreferens lagd till";
+"NTF.INSERT.EVENT" = "%@: Nytt evenemang lagd till";
+"NTF.INSERT.HOTEL" = "%@: Ny hotellbokning lagd till";
+"NTF.INSERT.ITINERARY" = "%@: Resrutt uppdaterad";
+"NTF.INSERT.TRIP" = "%@: Ny resa lagd till";
+"NTF.INSERT.USERPROFILE" = "Användarprofil uppdaterad";
+
+"NTF.UPDATE.ADDRESS" = "%@: Adressinformation uppdaterad";
+"NTF.UPDATE.BOOKING" = "%@: Bokning uppdaterad";
+"NTF.UPDATE.BOOKINGREF" = "%@: Bokningsreferens uppdaterad";
+"NTF.UPDATE.EVENT" = "%@: Evenemang uppdaterad";
+"NTF.UPDATE.HOTEL" = "%@: Hotellbokning uppdaterad";
+"NTF.UPDATE.ITINERARY" = "%@: Resrutt uppdaterad";
+"NTF.UPDATE.TRIP" = "%@: Resa uppdaterad";
+"NTF.UPDATE.USERPROFILE" = "Användarprofil uppdaterad";
+
+"NTF.DELETE.ADDRESS" = "%@: Adressinformation uppdaterad";
+"NTF.DELETE.BOOKING" = "%@: Bokning borttagen";
+"NTF.DELETE.BOOKINGREF" = "%@: Bokningsreferens borttagen";
+"NTF.DELETE.EVENT" = "%@: Evenemang borttagen";
+"NTF.DELETE.HOTEL" = "%@: Hotellbokning borttagen";
+"NTF.DELETE.ITINERARY" = "%@: Resrutt uppdaterad";
+"NTF.DELETE.TRIP" = "%@: Resa uppdaterad";
+"NTF.DELETE.USERPROFILE" = "Användarprofil uppdaterad";
 

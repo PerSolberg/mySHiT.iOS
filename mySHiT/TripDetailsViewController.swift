@@ -7,13 +7,37 @@
 //
 
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class TripDetailsViewController: UITableViewController {
     
     // MARK: Properties
     @IBOutlet var tripDetailsTable: UITableView!
     
-    var elementToRefresh: NSIndexPath?
+    var elementToRefresh: IndexPath?
     
     // Passed from TripListViewController
     var tripCode:String?
@@ -27,45 +51,50 @@ class TripDetailsViewController: UITableViewController {
 
 
     // MARK: Navigation
-    @IBAction func openSettings(sender: AnyObject) {
-        if let appSettings = NSURL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.sharedApplication().openURL(appSettings)
+    @IBAction func openSettings(_ sender: AnyObject) {
+        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
+            UIApplication.shared.openURL(appSettings)
         }
     }
     
         
     // Prepare for navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        if let segueId = segue.identifier, selectedTripCell = sender as? UITableViewCell {
+        if let segueId = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
             print("Trip Details: Preparing for segue '\(segueId)'")
-            let indexPath = tableView.indexPathForCell(selectedTripCell)!
+            let indexPath = tableView.indexPath(for: selectedTripCell)!
             let s = getSectionById(indexPath.section)
             let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
             
             switch (segueId) {
             case Constant.segue.showFlightInfo:
-                let destinationController = segue.destinationViewController as! FlightDetailsViewController
+                let destinationController = segue.destination as! FlightDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
             case Constant.segue.showHotelInfo:
-                let destinationController = segue.destinationViewController as! HotelDetailsViewController
+                let destinationController = segue.destination as! HotelDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
             case Constant.segue.showScheduledTransport:
-                let destinationController = segue.destinationViewController as! ScheduledTransportDetailsViewController
+                let destinationController = segue.destination as! ScheduledTransportDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
             case Constant.segue.showPrivateTransport:
-                let destinationController = segue.destinationViewController as! PrivateTransportDetailsViewController
+                let destinationController = segue.destination as! PrivateTransportDetailsViewController
+                destinationController.tripElement = selectedElement
+                destinationController.trip = trip
+                
+            case Constant.segue.showEventInfo:
+                let destinationController = segue.destination as! EventDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
                 
             default:
-                let destinationController = segue.destinationViewController as! UnknownElementDetailsViewController
+                let destinationController = segue.destination as! UnknownElementDetailsViewController
                 destinationController.tripElement = selectedElement
                 destinationController.trip = trip
             }
@@ -90,16 +119,16 @@ class TripDetailsViewController: UITableViewController {
         print("Trip Details View loaded")
         super.viewDidLoad()
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "RefreshTripElements", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "dataRefreshed", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleNetworkError", name: "networkError", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "RefreshTripElements"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "dataRefreshed"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.handleNetworkError), name: NSNotification.Name(rawValue: "networkError"), object: nil)
 
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip    
             if trip.trip.elements != nil && trip.trip.elements?.count > 0 {
                 print("Trip details already loaded")
                 updateSections()
-                refreshTripElements()
+                //refreshTripElements()
             } else {
                 // Load details from server
                 trip.trip.loadDetails()
@@ -111,12 +140,12 @@ class TripDetailsViewController: UITableViewController {
         // Set up refresh
         refreshControl = UIRefreshControl()
         refreshControl!.backgroundColor = tripDetailsTable.backgroundColor
-        refreshControl!.tintColor = UIColor.blueColor()  //whiteColor()
-        refreshControl!.addTarget(self, action: "reloadTripDetailsFromServer", forControlEvents: .ValueChanged)
+        refreshControl!.tintColor = UIColor.blue  //whiteColor()
+        refreshControl!.addTarget(self, action: #selector(TripDetailsViewController.reloadTripDetailsFromServer), for: .valueChanged)
     }
 
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         if let indexPath = elementToRefresh {
             let s = getSectionById(indexPath.section)
             let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
@@ -124,10 +153,11 @@ class TripDetailsViewController: UITableViewController {
             let tripElement = trip!.trip.elements![rowIdx].tripElement
             
             selectedElement.modified = .Unchanged
-            if let cell = tripDetailsTable.cellForRowAtIndexPath(indexPath), imgView = cell.viewWithTag(5) as? UIImageView {
+            if let cell = tripDetailsTable.cellForRow(at: indexPath), let imgView = cell.viewWithTag(5) as? UIImageView {
                 imgView.image = tripElement.icon?.overlayBadge(selectedElement.modified)
             }
             elementToRefresh = nil
+            UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
         }
     }
 
@@ -139,18 +169,18 @@ class TripDetailsViewController: UITableViewController {
     
     
     // MARK: UITableViewDataSource methods
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         var sectionCount = 0
         for s in sections {
             if s.firstTripElement > -1 {
-                sectionCount++
+                sectionCount += 1
             }
         }
         return sectionCount
     }
     
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let s = getSectionById(section) {
             if s.section.visible! {
                 return s.itemCount
@@ -163,7 +193,7 @@ class TripDetailsViewController: UITableViewController {
     }
     
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let s = getSectionById(section) {
             return s.section.title
         } else {
@@ -173,12 +203,13 @@ class TripDetailsViewController: UITableViewController {
     }
     
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //print("Refreshing cell at \(indexPath.section), \(indexPath.row)")
         let kCellIdentifier: String = "myTripDetailsCell"
         
         //tablecell optional to see if we can reuse cell
         var cell : UITableViewCell?
-        cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier)
+        cell = tableView.dequeueReusableCell(withIdentifier: kCellIdentifier)
         
         //Get data from TripList element
         if let s = getSectionById(indexPath.section) {
@@ -204,9 +235,9 @@ class TripDetailsViewController: UITableViewController {
     }
     
     
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView(frame: CGRectMake(0, 0, self.tripDetailsTable.frame.size.width, 40))
-        headerView.backgroundColor = UIColor.lightGrayColor()
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: self.tripDetailsTable.frame.size.width, height: 40))
+        headerView.backgroundColor = UIColor.lightGray
         headerView.tag = section
         
         let headerString = UILabel(frame: CGRect(x: 10, y: 5, width: self.tripDetailsTable.frame.size.width-10, height: 20)) as UILabel
@@ -216,37 +247,39 @@ class TripDetailsViewController: UITableViewController {
         
         headerView.addSubview(headerString)
         
-        let headerTapped = UITapGestureRecognizer (target: self, action:"sectionHeaderTapped:")
+        let headerTapped = UITapGestureRecognizer (target: self, action:#selector(TripDetailsViewController.sectionHeaderTapped(_:)))
         headerView.addGestureRecognizer(headerTapped)
         
         return headerView
     }
 
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let s = getSectionById(indexPath.section) {
             let rowIdx = s.section.firstTripElement + indexPath.row
             let tripElement = trip!.trip.elements![rowIdx].tripElement
-            let selectedCell = tableView.cellForRowAtIndexPath(indexPath)
+            let selectedCell = tableView.cellForRow(at: indexPath)
             switch (tripElement.type, tripElement.subType) {
             case ("ACM", "HTL"):
-                performSegueWithIdentifier("showHotelInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showHotelInfoSegue", sender: selectedCell)
+            case ("EVT", _):
+                performSegue(withIdentifier: "showEventInfoSegue", sender: selectedCell)
             case ("TRA", "AIR"):
-                performSegueWithIdentifier("showFlightInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showFlightInfoSegue", sender: selectedCell)
             case ("TRA", "BUS"):
-                performSegueWithIdentifier("showScheduledTransportInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showScheduledTransportInfoSegue", sender: selectedCell)
             case ("TRA", "TRN"):
-                performSegueWithIdentifier("showScheduledTransportInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showScheduledTransportInfoSegue", sender: selectedCell)
             case ("TRA", "BOAT"):
-                performSegueWithIdentifier("showScheduledTransportInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showScheduledTransportInfoSegue", sender: selectedCell)
             case ("TRA", "LIMO"):
-                performSegueWithIdentifier("showPrivateTransportInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showPrivateTransportInfoSegue", sender: selectedCell)
             case ("TRA", "PBUS"):
-                performSegueWithIdentifier("showPrivateTransportInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showPrivateTransportInfoSegue", sender: selectedCell)
             //case ("TRA", _):
             //    performSegueWithIdentifier("showFlightInfoSegue", sender: selectedCell)
             default:
-                performSegueWithIdentifier("showUnknownInfoSegue", sender: selectedCell)
+                performSegue(withIdentifier: "showUnknownInfoSegue", sender: selectedCell)
                 break
             }
         }
@@ -254,15 +287,15 @@ class TripDetailsViewController: UITableViewController {
     
     
     // MARK: Section header callbacks
-    func sectionHeaderTapped(recognizer: UITapGestureRecognizer) {
-        let indexPath : NSIndexPath = NSIndexPath(forRow: 0, inSection:(recognizer.view?.tag as Int!)!)
+    func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
+        let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as Int!)!)
         if let s = getSectionById(indexPath.section) {
             sections[s.index].visible = !sections[s.index].visible
             
             //reload specific section animated
             let range = NSMakeRange(indexPath.section, 1)
-            let sectionToReload = NSIndexSet(indexesInRange: range)
-            self.tripDetailsTable.reloadSections(sectionToReload, withRowAnimation:UITableViewRowAnimation.Fade)
+            let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
+            self.tripDetailsTable.reloadSections(sectionToReload, with:UITableViewRowAnimation.fade)
         }
     }
     
@@ -286,14 +319,14 @@ class TripDetailsViewController: UITableViewController {
         print("TripDetailsView: End refresh after network error")
         
         // Notify user
-        if self.isViewLoaded() && view.window != nil {
-            dispatch_async(dispatch_get_main_queue(), {
+        if self.isViewLoaded && view.window != nil {
+            DispatchQueue.main.async(execute: {
                 let alert = UIAlertController(
                     title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
                     message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                    preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             })
         }
         
@@ -311,8 +344,10 @@ class TripDetailsViewController: UITableViewController {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
-        print("Refreshing trip details - probably because data were refreshed")
+        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(tripCode)'")
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
+            self.trip = trip
+            trip.trip.refreshNotifications()
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
                 tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noDetailsAvailable, comment: "Some dummy comment"))
             } else {
@@ -320,7 +355,9 @@ class TripDetailsViewController: UITableViewController {
             }
         }
         updateSections()
-        dispatch_async(dispatch_get_main_queue(), {
+        print("Trip detail sections updated, now refreshing view")
+        DispatchQueue.main.async(execute: {
+            print("Refreshing trip details list view")
             self.title = self.trip?.trip.name
             self.tripDetailsTable.reloadData()
         })
@@ -335,10 +372,10 @@ class TripDetailsViewController: UITableViewController {
         sections = [TripElementListSectionInfo]()
         var lastSectionTitle = ""
         var lastElementTense = Tenses.future
-        if let trip = trip, elements = trip.trip.elements {
+        if let trip = trip, let elements = trip.trip.elements {
             for i in elements.indices {
                 //let elemStartDate = dateFormatter.stringFromDate(elements[i].tripElement.startTime!)
-                let elemStartDate = elements[i].tripElement.startTime(dateStyle: .MediumStyle, timeStyle: .NoStyle) ?? lastSectionTitle
+                let elemStartDate = elements[i].tripElement.startTime(dateStyle: .medium, timeStyle: .none) ?? lastSectionTitle
                 if elemStartDate != lastSectionTitle {
                     // First check if previous section should be hidden by default
                     // For active trips, past dates are collapsed by default; active and future dates are expanded
@@ -356,7 +393,7 @@ class TripDetailsViewController: UITableViewController {
     }
     
     
-    func getSectionById(sectionNo:Int) -> (index: Int, section:TripElementListSectionInfo, itemCount:Int)? {
+    func getSectionById(_ sectionNo:Int) -> (index: Int, section:TripElementListSectionInfo, itemCount:Int)? {
         if sectionNo >= sections.count {
             return nil
         }

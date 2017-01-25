@@ -8,18 +8,45 @@
 
 import Foundation
 import UIKit
+import FirebaseMessaging
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class Trip: NSObject, NSCoding {
     var id: Int!
-    var startDate: NSDate?
-    var endDate: NSDate?
+    var itineraryId: Int?
+    var startDate: Date?
+    var endDate: Date?
     var tripDescription: String?
     var code: String?
     var name: String?
     var type: String?
     var elements: [AnnotatedTripElement]?
     
-    var startTime: NSDate? {
+    var startTime: Date? {
         return startDate
     }
     var startTimeZone: String? {
@@ -28,25 +55,25 @@ class Trip: NSObject, NSCoding {
         }
         return nil
     }
-    var endTime: NSDate? {
+    var endTime: Date? {
         return endDate
     }
     var title: String? {
         return name
     }
     var dateInfo: String? {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.timeStyle = DateFormatter.Style.none
         
-        return dateFormatter.stringFromDate(startDate!) + " - " + dateFormatter.stringFromDate(endDate!)
+        return dateFormatter.string(from: startDate!) + " - " + dateFormatter.string(from: endDate!)
     }
     var detailInfo: String? {
         return tripDescription
     }
     var tense: Tenses? {
         if let startTime = self.startTime {
-            let today = NSDate()
+            let today = Date()
             // If end time isn't set, assume duration of 1 day
             let endTime = self.endTime ?? startTime.addDays(1)
             
@@ -97,6 +124,7 @@ class Trip: NSObject, NSCoding {
     
     struct PropertyKey {
         static let idKey = "id"
+        static let itineraryIdKey = "itineraryId"
         static let startDateKey = "startDate"
         static let endDateKey = "endDate"
         static let tripDescriptionKey = "description"
@@ -108,10 +136,10 @@ class Trip: NSObject, NSCoding {
 
     static let webServiceRootPath = "trip/code/"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.GET, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"])
+    var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"])
 
     // MARK: Factory
-    class func createFromDictionary( elementData: NSDictionary! ) -> Trip? {
+    class func createFromDictionary( _ elementData: NSDictionary! ) -> Trip? {
         //let tripType = elementData["type"] as? String ?? ""
         
         var trip: Trip?
@@ -130,15 +158,16 @@ class Trip: NSObject, NSCoding {
     
     
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeInteger(id, forKey: PropertyKey.idKey)
-        aCoder.encodeObject(startDate, forKey: PropertyKey.startDateKey)
-        aCoder.encodeObject(endDate, forKey: PropertyKey.endDateKey)
-        aCoder.encodeObject(tripDescription, forKey: PropertyKey.tripDescriptionKey)
-        aCoder.encodeObject(code, forKey: PropertyKey.codeKey)
-        aCoder.encodeObject(name, forKey: PropertyKey.nameKey)
-        aCoder.encodeObject(type, forKey: PropertyKey.typeKey)
-        aCoder.encodeObject(elements, forKey: PropertyKey.elementsKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(id, forKey: PropertyKey.idKey)
+        aCoder.encode(itineraryId, forKey: PropertyKey.itineraryIdKey)
+        aCoder.encode(startDate, forKey: PropertyKey.startDateKey)
+        aCoder.encode(endDate, forKey: PropertyKey.endDateKey)
+        aCoder.encode(tripDescription, forKey: PropertyKey.tripDescriptionKey)
+        aCoder.encode(code, forKey: PropertyKey.codeKey)
+        aCoder.encode(name, forKey: PropertyKey.nameKey)
+        aCoder.encode(type, forKey: PropertyKey.typeKey)
+        aCoder.encode(elements, forKey: PropertyKey.elementsKey)
     }
 
     
@@ -146,14 +175,16 @@ class Trip: NSObject, NSCoding {
     required init?(coder aDecoder: NSCoder) {
         super.init()
         // NB: use conditional cast (as?) for any optional properties
-        id  = aDecoder.decodeIntegerForKey(PropertyKey.idKey)
-        startDate  = aDecoder.decodeObjectForKey(PropertyKey.startDateKey) as? NSDate
-        endDate  = aDecoder.decodeObjectForKey(PropertyKey.endDateKey) as? NSDate
-        tripDescription  = aDecoder.decodeObjectForKey(PropertyKey.tripDescriptionKey) as? String
-        code  = aDecoder.decodeObjectForKey(PropertyKey.codeKey) as? String
-        name  = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String
-        type  = aDecoder.decodeObjectForKey(PropertyKey.typeKey) as? String
-        elements  = aDecoder.decodeObjectForKey(PropertyKey.elementsKey) as? [AnnotatedTripElement]
+        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        itineraryId = aDecoder.decodeObject(forKey: PropertyKey.itineraryIdKey) as? Int? ?? aDecoder.decodeInteger(forKey: PropertyKey.itineraryIdKey)
+        startDate  = aDecoder.decodeObject(forKey: PropertyKey.startDateKey) as? Date
+        endDate  = aDecoder.decodeObject(forKey: PropertyKey.endDateKey) as? Date
+        tripDescription  = aDecoder.decodeObject(forKey: PropertyKey.tripDescriptionKey) as? String
+        code  = aDecoder.decodeObject(forKey: PropertyKey.codeKey) as? String
+        name  = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String
+        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as? String
+        elements  = aDecoder.decodeObject(forKey: PropertyKey.elementsKey) as? [AnnotatedTripElement]
         
         setNotification()
     }
@@ -162,6 +193,7 @@ class Trip: NSObject, NSCoding {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
         id = elementData[Constant.JSON.tripId] as! Int  // "id"
+        itineraryId = elementData[Constant.JSON.tripItineraryId] as? Int
         startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
         endDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripEndDate] as! String, timeZoneName: nil)
         tripDescription = elementData[Constant.JSON.tripDescription] as? String
@@ -183,13 +215,14 @@ class Trip: NSObject, NSCoding {
     
 
     // MARK: Methods
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         //print("Comparing objects: self.class = \(object_getClassName(self)), object.class = \(object_getClassName(object!))")
         //print("Comparing objects: self.class = \(_stdlib_getDemangledTypeName(self)), object.class = \(_stdlib_getDemangledTypeName(object!))")
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherTrip = object as? Trip {
             if self.id              != otherTrip.id              { return false }
+            if self.itineraryId     != otherTrip.itineraryId     { return false }
             if self.startDate       != otherTrip.startDate       { return false }
             if self.endDate         != otherTrip.endDate         { return false }
             if self.tripDescription != otherTrip.tripDescription { return false }
@@ -208,7 +241,7 @@ class Trip: NSObject, NSCoding {
     }
 
 
-    func compareTripElements(otherTrip: Trip) {
+    func compareTripElements(_ otherTrip: Trip) {
         if elements == nil || otherTrip.elements == nil {
             return
         }
@@ -223,26 +256,41 @@ class Trip: NSObject, NSCoding {
             } else {
                 if !element.tripElement.isEqual(matchingOtherElements[0].tripElement) {
                     element.modified = .Changed
+                } else {
+                    element.modified = matchingOtherElements[0].modified;
                 }
             }
         }
     }
-    
-    
-    func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+
+
+    func changes() -> Int {
+        var changes = 0
+        if let elements = elements {
+            for element in elements {
+                if element.modified != .Unchanged {
+                    changes += 1
+                }
+            }
+        }
+        return changes
+    }
+
+
+    func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let departureTime = startTime {
-            let dateFormatter = NSDateFormatter()
+            let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
             //if let timeZoneName = departureTimeZone {
             if let timeZoneName = startTimeZone {
-                let timezone = NSTimeZone(name: timeZoneName)
+                let timezone = TimeZone(identifier: timeZoneName)
                 if timezone != nil {
                     dateFormatter.timeZone = timezone
                 }
             }
             
-            return dateFormatter.stringFromDate(departureTime)
+            return dateFormatter.string(from: departureTime)
         }
         return nil
     }
@@ -250,9 +298,9 @@ class Trip: NSObject, NSCoding {
 
     func setNotification() {
         // First delete any existing notifications for this trip
-        for notification in UIApplication.sharedApplication().scheduledLocalNotifications! as [UILocalNotification] {
+        for notification in UIApplication.shared.scheduledLocalNotifications! as [UILocalNotification] {
             if (notification.userInfo!["TripID"] as? Int == id) {
-                UIApplication.sharedApplication().cancelLocalNotification(notification)
+                UIApplication.shared.cancelLocalNotification(notification)
                 // there should be a maximum of one match on TripID
                 break
             }
@@ -261,22 +309,22 @@ class Trip: NSObject, NSCoding {
         // Set notification (if we have a start date)
         if let tripStart = startTime {
             if tense == .future {
-                let defaults = NSUserDefaults.standardUserDefaults()
-                let tripLeadtime = Int(defaults.floatForKey("trip_notification_leadtime"))
-                let startTimeText = startTime(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
-                let now = NSDate()
-                let dcf = NSDateComponentsFormatter()
+                let defaults = UserDefaults.standard
+                let tripLeadtime = Int(defaults.float(forKey: "trip_notification_leadtime"))
+                let startTimeText = startTime(dateStyle: .short, timeStyle: .short)
+                let now = Date()
+                let dcf = DateComponentsFormatter()
                 let genericAlertMessage = NSLocalizedString(Constant.msg.tripAlertMessage, comment: "Some dummy comment")
                 
-                dcf.unitsStyle = .Short
-                dcf.zeroFormattingBehavior = .DropAll
+                dcf.unitsStyle = .short
+                dcf.zeroFormattingBehavior = .dropAll
                 
-                var userInfo: [String:NSObject] = ["TripID": id]
+                var userInfo: [String:NSObject] = ["TripID": id as NSObject]
                 if let startTimeZone = startTimeZone {
-                    userInfo["TimeZone"] = startTimeZone
+                    userInfo["TimeZone"] = startTimeZone as NSObject?
                 }
                 
-                if (tripLeadtime ?? -1) > 0 {
+                if tripLeadtime > 0 {
                     var alertTime = tripStart.addHours( -tripLeadtime )
                     // If we're already past the warning time, set a notification for right now instead
                     if alertTime.isLessThanDate(now) {
@@ -284,14 +332,15 @@ class Trip: NSObject, NSCoding {
                     }
                     let notification = UILocalNotification()
                     
-                    let actualLeadTime = tripStart.timeIntervalSinceDate(alertTime)
-                    let leadTimeText = dcf.stringFromTimeInterval(actualLeadTime)
-                    notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                    let actualLeadTime = tripStart.timeIntervalSince(alertTime)
+                    let leadTimeText = dcf.string(from: actualLeadTime)
+                    //notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                    notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
                     notification.fireDate = alertTime
                     notification.soundName = UILocalNotificationDefaultSoundName
                     notification.userInfo = userInfo
                     notification.category = "SHiT"
-                    UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                    UIApplication.shared.scheduleLocalNotification(notification)
                 }
             }
         }
@@ -314,32 +363,33 @@ class Trip: NSObject, NSCoding {
         assert( userCred.urlsafePassword != nil );
         
         //Set the parameters for the RSTransaction object
-        rsTransGetTripList.path = self.dynamicType.webServiceRootPath + code!
+        rsTransGetTripList.path = type(of: self).webServiceRootPath + code!
         rsTransGetTripList.parameters = [ "userName":userCred.name!,
             "password":userCred.urlsafePassword! ]
         
         //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
+        rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
                 //If there was an error, log it
-                print("Error : \(error.domain)")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary[Constant.JSON.queryError] {
+                print("Error : \(error.localizedDescription)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 print("Trip details retrieved from server")
-                if let tripsFound = responseDictionary[Constant.JSON.queryCount] as? Int {
+                if let tripsFound = responseDictionary?[Constant.JSON.queryCount] as? Int {
                     if tripsFound != 1 {
                         print("ERROR: Found \(tripsFound) for trip code \(self.code)")
                     }
                     else {
-                        let serverData = (responseDictionary[Constant.JSON.queryResults] as! NSArray)[0] as! NSDictionary
+                        let serverData = (responseDictionary?[Constant.JSON.queryResults] as! NSArray)[0] as! NSDictionary
                         if let newTrip = Trip.createFromDictionary(serverData) {
                             newTrip.compareTripElements(self)
                             self.id              = newTrip.id
+                            self.itineraryId     = newTrip.itineraryId
                             self.startDate       = newTrip.startDate
                             self.endDate         = newTrip.endDate
                             self.tripDescription = newTrip.tripDescription
@@ -347,12 +397,14 @@ class Trip: NSObject, NSCoding {
                             self.name            = newTrip.name
                             self.type            = newTrip.type
                             self.elements        = newTrip.elements
+                            
+                            UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
                         }
 
                         //let tripName = serverData["name"] as! String
                         //let srvElementList = serverData["elements"] as? NSArray ?? NSArray()
                         //self.copyServerData(srvElementList)
-                        NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.tripElementsRefreshed, object: self)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripElementsRefreshed), object: self)
                         /*
                         dispatch_async(dispatch_get_main_queue(), {
                             self.title = tripName
@@ -366,4 +418,32 @@ class Trip: NSObject, NSCoding {
             }
         })
     }
+
+
+    func deregisterPushNotifications() {
+        let topicTrip = Constant.Firebase.topicRootTrip + String(id)
+        //print("Unsubscribing from topic '\(topicTrip)")
+        FIRMessaging.messaging().unsubscribe(fromTopic: topicTrip)
+            
+        if let itineraryId = itineraryId {
+            let topicItinerary = Constant.Firebase.topicRootItinerary + String(itineraryId)
+            //print("Unsubscribing from topic '\(topicItinerary)")
+            FIRMessaging.messaging().unsubscribe(fromTopic: topicItinerary)
+        }
+    }
+
+    
+    func registerForPushNotifications() {
+        let topicTrip = Constant.Firebase.topicRootTrip + String(id)
+        //print("Subscribing to topic '\(topicTrip)")
+        FIRMessaging.messaging().subscribe(toTopic: topicTrip)
+            
+        if let itineraryId = itineraryId {
+            let topicItinerary = Constant.Firebase.topicRootItinerary + String(itineraryId)
+            //print("Subscribing to topic '\(topicItinerary)")
+            FIRMessaging.messaging().subscribe(toTopic: topicItinerary)
+        }
+    }
+    
+
 }

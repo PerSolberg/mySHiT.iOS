@@ -26,7 +26,7 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     // MARK: Navigation
     
     // Prepare for navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         print("Flight Details: Preparing for segue '\(segue.identifier)'")
     }
@@ -50,7 +50,7 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         //arrivalLocationTextView.scrollEnabled = false
         
         if let transportElement = tripElement?.tripElement as? GenericTransport {
-            print(transportElement.routeNo)
+            print(transportElement.routeNo as Any)
             companyTextField.text = transportElement.companyName
             routeNoTextField.text = transportElement.routeNo
             departureInfoTextView.text = transportElement.departureLocation
@@ -84,7 +84,7 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     func refreshTripElements() {
         print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name
             //self.tripDetailsTable.reloadData()
         })

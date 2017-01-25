@@ -24,13 +24,13 @@ class Flight: GenericTransport {
         return (airlineCode ?? "XX") + " " + (routeNo ?? "***") + ": " + (departureLocation ?? "<Departure>") + " - " + (arrivalLocation ?? "<Arrival>")
     }
     override var startInfo: String? {
-        let timeInfo = startTime(dateStyle: .NoStyle, timeStyle: .ShortStyle)
+        let timeInfo = startTime(dateStyle: .none, timeStyle: .short)
         let airportName = departureStop ?? "<Departure Airport>"
         let terminalInfo = (departureTerminalCode != nil && departureTerminalCode != "" ? " [" + departureTerminalCode! + "]" : "")
         return (timeInfo != nil ? timeInfo! + ": " : "") + airportName + terminalInfo
     }
     override var endInfo: String? {
-        let timeInfo = endTime(dateStyle: .NoStyle, timeStyle: .ShortStyle)
+        let timeInfo = endTime(dateStyle: .none, timeStyle: .short)
         let airportName = arrivalStop ?? "<Arrival Airport>"
         let terminalInfo = (arrivalTerminalCode != nil && arrivalTerminalCode != "" ? " [" + arrivalTerminalCode! + "]" : "")
         return (timeInfo != nil ? timeInfo! + ": " : "") + airportName + terminalInfo
@@ -54,9 +54,9 @@ class Flight: GenericTransport {
     }
 
     // MARK: NSCoding
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)
-        aCoder.encodeObject(airlineCode, forKey: PropertyKey.airlineCodeKey)
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(airlineCode, forKey: PropertyKey.airlineCodeKey)
     }
     
     
@@ -64,7 +64,7 @@ class Flight: GenericTransport {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         // NB: use conditional cast (as?) for any optional properties
-        airlineCode = aDecoder.decodeObjectForKey(PropertyKey.airlineCodeKey) as? String
+        airlineCode = aDecoder.decodeObject(forKey: PropertyKey.airlineCodeKey) as? String
         setNotification()
     }
     
@@ -77,7 +77,7 @@ class Flight: GenericTransport {
     
     
     // MARK: Methods
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherFlight = object as? Flight {

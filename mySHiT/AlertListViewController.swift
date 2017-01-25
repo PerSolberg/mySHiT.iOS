@@ -17,7 +17,7 @@ class AlertListViewController: UITableViewController {
     
     // MARK: Navigation
     // Prepare for navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // print("Preparing for segue '\(segue.identifier)'")
     }
@@ -39,14 +39,14 @@ class AlertListViewController: UITableViewController {
         super.viewDidLoad()
 
         // Load data & check if section list is complete (if not, add missing elements)
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             self.alertListTable.reloadData()
         })
     }
     
     
     func refreshAlertList() {
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             self.alertListTable.reloadData()
         })
     }
@@ -59,8 +59,8 @@ class AlertListViewController: UITableViewController {
     
     
     // MARK: UITableViewDataSource methods
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let notifications = UIApplication.sharedApplication().scheduledLocalNotifications {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let notifications = UIApplication.shared.scheduledLocalNotifications {
             return notifications.count
         } else {
             return 0
@@ -68,22 +68,22 @@ class AlertListViewController: UITableViewController {
     }
     
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let kCellIdentifier: String = "MyAlertCell"
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = .MediumStyle
-        dateFormatter.timeStyle = .ShortStyle
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
         
         //tablecell optional to see if we can reuse cell
         var cell : UITableViewCell?
-        cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier)
+        cell = tableView.dequeueReusableCell(withIdentifier: kCellIdentifier)
         
         //If we did not get a reuseable cell, then create a new one
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: kCellIdentifier)
+            cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: kCellIdentifier)
         }
 
-        if let notifications = UIApplication.sharedApplication().scheduledLocalNotifications {
+        if let notifications = UIApplication.shared.scheduledLocalNotifications {
             if indexPath.row >= notifications.count {
                 cell!.textLabel!.text = "Unknown notification! Deleted?"  /* LOCALISE */
                 cell!.detailTextLabel!.text = ""
@@ -91,12 +91,12 @@ class AlertListViewController: UITableViewController {
                 let notification = notifications[indexPath.row]
 
                 let timeZoneName = notification.userInfo!["TimeZone"] as? String ?? "UTC"
-                dateFormatter.timeZone = NSTimeZone(name: timeZoneName )
-                var notificationTime: String = dateFormatter.stringFromDate(notification.fireDate!)
+                dateFormatter.timeZone = TimeZone(identifier: timeZoneName )
+                var notificationTime: String = dateFormatter.string(from: notification.fireDate!)
                 if timeZoneName != "UTC" {
                     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                    dateFormatter.timeZone = NSTimeZone(name: "UTC")
-                    notificationTime += " (" + dateFormatter.stringFromDate(notification.fireDate!) + " UTC)"
+                    dateFormatter.timeZone = TimeZone(identifier: "UTC")
+                    notificationTime += " (" + dateFormatter.string(from: notification.fireDate!) + " UTC)"
                 }
                 cell!.textLabel!.text = notificationTime
                 cell!.detailTextLabel!.text = "\(notification.alertBody!)"

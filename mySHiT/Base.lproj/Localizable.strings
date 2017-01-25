@@ -16,6 +16,8 @@
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT trip '%@' starts in %@ (%@)";
 // transportAlertMessage
 "%@ departs in %@, at %@" = "%@ departs in %@, at %@";
+// eventAlertMessage
+"%@ starts in %@, at %@" = "%@ starts in %@, at %@";
 // noDetailsAvailable
 "No details available yet" = "No details available yet";
 // networkUnavailable
@@ -36,4 +38,32 @@
 "You have no SHiT trips yet" = "You have no SHiT trips yet";
 // unknownElement
 "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server.";
+
+// Push notifications
+"NTF.INSERT.ADDRESS" = "%@: Address information updated";
+"NTF.INSERT.BOOKING" = "%@: New booking added";
+"NTF.INSERT.BOOKINGREF" = "%@: New booking reference added";
+"NTF.INSERT.EVENT" = "%@: New event added";
+"NTF.INSERT.HOTEL" = "%@: New hotel booking added";
+"NTF.INSERT.ITINERARY" = "%@: Itinerary updated";
+"NTF.INSERT.TRIP" = "%@: New trip added";
+"NTF.INSERT.USERPROFILE" = "User profile updated";
+
+"NTF.UPDATE.ADDRESS" = "%@: Address information updated";
+"NTF.UPDATE.BOOKING" = "%@: Booking updated";
+"NTF.UPDATE.BOOKINGREF" = "%@: Booking reference updated";
+"NTF.UPDATE.EVENT" = "%@: Event updated";
+"NTF.UPDATE.HOTEL" = "%@: Hotel booking updated";
+"NTF.UPDATE.ITINERARY" = "%@: Itinerary updated";
+"NTF.UPDATE.TRIP" = "%@: Trip updated";
+"NTF.UPDATE.USERPROFILE" = "User profile updated";
+
+"NTF.DELETE.ADDRESS" = "%@: Address information updated";
+"NTF.DELETE.BOOKING" = "%@: Booking removed";
+"NTF.DELETE.BOOKINGREF" = "%@: Booking reference removed";
+"NTF.DELETE.EVENT" = "%@: Event removed";
+"NTF.DELETE.HOTEL" = "%@: Hotel booking removed";
+"NTF.DELETE.ITINERARY" = "%@: Itinerary updated";
+"NTF.DELETE.TRIP" = "%@: Trip updated";
+"NTF.DELETE.USERPROFILE" = "User profile updated";
 

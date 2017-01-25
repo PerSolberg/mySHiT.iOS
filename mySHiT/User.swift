@@ -7,23 +7,43 @@
 //
 
 import Foundation
+import FirebaseMessaging
 
-class User {
+class User : NSObject, NSCoding {
     static let sharedUser = User()
+    
+    // Keyed archiver configuration
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveUserURL = DocumentsDirectory.appendingPathComponent("user")
+
 
     // Prevent other classes from instantiating - User is singleton!
-    private init () {
+    override fileprivate init () {
+        super.init()
+        loadUser()
     }
-    
+
+    required init?(coder aDecoder: NSCoder) {
+        // NB: use conditional cast (as?) for any optional properties
+        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        srvUserId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
+        srvUserName = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String
+        srvFullName  = aDecoder.decodeObject(forKey: PropertyKey.fullNameKey) as? String
+        srvCommonName  = aDecoder.decodeObject(forKey: PropertyKey.commonNameKey) as? String
+    }
+
     // Public properties
     var userName:String? {
         get {
-            let defaults = NSUserDefaults.standardUserDefaults()
-            return defaults.stringForKey("user_name")
+            return srvUserName
+            //let defaults = UserDefaults.standard
+            //return defaults.string(forKey: "user_name")
         }
         set(newName) {
-            let defaults = NSUserDefaults.standardUserDefaults()
-            defaults.setObject(newName, forKey: "user_name")
+            srvUserName = newName
+            saveUser()
+            //let defaults = UserDefaults.standard
+            //defaults.set(newName, forKey: "user_name")
         }
     }
     var password:String? {
@@ -35,7 +55,7 @@ class User {
             }
         }
         set(newPassword) {
-            if let userName = userName, newPassword = newPassword {
+            if let userName = userName, let newPassword = newPassword {
                 Keychain.setString(newPassword, forAccount: userName, synchronizable: true, background: true)
             } else if let userName = userName {
                 Keychain.deleteAccount(userName)
@@ -46,10 +66,13 @@ class User {
     }
     var urlsafePassword:String? {
         let rawPassword = password ?? ""
-        let safePassword = rawPassword.stringByReplacingOccurrencesOfString(" ", withString: "+", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        let safePassword = rawPassword.replacingOccurrences(of: " ", with: "+", options: NSString.CompareOptions.literal, range: nil)
         
         return safePassword
 
+    }
+    var userId:Int? {
+        return srvUserId
     }
     var commonName:String? {
         return srvCommonName
@@ -59,12 +82,22 @@ class User {
     }
 
     // Private properties
-    private var srvCommonName:String?
-    private var srvFullName:String?
-    private var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    private var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.GET, baseURL: "https://www.shitt.no/mySHiT", path: "user", parameters: ["userName":"dummy@default.com","password":"******"])
+    fileprivate var srvUserId:Int?
+    fileprivate var srvUserName:String?
+    fileprivate var srvCommonName:String?
+    fileprivate var srvFullName:String?
+
+    fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
+    fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "user", parameters: ["userName":"dummy@default.com","password":"******"])
 
 
+    struct PropertyKey {
+        static let userIdKey = "userId"
+        static let userNameKey = "userName"
+        static let fullNameKey = "fullName"
+        static let commonNameKey = "commonName"
+    }
+    
     // Functions
     func hasCredentials() -> Bool {
         if userName == nil || userName == "" || password == nil || password == "" {
@@ -79,37 +112,104 @@ class User {
     }
     
 
-    func logon(userName userName: String, password: String) {
+    func logon(userName: String, password: String) {
         //rsTransGetUser.parameters = ["userName":userName!,"password":urlsafePassword!]
-        let urlsafePassword = password.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+        let urlsafePassword = password.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         rsTransGetUser.parameters = ["userName":userName,"password":urlsafePassword]
-        rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
+        rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
-                print("Network error : \(error.domain)")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary[Constant.JSON.queryError] {
+                print("Network error : \(error.localizedDescription)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Server error : \(errMsg)")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.logonFailed, object: self)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.logonFailed), object: self)
             } else {
-                User.sharedUser.userName = userName
+                //User.sharedUser.userName = userName
+                self.srvUserName = userName
                 User.sharedUser.password = password
-                self.srvCommonName = responseDictionary[Constant.JSON.userCommonName] as? String
-                self.srvFullName = responseDictionary[Constant.JSON.userFullName] as? String
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.logonSuccessful, object: self)
+                self.srvCommonName = responseDictionary?[Constant.JSON.userCommonName] as? String
+                self.srvFullName = responseDictionary?[Constant.JSON.userFullName] as? String
+                self.srvUserId = responseDictionary?[Constant.JSON.userId] as? Int
+                
+                print("User logged on. User ID = \(self.srvUserId), Common name = \(self.srvCommonName)")
+                self.registerForPushNotifications()
+                self.saveUser()
+
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.logonSuccessful), object: self)
             }
         })
     }
 
 
     func logout() {
+        deregisterPushNotifications()
+        TripList.sharedList.deregisterPushNotifications()
+
         // Must clear password first, otherwise the missing user name will prevent deleting the password
         password = nil
         userName = nil
         srvFullName = nil
         srvCommonName = nil
+        srvUserId = nil
 
         // Delete all keychain entries just to make sure nothing is left
         Keychain.deleteAllAccounts()
     }
+
+
+    func deregisterPushNotifications() {
+        if let userId = userId {
+            let topicUser = Constant.Firebase.topicRootUser + String(userId)
+            print("Unsubscribing from topic '\(topicUser)")
+            FIRMessaging.messaging().unsubscribe(fromTopic: topicUser)
+        }
+    }
+    
+    
+    func registerForPushNotifications() {
+        if let userId = userId {
+            let topicUser = Constant.Firebase.topicRootUser + String(userId)
+            print("Subscribing to topic '\(topicUser)")
+            FIRMessaging.messaging().subscribe(toTopic: topicUser)
+        } else {
+            print("User ID not available, can't register for notifications")
+        }
+    }
+
+    
+    // MARK: NSCoding
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(srvUserId, forKey: PropertyKey.userIdKey)
+        aCoder.encode(srvUserName, forKey: PropertyKey.userNameKey)
+        aCoder.encode(srvFullName, forKey: PropertyKey.fullNameKey)
+        aCoder.encode(srvCommonName, forKey: PropertyKey.commonNameKey)
+    }
+    
+    
+    func saveUser() {
+        print("Saving user to iOS keyed archive")
+        //User.sharedUser.saveToArchive(User.ArchiveUserURL.path)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)
+        if !isSuccessfulSave {
+            print("Failed to save user...")
+        } else {
+            print("User saved to iOS keyed archive")
+        }
+    }
+    
+    func loadUser() {
+        print("Loading user from iOS keyed archive")
+        //TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
+        if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: User.ArchiveUserURL.path) as? User {
+            self.srvUserId     = newUser.srvUserId
+            self.srvUserName   = newUser.srvUserName
+            self.srvFullName   = newUser.fullName
+            self.srvCommonName = newUser.commonName
+        }
+        
+        //User.sharedUser = newUser ?? User()
+        //return sectionList
+    }
+
 }

@@ -7,15 +7,15 @@
 //
 
 import Foundation
-extension NSDate
+extension Date
 {
-    func isGreaterThanDate(dateToCompare : NSDate) -> Bool
+    func isGreaterThanDate(_ dateToCompare : Date) -> Bool
     {
         //Declare Variables
         var isGreater = false
         
         //Compare Values
-        if self.compare(dateToCompare) == NSComparisonResult.OrderedDescending
+        if self.compare(dateToCompare) == ComparisonResult.orderedDescending
         {
             isGreater = true
         }
@@ -25,13 +25,13 @@ extension NSDate
     }
     
     
-    func isLessThanDate(dateToCompare : NSDate) -> Bool
+    func isLessThanDate(_ dateToCompare : Date) -> Bool
     {
         //Declare Variables
         var isLess = false
         
         //Compare Values
-        if self.compare(dateToCompare) == NSComparisonResult.OrderedAscending
+        if self.compare(dateToCompare) == ComparisonResult.orderedAscending
         {
             isLess = true
         }
@@ -40,30 +40,39 @@ extension NSDate
         return isLess
     }
 
-    func addDays(daysToAdd : Int) -> NSDate
+    func addDays(_ daysToAdd : Int) -> Date
     {
-        let secondsInDays : NSTimeInterval = Double(daysToAdd) * 60 * 60 * 24
-        let dateWithDaysAdded : NSDate = self.dateByAddingTimeInterval(secondsInDays)
+        let secondsInDays : TimeInterval = Double(daysToAdd) * 60 * 60 * 24
+        let dateWithDaysAdded : Date = self.addingTimeInterval(secondsInDays)
         
         //Return Result
         return dateWithDaysAdded
     }
 
-    func addHours(hoursToAdd : Int) -> NSDate
+    func addHours(_ hoursToAdd : Int) -> Date
     {
-        let secondsInHours : NSTimeInterval = Double(hoursToAdd) * 60 * 60
-        let dateWithHoursAdded : NSDate = self.dateByAddingTimeInterval(secondsInHours)
+        let secondsInHours : TimeInterval = Double(hoursToAdd) * 60 * 60
+        let dateWithHoursAdded : Date = self.addingTimeInterval(secondsInHours)
         
         //Return Result
         return dateWithHoursAdded
     }
 
-    func addMinutes(minutesToAdd : Int) -> NSDate
+    func addMinutes(_ minutesToAdd : Int) -> Date
     {
-        let secondsInMinutes : NSTimeInterval = Double(minutesToAdd) * 60
-        let dateWithHoursAdded : NSDate = self.dateByAddingTimeInterval(secondsInMinutes)
+        let secondsInMinutes : TimeInterval = Double(minutesToAdd) * 60
+        let dateWithMinutesAdded : Date = self.addingTimeInterval(secondsInMinutes)
         
         //Return Result
-        return dateWithHoursAdded
+        return dateWithMinutesAdded
+    }
+
+    func addSeconds(_ secondsToAdd : Int) -> Date
+    {
+        let seconds : TimeInterval = Double(secondsToAdd)
+        let dateWithSecondsAdded : Date = self.addingTimeInterval(seconds)
+        
+        //Return Result
+        return dateWithSecondsAdded
     }
 }

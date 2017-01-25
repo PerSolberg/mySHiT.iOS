@@ -22,22 +22,22 @@ class AnnotatedTrip: NSObject, NSCoding {
     }
     
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(modified.rawValue, forKey: PropertyKey.modifiedKey)
-        aCoder.encodeObject(section.rawValue, forKey: PropertyKey.sectionKey)
-        aCoder.encodeObject(trip, forKey: PropertyKey.tripKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(modified.rawValue, forKey: PropertyKey.modifiedKey)
+        aCoder.encode(section.rawValue, forKey: PropertyKey.sectionKey)
+        aCoder.encode(trip, forKey: PropertyKey.tripKey)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        let _modified   = aDecoder.decodeObjectForKey(PropertyKey.modifiedKey) as? String
+        let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
         var modified:ChangeState = .Unchanged
         if (_modified != nil) {
             modified  = ChangeState(rawValue: _modified!)!
         }
 
-        let section  = aDecoder.decodeObjectForKey(PropertyKey.sectionKey) as? TripListSection ?? .Historic
-        let trip = aDecoder.decodeObjectForKey(PropertyKey.tripKey) as! Trip
+        let section  = aDecoder.decodeObject(forKey: PropertyKey.sectionKey) as? TripListSection ?? .Historic
+        let trip = aDecoder.decodeObject(forKey: PropertyKey.tripKey) as! Trip
         
         // Must call designated initializer.
         self.init(section: section, trip: trip, modified: modified)

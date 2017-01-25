@@ -24,7 +24,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
     // MARK: Navigation
     
     // Prepare for navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         print("Unknown Element Details: Preparing for segue '\(segue.identifier)'")
     }
@@ -51,7 +51,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if let size = serverDataContentSize {
             topView.contentSize = size
@@ -74,7 +74,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
     func refreshTripElements() {
         print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name
             //self.tripDetailsTable.reloadData()
         })

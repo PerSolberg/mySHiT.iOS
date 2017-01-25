@@ -14,7 +14,7 @@ class GenericTransport: TripElement {
     var segmentId: Int?
     var segmentCode: String?
     var legNo: Int?
-    var departureTime: NSDate?
+    var departureTime: Date?
     var departureLocation: String?
     var departureStop: String?
     var departureAddress: String?
@@ -22,7 +22,7 @@ class GenericTransport: TripElement {
     var departureCoordinates: String?
     var departureTerminalCode: String?
     var departureTerminalName: String?
-    var arrivalTime: NSDate?
+    var arrivalTime: Date?
     var arrivalLocation: String?
     var arrivalStop: String?
     var arrivalAddress: String?
@@ -34,13 +34,13 @@ class GenericTransport: TripElement {
     var companyName: String?
     var companyPhone: String?
     
-    override var startTime:NSDate? {
+    override var startTime:Date? {
         return departureTime
     }
     override var startTimeZone:String? {
         return departureTimeZone
     }
-    override var endTime:NSDate? {
+    override var endTime:Date? {
         return arrivalTime
     }
     override var endTimeZone:String? {
@@ -93,30 +93,30 @@ class GenericTransport: TripElement {
     }
     
     // MARK: NSCoding
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)
-        aCoder.encodeObject(segmentId, forKey: PropertyKey.segmentIdKey)
-        aCoder.encodeObject(segmentCode, forKey: PropertyKey.segmentCodeKey)
-        aCoder.encodeObject(legNo, forKey: PropertyKey.legNoKey)
-        aCoder.encodeObject(departureTime, forKey: PropertyKey.departureTimeKey)
-        aCoder.encodeObject(departureLocation, forKey: PropertyKey.departureLocationKey)
-        aCoder.encodeObject(departureStop, forKey: PropertyKey.departureStopKey)
-        aCoder.encodeObject(departureAddress, forKey: PropertyKey.departureAddressKey)
-        aCoder.encodeObject(departureTimeZone, forKey: PropertyKey.departureTimeZoneKey)
-        aCoder.encodeObject(departureCoordinates, forKey: PropertyKey.departureCoordinatesKey)
-        aCoder.encodeObject(departureTerminalCode, forKey: PropertyKey.departureTerminalCodeKey)
-        aCoder.encodeObject(departureTerminalName, forKey: PropertyKey.departureTerminalNameKey)
-        aCoder.encodeObject(arrivalTime, forKey: PropertyKey.arrivalTimeKey)
-        aCoder.encodeObject(arrivalLocation, forKey: PropertyKey.arrivalLocationKey)
-        aCoder.encodeObject(arrivalStop, forKey: PropertyKey.arrivalStopKey)
-        aCoder.encodeObject(arrivalAddress, forKey: PropertyKey.arrivalAddressKey)
-        aCoder.encodeObject(arrivalTimeZone, forKey: PropertyKey.arrivalTimeZoneKey)
-        aCoder.encodeObject(arrivalCoordinates, forKey: PropertyKey.arrivalCoordinatesKey)
-        aCoder.encodeObject(arrivalTerminalCode, forKey: PropertyKey.arrivalTerminalCodeKey)
-        aCoder.encodeObject(arrivalTerminalName, forKey: PropertyKey.arrivalTerminalNameKey)
-        aCoder.encodeObject(routeNo, forKey: PropertyKey.routeNoKey)
-        aCoder.encodeObject(companyName, forKey: PropertyKey.companyNameKey)
-        aCoder.encodeObject(companyPhone, forKey: PropertyKey.companyPhoneKey)
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(segmentId, forKey: PropertyKey.segmentIdKey)
+        aCoder.encode(segmentCode, forKey: PropertyKey.segmentCodeKey)
+        aCoder.encode(legNo, forKey: PropertyKey.legNoKey)
+        aCoder.encode(departureTime, forKey: PropertyKey.departureTimeKey)
+        aCoder.encode(departureLocation, forKey: PropertyKey.departureLocationKey)
+        aCoder.encode(departureStop, forKey: PropertyKey.departureStopKey)
+        aCoder.encode(departureAddress, forKey: PropertyKey.departureAddressKey)
+        aCoder.encode(departureTimeZone, forKey: PropertyKey.departureTimeZoneKey)
+        aCoder.encode(departureCoordinates, forKey: PropertyKey.departureCoordinatesKey)
+        aCoder.encode(departureTerminalCode, forKey: PropertyKey.departureTerminalCodeKey)
+        aCoder.encode(departureTerminalName, forKey: PropertyKey.departureTerminalNameKey)
+        aCoder.encode(arrivalTime, forKey: PropertyKey.arrivalTimeKey)
+        aCoder.encode(arrivalLocation, forKey: PropertyKey.arrivalLocationKey)
+        aCoder.encode(arrivalStop, forKey: PropertyKey.arrivalStopKey)
+        aCoder.encode(arrivalAddress, forKey: PropertyKey.arrivalAddressKey)
+        aCoder.encode(arrivalTimeZone, forKey: PropertyKey.arrivalTimeZoneKey)
+        aCoder.encode(arrivalCoordinates, forKey: PropertyKey.arrivalCoordinatesKey)
+        aCoder.encode(arrivalTerminalCode, forKey: PropertyKey.arrivalTerminalCodeKey)
+        aCoder.encode(arrivalTerminalName, forKey: PropertyKey.arrivalTerminalNameKey)
+        aCoder.encode(routeNo, forKey: PropertyKey.routeNoKey)
+        aCoder.encode(companyName, forKey: PropertyKey.companyNameKey)
+        aCoder.encode(companyPhone, forKey: PropertyKey.companyPhoneKey)
     }
     
     
@@ -124,28 +124,30 @@ class GenericTransport: TripElement {
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
-        segmentId = aDecoder.decodeObjectForKey(PropertyKey.segmentIdKey) as? Int
-        segmentCode = aDecoder.decodeObjectForKey(PropertyKey.segmentCodeKey) as? String
-        legNo = aDecoder.decodeObjectForKey(PropertyKey.legNoKey) as? Int
-        departureTime  = aDecoder.decodeObjectForKey(PropertyKey.departureTimeKey) as? NSDate
-        departureLocation = aDecoder.decodeObjectForKey(PropertyKey.departureLocationKey) as? String
-        departureStop = aDecoder.decodeObjectForKey(PropertyKey.departureStopKey) as? String
-        departureAddress = aDecoder.decodeObjectForKey(PropertyKey.departureAddressKey) as? String
-        departureTimeZone = aDecoder.decodeObjectForKey(PropertyKey.departureTimeZoneKey) as? String
-        departureCoordinates = aDecoder.decodeObjectForKey(PropertyKey.departureCoordinatesKey) as? String
-        departureTerminalCode = aDecoder.decodeObjectForKey(PropertyKey.departureTerminalCodeKey) as? String
-        departureTerminalName = aDecoder.decodeObjectForKey(PropertyKey.departureTerminalNameKey) as? String
-        arrivalTime = aDecoder.decodeObjectForKey(PropertyKey.arrivalTimeKey) as? NSDate
-        arrivalLocation = aDecoder.decodeObjectForKey(PropertyKey.arrivalLocationKey) as? String
-        arrivalStop = aDecoder.decodeObjectForKey(PropertyKey.arrivalStopKey) as? String
-        arrivalAddress = aDecoder.decodeObjectForKey(PropertyKey.arrivalAddressKey) as? String
-        arrivalTimeZone = aDecoder.decodeObjectForKey(PropertyKey.arrivalTimeZoneKey) as? String
-        arrivalCoordinates = aDecoder.decodeObjectForKey(PropertyKey.arrivalCoordinatesKey) as? String
-        arrivalTerminalCode = aDecoder.decodeObjectForKey(PropertyKey.arrivalTerminalCodeKey) as? String
-        arrivalTerminalName = aDecoder.decodeObjectForKey(PropertyKey.arrivalTerminalNameKey) as? String
-        routeNo = aDecoder.decodeObjectForKey(PropertyKey.routeNoKey) as? String
-        companyName = aDecoder.decodeObjectForKey(PropertyKey.companyNameKey) as? String
-        companyPhone = aDecoder.decodeObjectForKey(PropertyKey.companyPhoneKey) as? String
+        //segmentId = aDecoder.decodeObject(forKey: PropertyKey.segmentIdKey) as? Int
+        segmentId = aDecoder.decodeObject(forKey: PropertyKey.segmentIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.segmentIdKey)
+        segmentCode = aDecoder.decodeObject(forKey: PropertyKey.segmentCodeKey) as? String
+        //legNo = aDecoder.decodeObject(forKey: PropertyKey.legNoKey) as? Int
+        legNo = aDecoder.decodeObject(forKey: PropertyKey.legNoKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.legNoKey)
+        departureTime  = aDecoder.decodeObject(forKey: PropertyKey.departureTimeKey) as? Date
+        departureLocation = aDecoder.decodeObject(forKey: PropertyKey.departureLocationKey) as? String
+        departureStop = aDecoder.decodeObject(forKey: PropertyKey.departureStopKey) as? String
+        departureAddress = aDecoder.decodeObject(forKey: PropertyKey.departureAddressKey) as? String
+        departureTimeZone = aDecoder.decodeObject(forKey: PropertyKey.departureTimeZoneKey) as? String
+        departureCoordinates = aDecoder.decodeObject(forKey: PropertyKey.departureCoordinatesKey) as? String
+        departureTerminalCode = aDecoder.decodeObject(forKey: PropertyKey.departureTerminalCodeKey) as? String
+        departureTerminalName = aDecoder.decodeObject(forKey: PropertyKey.departureTerminalNameKey) as? String
+        arrivalTime = aDecoder.decodeObject(forKey: PropertyKey.arrivalTimeKey) as? Date
+        arrivalLocation = aDecoder.decodeObject(forKey: PropertyKey.arrivalLocationKey) as? String
+        arrivalStop = aDecoder.decodeObject(forKey: PropertyKey.arrivalStopKey) as? String
+        arrivalAddress = aDecoder.decodeObject(forKey: PropertyKey.arrivalAddressKey) as? String
+        arrivalTimeZone = aDecoder.decodeObject(forKey: PropertyKey.arrivalTimeZoneKey) as? String
+        arrivalCoordinates = aDecoder.decodeObject(forKey: PropertyKey.arrivalCoordinatesKey) as? String
+        arrivalTerminalCode = aDecoder.decodeObject(forKey: PropertyKey.arrivalTerminalCodeKey) as? String
+        arrivalTerminalName = aDecoder.decodeObject(forKey: PropertyKey.arrivalTerminalNameKey) as? String
+        routeNo = aDecoder.decodeObject(forKey: PropertyKey.routeNoKey) as? String
+        companyName = aDecoder.decodeObject(forKey: PropertyKey.companyNameKey) as? String
+        companyPhone = aDecoder.decodeObject(forKey: PropertyKey.companyPhoneKey) as? String
     }
     
     
@@ -183,7 +185,7 @@ class GenericTransport: TripElement {
 
     
     // MARK: Methods
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherTransport = object as? GenericTransport {
@@ -217,88 +219,89 @@ class GenericTransport: TripElement {
     }
     
     
-    override func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+    override func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let departureTime = departureTime {
-            let dateFormatter = NSDateFormatter()
+            let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
             if let timeZoneName = departureTimeZone {
-                let timezone = NSTimeZone(name: timeZoneName)
+                let timezone = TimeZone(identifier: timeZoneName)
                 if timezone != nil {
                     dateFormatter.timeZone = timezone
                 }
             }
         
-            return dateFormatter.stringFromDate(departureTime)
+            return dateFormatter.string(from: departureTime)
         }
         return nil
     }
 
-    override func endTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+    override func endTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let arrivalTime = arrivalTime {
-            let dateFormatter = NSDateFormatter()
+            let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
             if let timeZoneName = arrivalTimeZone {
-                let timezone = NSTimeZone(name: timeZoneName)
+                let timezone = TimeZone(identifier: timeZoneName)
                 if timezone != nil {
                     dateFormatter.timeZone = timezone
                 }
             }
 
-            return dateFormatter.stringFromDate(arrivalTime)
+            return dateFormatter.string(from: arrivalTime)
         }
         return nil
     }
     
     override func setNotification() {
         // First delete any existing notifications for this trip element (either one or two)
-        for notification in UIApplication.sharedApplication().scheduledLocalNotifications! as [UILocalNotification] {
+        for notification in UIApplication.shared.scheduledLocalNotifications! as [UILocalNotification] {
             if (notification.userInfo!["TripElementID"] as? Int == id) {
-                UIApplication.sharedApplication().cancelLocalNotification(notification)
+                UIApplication.shared.cancelLocalNotification(notification)
             }
         }
         
         // Set notification (if we have a start date)
         if let tripStart = startTime {
             if tense == .future {
-                let defaults = NSUserDefaults.standardUserDefaults()
-                let departureLeadtime = Int(defaults.floatForKey("dept_notification_leadtime"))
-                let legLeadtime = Int(defaults.floatForKey("leg_notification_leadtime"))
-                let startTimeText = startTime(dateStyle: .NoStyle, timeStyle: .ShortStyle)
-                let now = NSDate()
-                let dcf = NSDateComponentsFormatter()
+                let defaults = UserDefaults.standard
+                let departureLeadtime = Int(defaults.float(forKey: "dept_notification_leadtime"))
+                let legLeadtime = Int(defaults.float(forKey: "leg_notification_leadtime"))
+                let startTimeText = startTime(dateStyle: .none, timeStyle: .short)
+                let now = Date()
+                let dcf = DateComponentsFormatter()
                 let genericAlertMessage = NSLocalizedString(Constant.msg.transportAlertMessage, comment: "Some dummy comment")
 
-                dcf.unitsStyle = .Short
-                dcf.zeroFormattingBehavior = .DropAll
+                dcf.unitsStyle = .short
+                dcf.zeroFormattingBehavior = .dropAll
 
-                var userInfo: [String:NSObject] = ["TripElementID": id]
+                var userInfo: [String:NSObject] = ["TripElementID": id as NSObject]
                 if let departureTimeZone = departureTimeZone {
-                    userInfo["TimeZone"] = departureTimeZone
+                    userInfo["TimeZone"] = departureTimeZone as NSObject?
                 }
 
 
-                if (departureLeadtime ?? -1) > 0 && (legNo ?? 1) == 1 {
+                if departureLeadtime > 0 && legNo == 1 {
                     var alertTime = tripStart.addMinutes( -departureLeadtime )
                     // If we're already past the warning time, set a notification for right now instead
                     if alertTime.isLessThanDate(now) {
-                        alertTime = now
+                        // Add 5 seconds to ensure alert time doesn't lapse while still processing
+                        alertTime = now.addSeconds(5)
                     }
                     let notification = UILocalNotification()
                     
-                    let actualLeadTime = tripStart.timeIntervalSinceDate(alertTime)
-                    let leadTimeText = dcf.stringFromTimeInterval(actualLeadTime)
+                    let actualLeadTime = tripStart.timeIntervalSince(alertTime)
+                    let leadTimeText = dcf.string(from: actualLeadTime)
                     //notification.alertBody = "\(title!) departs in \(leadTimeText!), at \(startTimeText!)"
-                    notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                    notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
                     //notification.alertAction = "open" // text that is displayed after "slide to..." on the lock screen - defaults to "slide to view"
                     notification.fireDate = alertTime
                     notification.soundName = UILocalNotificationDefaultSoundName
                     notification.userInfo = userInfo
                     notification.category = "SHiT"
-                    UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                    UIApplication.shared.scheduleLocalNotification(notification)
                 }
-                setLegNotification: if (legLeadtime ?? -1) > 0 {
+                setLegNotification: if legLeadtime > 0 {
                     var alertTime = tripStart.addMinutes( -legLeadtime )
                     // If we're already past the warning time, set a notification for right now instead
                     // unless it's the first leg, in which case we already have one from above
@@ -306,22 +309,23 @@ class GenericTransport: TripElement {
                         if (legNo ?? 1) == 1 {
                             break setLegNotification
                         } else {
-                            alertTime = now
+                            // Add 5 seconds to ensure alert time doesn't lapse while still processing
+                            alertTime = now.addSeconds(5)
                         }
                     }
                     let notification = UILocalNotification()
                     
-                    let actualLeadTime = tripStart.timeIntervalSinceDate(alertTime)
-                    let leadTimeText = dcf.stringFromTimeInterval(actualLeadTime)
+                    let actualLeadTime = tripStart.timeIntervalSince(alertTime)
+                    let leadTimeText = dcf.string(from: actualLeadTime)
 
-                    notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                    notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
                     //"\(title!) departs in \(leadTimeText!), at \(startTimeText!)"
                     //notification.alertAction = "open" // text that is displayed after "slide to..." on the lock screen - defaults to "slide to view"
                     notification.fireDate = alertTime
                     notification.soundName = UILocalNotificationDefaultSoundName
                     notification.userInfo = userInfo
                     notification.category = "SHiT"
-                    UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                    UIApplication.shared.scheduleLocalNotification(notification)
                 }
             }
         }

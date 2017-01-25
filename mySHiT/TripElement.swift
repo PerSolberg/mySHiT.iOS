@@ -20,13 +20,13 @@ class TripElement: NSObject, NSCoding {
     var references: [ [String:String] ]?
     var serverData: NSDictionary?
     
-    var startTime: NSDate? {
+    var startTime: Date? {
         return nil
     }
     var startTimeZone: String? {
         return nil
     }
-    var endTime: NSDate? {
+    var endTime: Date? {
         return nil
     }
     var endTimeZone: String? {
@@ -46,7 +46,7 @@ class TripElement: NSObject, NSCoding {
     }
     var tense: Tenses? {
         if let startTime = self.startTime {
-            let today = NSDate()
+            let today = Date()
             // If end time isn't set, assume duration of 1 day
             let endTime = self.endTime ?? startTime.addDays(1)
             
@@ -105,7 +105,7 @@ class TripElement: NSObject, NSCoding {
     }
     
     // MARK: Factory
-    class func createFromDictionary( elementData: NSDictionary! ) -> TripElement? {
+    class func createFromDictionary( _ elementData: NSDictionary! ) -> TripElement? {
         let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
         let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
 
@@ -117,6 +117,8 @@ class TripElement: NSObject, NSCoding {
             elem = GenericTransport(fromDictionary: elementData)
         case ("ACM", _):
             elem = Hotel(fromDictionary: elementData)
+        case ("EVT", _):
+            elem = Event(fromDictionary: elementData)
         default:
             elem = nil
         }
@@ -126,12 +128,12 @@ class TripElement: NSObject, NSCoding {
 
     
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(type, forKey: PropertyKey.typeKey)
-        aCoder.encodeObject(subType, forKey: PropertyKey.subTypeKey)
-        aCoder.encodeInteger(id, forKey: PropertyKey.idKey)
-        aCoder.encodeObject(references, forKey: PropertyKey.referencesKey)
-        aCoder.encodeObject(serverData, forKey: PropertyKey.serverDataKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(type, forKey: PropertyKey.typeKey)
+        aCoder.encode(subType, forKey: PropertyKey.subTypeKey)
+        aCoder.encode(id, forKey: PropertyKey.idKey)
+        aCoder.encode(references, forKey: PropertyKey.referencesKey)
+        aCoder.encode(serverData, forKey: PropertyKey.serverDataKey)
     }
     
     
@@ -139,11 +141,13 @@ class TripElement: NSObject, NSCoding {
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
         //let visible  = aDecoder.decodeObjectForKey(PropertyKey.visibleKey) as! Bool
-        type  = aDecoder.decodeObjectForKey(PropertyKey.typeKey) as! String
-        subType = aDecoder.decodeObjectForKey(PropertyKey.subTypeKey) as! String
-        id = aDecoder.decodeIntegerForKey(PropertyKey.idKey)
-        references = aDecoder.decodeObjectForKey(PropertyKey.referencesKey) as? [[String:String]]
-        serverData = aDecoder.decodeObjectForKey(PropertyKey.serverDataKey) as? NSDictionary
+        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String
+        subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as! String
+        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        
+        references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
+        serverData = aDecoder.decodeObject(forKey: PropertyKey.serverDataKey) as? NSDictionary
         //references = [ [String:String] ]() //NSDictionary()
 
         // Must call designated initializer.
@@ -177,7 +181,7 @@ class TripElement: NSObject, NSCoding {
     
     
     // MARK: Methods
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherTripElement = object as? TripElement {
@@ -185,7 +189,7 @@ class TripElement: NSObject, NSCoding {
             if self.subType      != otherTripElement.subType         { return false }
             if self.id           != otherTripElement.id              { return false }
             
-            if let myRefs = self.references, otherRefs = otherTripElement.references {
+            if let myRefs = self.references, let otherRefs = otherTripElement.references {
                 if myRefs.count != otherRefs.count { return false }
                 check_refs: for myRef in myRefs {
                     for otherRef in otherRefs {
@@ -206,11 +210,11 @@ class TripElement: NSObject, NSCoding {
     }
     
     
-    func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+    func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         return nil
     }
 
-    func endTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+    func endTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         return nil
     }
     

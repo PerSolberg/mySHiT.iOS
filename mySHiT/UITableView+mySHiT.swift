@@ -11,24 +11,24 @@ import UIKit
 
 extension UITableView
 {
-    func setBackgroundMessage(messageText:String?) {
+    func setBackgroundMessage(_ messageText:String?) {
         if let messageText = messageText {
             let messageView = UILabel()
             //let messageView = UITextView()
         
             messageView.text = messageText
-            messageView.textAlignment = .Center
+            messageView.textAlignment = .center
             messageView.sizeToFit()
 
             //messageLabel.textColor = UIColor.cyanColor()
             //self.backgroundColor = UIColor.clearColor()
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.backgroundView = messageView
             })
         }
         else
         {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.backgroundView = nil
             })
         }

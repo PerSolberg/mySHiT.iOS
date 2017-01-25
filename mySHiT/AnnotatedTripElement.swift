@@ -18,19 +18,19 @@ class AnnotatedTripElement: NSObject, NSCoding {
     }
     
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(modified.rawValue, forKey: PropertyKey.modifiedKey)
-        aCoder.encodeObject(tripElement, forKey: PropertyKey.tripElementKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(modified.rawValue, forKey: PropertyKey.modifiedKey)
+        aCoder.encode(tripElement, forKey: PropertyKey.tripElementKey)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        let _modified   = aDecoder.decodeObjectForKey(PropertyKey.modifiedKey) as? String
+        let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
         var modified:ChangeState = .Unchanged
         if (_modified != nil) {
             modified  = ChangeState(rawValue: _modified!)!
         }
-        let tripElement = aDecoder.decodeObjectForKey(PropertyKey.tripElementKey) as! TripElement
+        let tripElement = aDecoder.decodeObject(forKey: PropertyKey.tripElementKey) as! TripElement
         
         // Must call designated initializer.
         self.init(tripElement: tripElement, modified: modified)

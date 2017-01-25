@@ -11,47 +11,47 @@
 import Security
 import UIKit
 
-enum KeychainError: ErrorType {
-    case Unimplemented
-    case Param
-    case Allocate
-    case NotAvailable
-    case AuthFailed
-    case DuplicateItem
-    case ItemNotFound
-    case InteractionNotAllowed
-    case Decode
-    case Unknown
+enum KeychainError: Error {
+    case unimplemented
+    case param
+    case allocate
+    case notAvailable
+    case authFailed
+    case duplicateItem
+    case itemNotFound
+    case interactionNotAllowed
+    case decode
+    case unknown
     
     /// Returns the appropriate error for the status, or nil if it
     /// was successful, or Unknown for a code that doesn't match.
-    static func errorFromOSStatus(rawStatus: OSStatus) ->
+    static func errorFromOSStatus(_ rawStatus: OSStatus) ->
         KeychainError? {
             if rawStatus == errSecSuccess {
                 return nil
             } else {
                 // If the mapping doesn't find a match, return unknown.
-                return mapping[rawStatus] ?? .Unknown
+                return mapping[rawStatus] ?? .unknown
             }
     }
     
     static let mapping: [Int32: KeychainError] = [
-        errSecUnimplemented: .Unimplemented,
-        errSecParam: .Param,
-        errSecAllocate: .Allocate,
-        errSecNotAvailable: .NotAvailable,
-        errSecAuthFailed: .AuthFailed,
-        errSecDuplicateItem: .DuplicateItem,
-        errSecItemNotFound: .ItemNotFound,
-        errSecInteractionNotAllowed: .InteractionNotAllowed,
-        errSecDecode: .Decode
+        errSecUnimplemented: .unimplemented,
+        errSecParam: .param,
+        errSecAllocate: .allocate,
+        errSecNotAvailable: .notAvailable,
+        errSecAuthFailed: .authFailed,
+        errSecDuplicateItem: .duplicateItem,
+        errSecItemNotFound: .itemNotFound,
+        errSecInteractionNotAllowed: .interactionNotAllowed,
+        errSecDecode: .decode
     ]
 }
 
 struct SecItemWrapper {
-    static func matching(query: [String: AnyObject]) throws -> AnyObject? {
+    static func matching(_ query: [String: AnyObject]) throws -> AnyObject? {
         var rawResult: AnyObject?
-        let rawStatus = SecItemCopyMatching(query, &rawResult)
+        let rawStatus = SecItemCopyMatching(query as CFDictionary, &rawResult)
         
         if let error = KeychainError.errorFromOSStatus(rawStatus) {
             throw error
@@ -59,9 +59,9 @@ struct SecItemWrapper {
         return rawResult
     }
     
-    static func add(attributes: [String: AnyObject]) throws -> AnyObject? {
+    static func add(_ attributes: [String: AnyObject]) throws -> AnyObject? {
         var rawResult: AnyObject?
-        let rawStatus = SecItemAdd(attributes, &rawResult)
+        let rawStatus = SecItemAdd(attributes as CFDictionary, &rawResult)
         
         if let error = KeychainError.errorFromOSStatus(rawStatus) {
             throw error
@@ -69,16 +69,16 @@ struct SecItemWrapper {
         return rawResult
     }
     
-    static func update(query: [String: AnyObject],
+    static func update(_ query: [String: AnyObject],
         attributesToUpdate: [String: AnyObject]) throws {
-            let rawStatus = SecItemUpdate(query, attributesToUpdate)
+            let rawStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
             if let error = KeychainError.errorFromOSStatus(rawStatus) {
                 throw error
             }
     }
     
-    static func delete(query: [String: AnyObject]) throws {
-        let rawStatus = SecItemDelete(query)
+    static func delete(_ query: [String: AnyObject]) throws {
+        let rawStatus = SecItemDelete(query as CFDictionary)
         if let error = KeychainError.errorFromOSStatus(rawStatus) {
             throw error
         }
@@ -87,22 +87,22 @@ struct SecItemWrapper {
 
 struct Keychain {
     
-    static func deleteAccount(account: String) {
+    static func deleteAccount(_ account: String) {
         do {
             try SecItemWrapper.delete([
                 kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: Constants.service,
-                kSecAttrAccount as String: account,
+                kSecAttrService as String: Constants.service as AnyObject,
+                kSecAttrAccount as String: account as AnyObject,
                 kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,
                 ])
-        } catch KeychainError.ItemNotFound {
+        } catch KeychainError.itemNotFound {
             // Ignore this error.
         } catch let error {
             NSLog("deleteAccount error: \(error)")
         }
     }
     
-    static func dataForAccount(account: String) -> NSData? {
+    static func dataForAccount(_ account: String) -> Data? {
         do {
             let query = [
                 kSecClass as String: kSecClassGenericPassword,
@@ -110,10 +110,10 @@ struct Keychain {
                 kSecAttrAccount as String: account,
                 kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,
                 kSecReturnData as String: kCFBooleanTrue as CFTypeRef,
-            ]
-            let result = try SecItemWrapper.matching(query)
-            return result as? NSData
-        } catch KeychainError.ItemNotFound {
+            ] as [String : Any]
+            let result = try SecItemWrapper.matching(query as [String : AnyObject])
+            return result as? Data
+        } catch KeychainError.itemNotFound {
             // Ignore this error, simply return nil.
             return nil
         } catch let error {
@@ -122,16 +122,16 @@ struct Keychain {
         }
     }
     
-    static func stringForAccount(account: String) -> String? {
+    static func stringForAccount(_ account: String) -> String? {
         if let data = dataForAccount(account) {
             return NSString(data: data,
-                encoding: NSUTF8StringEncoding) as? String
+                encoding: String.Encoding.utf8.rawValue) as? String
         } else {
             return nil
         }
     }
     
-    static func setData(data: NSData,
+    static func setData(_ data: Data,
         forAccount account: String,
         synchronizable: Bool,
         background: Bool) {
@@ -142,13 +142,13 @@ struct Keychain {
                 deleteAccount(account)
                 
                 // Add it.
-                try SecItemWrapper.add([
+                try _ = SecItemWrapper.add([
                     kSecClass as String: kSecClassGenericPassword,
-                    kSecAttrService as String: Constants.service,
-                    kSecAttrAccount as String: account,
+                    kSecAttrService as String: Constants.service as AnyObject,
+                    kSecAttrAccount as String: account as AnyObject,
                     kSecAttrSynchronizable as String: synchronizable ?
                         kCFBooleanTrue : kCFBooleanFalse,
-                    kSecValueData as String: data,
+                    kSecValueData as String: data as AnyObject,
                     kSecAttrAccessible as String: background ?
                         kSecAttrAccessibleAfterFirstUnlock :
                     kSecAttrAccessibleWhenUnlocked,
@@ -159,11 +159,11 @@ struct Keychain {
     }
 
 
-    static func setString(string: String,
+    static func setString(_ string: String,
         forAccount account: String,
         synchronizable: Bool,
         background: Bool) {
-            let data = string.dataUsingEncoding(NSUTF8StringEncoding)!
+            let data = string.data(using: String.Encoding.utf8)!
             setData(data,
                 forAccount: account,
                 synchronizable: synchronizable,
@@ -179,20 +179,20 @@ struct Keychain {
                 kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,
                 kSecReturnAttributes as String: kCFBooleanTrue as CFTypeRef,
                 kSecMatchLimit as String: kSecMatchLimitAll
-            ]
-            let accountListRaw = try SecItemWrapper.matching(query)
+            ] as [String : Any]
+            let accountListRaw = try SecItemWrapper.matching(query as [String : AnyObject])
             
             if let accountList = accountListRaw as? [NSMutableDictionary] {
                 print("Found \(accountList.count) accounts in Keychain: ", terminator: "")
                 var sep = ""
                 for account in accountList {
                     let userName = account[kSecAttrAccount as NSString] ?? "<Unknown>"
-                    print("\(sep)\(userName!)", terminator: "")
+                    print("\(sep)\(userName)", terminator: "")
                     sep = ", "
                 }
                 print("")
             }
-        } catch KeychainError.ItemNotFound {
+        } catch KeychainError.itemNotFound {
             // Ignore this error, simply return nil.
         } catch let error {
             NSLog("listAccounts error: \(error)")
@@ -203,11 +203,11 @@ struct Keychain {
         do {
             try SecItemWrapper.delete([
                 kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: Constants.service,
+                kSecAttrService as String: Constants.service as AnyObject,
                 //kSecAttrAccount as String: account,
                 kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,
                 ])
-        } catch KeychainError.ItemNotFound {
+        } catch KeychainError.itemNotFound {
             // Ignore this error.
         } catch let error {
             NSLog("deleteAllAccounts error: \(error)")

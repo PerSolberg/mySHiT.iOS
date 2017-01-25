@@ -23,7 +23,10 @@ struct Constant {
         
         static let userFullName = "fullName"
         static let userCommonName = "commonName"
+        static let userId = "userId"
+        
         static let tripId = "id"
+        static let tripItineraryId = "itineraryId"
         static let tripStartDate = "startDate"
         static let tripEndDate = "endDate"
         static let tripDescription = "description"
@@ -70,6 +73,17 @@ struct Constant {
         static let transportCompanyPhone = "companyPhone"
 
         static let airlineCompanyCode = "companyCode"
+
+        static let eventStartTime = "startTime"
+        static let eventTravelTime = "travelTime"
+        static let eventVenueName = "venueName"
+        static let eventVenueAddress = "venueAddress"
+        static let eventVenuePostCode = "venuePostCode"
+        static let eventVenueCity = "venueCity"
+        static let eventVenuePhone = "venuePhone"
+        static let eventAccessInfo = "accessInfo"
+        static let eventTimezone = "timezone"
+    
     }
     
     // User interface messages
@@ -77,6 +91,7 @@ struct Constant {
         static let retrievingTrips = "Retrieving your trips from SHiT"
         static let tripAlertMessage = "SHiT trip '%@' starts in %@ (%@)"
         static let transportAlertMessage = "%@ departs in %@, at %@"
+        static let eventAlertMessage = "%@ starts in %@, at %@"
         static let noDetailsAvailable = "No details available yet"
         static let networkUnavailable = "Network unavailable, please refresh when network is available again"
         static let connectError = "Error connecting to SHiT, please check your Internet connection"
@@ -97,16 +112,38 @@ struct Constant {
         static let tripsRefreshed = "dataRefreshed"
         static let logonSuccessful = "logonSuccessful"
         static let logonFailed = "logonFailed"
-        static let refreshTripList = "RefreshTripList"    
+        static let refreshTripList = "RefreshTripList"
+        static let refreshTripElements = "RefreshTripElements"
     }
-    
+
+    // Firebase Cloud Messaging (FCM)
+    struct Firebase {
+        private static let topicRoot = "/topics"
+        
+        // There are ready to use as is
+        static let topicGlobal = "\(topicRoot)/GLOBAL"
+        
+        // These should be suffixed with IDs
+        static let topicRootItinerary = "\(topicRoot)/I-"
+        static let topicRootTrip = "\(topicRoot)/T-"
+        static let topicRootUser = "\(topicRoot)/U-"
+    }
+
     struct segue {
         static let showFlightInfo = "showFlightInfoSegue"
         static let showHotelInfo = "showHotelInfoSegue"
+        static let showEventInfo = "showEventInfoSegue"
         static let showScheduledTransport = "showScheduledTransportInfoSegue"
         static let showPrivateTransport = "showPrivateTransportInfoSegue"
         static let logout = "logoutSegue"
         static let showTripDetails = "tripDetails"
+    }
+    
+    struct Settings {
+        static let tripLeadTime = "trip_notification_leadtime"
+        static let deptLeadTime = "dept_notification_leadtime"
+        static let legLeadTime = "leg_notification_leadtime"
+        static let eventLeadTime = "event_notification_leadtime"
     }
 }
 

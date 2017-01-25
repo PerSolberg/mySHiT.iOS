@@ -10,134 +10,152 @@ import Foundation
 import UIKit
 import SystemConfiguration
 
-private func urlEncode(s: String) -> String? {
-    return s.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
+private func urlEncode(_ s: String) -> String? {
+    return s.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
 }
 
 class RSTransactionRequest: NSObject {
     
     let dictKey = "results"
     
-    typealias dataFromRSTransactionCompletionClosure = ((NSURLResponse!, NSData!, NSError!) -> Void)
-    typealias stringFromRSTransactionCompletionClosure = ((NSURLResponse!, NSString!, NSError!) -> Void)
-    typealias dictionaryFromRSTransactionCompletionClosure = ((NSURLResponse!, NSDictionary!, NSError!) -> Void)
-    typealias imageFromRSTransactionCompletionClosure = ((NSURLResponse!, UIImage!, NSError!) -> Void)
+    typealias dataFromRSTransactionCompletionClosure = ((URLResponse?, Data?, Error?) -> Void)
+    typealias stringFromRSTransactionCompletionClosure = ((URLResponse?, NSString?, Error?) -> Void)
+    typealias dictionaryFromRSTransactionCompletionClosure = ((URLResponse?, NSDictionary?, Error?) -> Void)
+    typealias imageFromRSTransactionCompletionClosure = ((URLResponse?, UIImage?, Error?) -> Void)
     
     
-    func dataFromRSTransaction(transaction: RSTransaction, completionHandler handler: dataFromRSTransactionCompletionClosure)
+    func dataFromRSTransaction(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
     {
-        if (transaction.transactionType == RSTransactionType.GET) {
+        if (transaction.transactionType == RSTransactionType.get) {
             dataFromRSTransactionGet(transaction, completionHandler: handler);
-        } else if(transaction.transactionType == RSTransactionType.POST) {
+        } else if(transaction.transactionType == RSTransactionType.post) {
             dataFromRSTransactionPost(transaction, completionHandler: handler);
         }
     }
-    
-    private func dataFromRSTransactionPost(transaction: RSTransaction, completionHandler handler: dataFromRSTransactionCompletionClosure)
+
+    fileprivate func dataFromRSTransactionPost(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
     {
 
-        let sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        
-        let urlString = transaction.getFullURLString()
-        let url: NSURL = NSURL(string: urlString)!
-        
-        let request = NSMutableURLRequest(URL:url)
-        request.HTTPMethod = "POST"
-        let params = dictionaryToQueryString(transaction.parameters)
-        request.HTTPBody = params.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-        
-        let urlSession = NSURLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
-        
-        urlSession.dataTaskWithRequest(request, completionHandler: {(responseData: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
-            
-            handler(response,responseData,error)
-        }).resume()
-    }
-    
-    private func dataFromRSTransactionGet(transaction: RSTransaction, completionHandler handler: dataFromRSTransactionCompletionClosure)
-    {
-        
-        let sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let sessionConfiguration = URLSessionConfiguration.default
         
         let urlString = transaction.getFullURLString() + "?" + dictionaryToQueryString(transaction.parameters)
-        let url: NSURL = NSURL(string: urlString)!
+        let url: URL = URL(string: urlString)!
         
-        let request = NSMutableURLRequest(URL:url)
-        request.HTTPMethod = "GET"
-        let urlSession = NSURLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
+        var request = URLRequest(url:url)
+        request.httpMethod = "POST"
+        var params = Data()
+        if let payload = transaction.payload {
+            //params = dictionaryToQueryString(payload)
+            params = try! JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
+            print("JSON payload:")
+            print(params)
+            //using: String.Encoding.utf8)
+        }
+        request.httpBody = params //params.
+        //request.httpBody = params.data(using: String.Encoding.utf8, allowLossyConversion: true)
         
-        urlSession.dataTaskWithRequest(request, completionHandler: {(responseData: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+        let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
+        
+        urlSession.dataTask(with: request, completionHandler: {(responseData: Data?, response: URLResponse?, error: Error?) -> Void in
             
-            handler(response,responseData,error)
+            handler(response, responseData, error)
         }).resume()
     }
-    
-    func stringFromRSTransaction(transaction: RSTransaction, completionHandler handler: stringFromRSTransactionCompletionClosure) {
-        dataFromRSTransaction(transaction, completionHandler: {(response: NSURLResponse!, responseData: NSData!, error: NSError!) -> Void in
+
+    fileprivate func dataFromRSTransactionGet(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
+    {
+        
+        let sessionConfiguration = URLSessionConfiguration.default
+        
+        let urlString = transaction.getFullURLString() + "?" + dictionaryToQueryString(transaction.parameters)
+        let url: URL = URL(string: urlString)!
+        //print("URL = \(urlString)")
+        
+        var request = URLRequest(url:url)
+        request.httpMethod = "GET"
+        let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
+        
+        urlSession.dataTask(with: request, completionHandler: {(responseData: Data?, response: URLResponse?, error: Error?) -> Void in
             
-            let responseString = NSString(data: responseData, encoding: NSUTF8StringEncoding)
+            handler(response, responseData, error)
+        }).resume()
+    }
+
+    func stringFromRSTransaction(_ transaction: RSTransaction, completionHandler handler: @escaping stringFromRSTransactionCompletionClosure) {
+        dataFromRSTransaction(transaction, completionHandler: {(response: URLResponse!, responseData: Data!, error: Error!) -> Void in
+            
+            let responseString = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue)
             handler(response,responseString,error)
-        })
+        } as! (URLResponse?, Data?, Error?) -> Void)
     }
     
     
-    func dictionaryFromRSTransaction(transaction: RSTransaction, completionHandler handler: dictionaryFromRSTransactionCompletionClosure) {
-        dataFromRSTransaction(transaction, completionHandler: {(response: NSURLResponse!, responseData: NSData!, error: NSError!) -> Void in
+    func dictionaryFromRSTransaction(_ transaction: RSTransaction, completionHandler handler: @escaping dictionaryFromRSTransactionCompletionClosure) {
+        dataFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, responseData: Data?, error: Error?) -> Void in
             
             if error != nil {
-                handler(response,nil,error)
+                handler(response, nil, error)
                 return
             }
             
-            var resultDictionary = NSMutableDictionary()
-            var jsonResponse : AnyObject?
+            /*if let responseData = responseData {
+                print("Response (base64): " + (responseData.base64EncodedString()))
+            } else {
+                print("Empty response")
+            }*/
+            
+            let resultDictionary = NSMutableDictionary()
+            var jsonResponse : Any?
             var errMsg: String = ""
             do {
-                jsonResponse  = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments)
+                jsonResponse  = try JSONSerialization.jsonObject(with: (responseData!), options: JSONSerialization.ReadingOptions.allowFragments)
             }
             catch let error as NSError {
                 errMsg = "A JSON parsing error occurred, here are the details:\n \(error) \n \(responseData)"
             }
-            
-            if let jsonResponse = jsonResponse {
-            switch jsonResponse {
-            case is NSDictionary:
-                resultDictionary = jsonResponse as! NSMutableDictionary
-            case is NSArray:
-                resultDictionary[self.dictKey] = jsonResponse
-            default:
-                resultDictionary[self.dictKey] = ""
-            }
+            //print("JSON parsed successfully")
+            if let jsonResponse = jsonResponse as? [String:Any] {
+                //print(jsonResponse)
+                resultDictionary.setDictionary(jsonResponse)
+                //switch jsonResponse {
+                //case is NSDictionary:
+                //    resultDictionary = jsonResponse as NSMutableDictionary
+                //case is NSArray:
+                //    resultDictionary[self.dictKey] = jsonResponse
+                //default:
+                //    resultDictionary[self.dictKey] = ""
+                //}
             } else {
                 resultDictionary[self.dictKey] = errMsg
             }
-            handler(response,resultDictionary.copy() as! NSDictionary,error)
-        })
+            //print("JSON Dictionary = \(resultDictionary)")
+            handler(response, resultDictionary.copy() as? NSDictionary, error)
+        } /* as! (URLResponse?, Data?, Error?) -> Void */)
     }
     
     
-    func imageFromRSTransaction(transaction: RSTransaction, completionHandler handler: imageFromRSTransactionCompletionClosure) {
-        dataFromRSTransaction(transaction, completionHandler: {(response: NSURLResponse!, responseData: NSData!, error: NSError!) -> Void in
+    func imageFromRSTransaction(_ transaction: RSTransaction, completionHandler handler: @escaping imageFromRSTransactionCompletionClosure) {
+        dataFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, responseData: Data?, error: Error?) -> Void in
             
             if error != nil {
                 handler(response,nil,error)
                 return
             }
             
-            let image = UIImage(data: responseData)
-            handler(response,image?.copy() as! UIImage?,error)
-        })
+            let image = UIImage(data: responseData!)
+            handler(response,image?.copy() as! UIImage?, error)
+        } /* as! (URLResponse?, Data?, Error?) -> Void */)
     }
     
     
-    private func dictionaryToQueryString(dict: [String : String]) -> String {
+    fileprivate func dictionaryToQueryString(_ dict: [String : String]) -> String {
         var parts = [String]()
         for (key, value) in dict {
-            if let keyEncoded = urlEncode(key), valueEncoded = urlEncode(value) {
+            if let keyEncoded = urlEncode(key), let valueEncoded = urlEncode(value) {
                 parts.append(keyEncoded + "=" + valueEncoded);
             }
         }
-        return parts.joinWithSeparator("&")
+        return parts.joined(separator: "&")
 
     }
 }

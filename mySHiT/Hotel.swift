@@ -10,8 +10,8 @@ import Foundation
 
 class Hotel: TripElement {
     // MARK: Properties
-    var checkInDate: NSDate?
-    var checkOutDate: NSDate?
+    var checkInDate: Date?
+    var checkOutDate: Date?
     var hotelName: String?
     var address: String?
     var postCode: String?
@@ -20,26 +20,26 @@ class Hotel: TripElement {
     var transferInfo: String?
     var timezone: String?
     
-    override var startTime:NSDate? {
+    override var startTime:Date? {
         return checkInDate
     }
-    override var endTime:NSDate? {
+    override var endTime:Date? {
         return checkOutDate
     }
     override var title: String? {
         return hotelName
     }
     override var startInfo: String? {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.timeStyle = DateFormatter.Style.none
 
-        return dateFormatter.stringFromDate(checkInDate!) + " - " + dateFormatter.stringFromDate(checkOutDate!)
+        return dateFormatter.string(from: checkInDate!) + " - " + dateFormatter.string(from: checkOutDate!)
     }
     override var endInfo: String? {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.timeStyle = DateFormatter.Style.none
         
         return nil
         //return dateFormatter.stringFromDate(checkOutTime!)
@@ -70,17 +70,17 @@ class Hotel: TripElement {
 
     
     // MARK: NSCoding
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)
-        aCoder.encodeObject(checkInDate, forKey: PropertyKey.checkInDateKey)
-        aCoder.encodeObject(checkOutDate, forKey: PropertyKey.checkOutDateKey)
-        aCoder.encodeObject(hotelName, forKey: PropertyKey.hotelNameKey)
-        aCoder.encodeObject(address, forKey: PropertyKey.addressKey)
-        aCoder.encodeObject(postCode, forKey: PropertyKey.postCodeKey)
-        aCoder.encodeObject(city, forKey: PropertyKey.cityKey)
-        aCoder.encodeObject(phone, forKey: PropertyKey.phoneKey)
-        aCoder.encodeObject(transferInfo, forKey: PropertyKey.transferInfoKey)
-        aCoder.encodeObject(timezone, forKey: PropertyKey.timezoneKey)
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(checkInDate, forKey: PropertyKey.checkInDateKey)
+        aCoder.encode(checkOutDate, forKey: PropertyKey.checkOutDateKey)
+        aCoder.encode(hotelName, forKey: PropertyKey.hotelNameKey)
+        aCoder.encode(address, forKey: PropertyKey.addressKey)
+        aCoder.encode(postCode, forKey: PropertyKey.postCodeKey)
+        aCoder.encode(city, forKey: PropertyKey.cityKey)
+        aCoder.encode(phone, forKey: PropertyKey.phoneKey)
+        aCoder.encode(transferInfo, forKey: PropertyKey.transferInfoKey)
+        aCoder.encode(timezone, forKey: PropertyKey.timezoneKey)
     }
     
     
@@ -88,15 +88,15 @@ class Hotel: TripElement {
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
-        checkInDate = aDecoder.decodeObjectForKey(PropertyKey.checkInDateKey) as? NSDate
-        checkOutDate = aDecoder.decodeObjectForKey(PropertyKey.checkOutDateKey) as? NSDate
-        hotelName = aDecoder.decodeObjectForKey(PropertyKey.hotelNameKey) as? String
-        address = aDecoder.decodeObjectForKey(PropertyKey.addressKey) as? String
-        postCode = aDecoder.decodeObjectForKey(PropertyKey.postCodeKey) as? String
-        city = aDecoder.decodeObjectForKey(PropertyKey.cityKey) as? String
-        phone = aDecoder.decodeObjectForKey(PropertyKey.phoneKey) as? String
-        transferInfo = aDecoder.decodeObjectForKey(PropertyKey.transferInfoKey) as? String
-        timezone = aDecoder.decodeObjectForKey(PropertyKey.timezoneKey) as? String
+        checkInDate = aDecoder.decodeObject(forKey: PropertyKey.checkInDateKey) as? Date
+        checkOutDate = aDecoder.decodeObject(forKey: PropertyKey.checkOutDateKey) as? Date
+        hotelName = aDecoder.decodeObject(forKey: PropertyKey.hotelNameKey) as? String
+        address = aDecoder.decodeObject(forKey: PropertyKey.addressKey) as? String
+        postCode = aDecoder.decodeObject(forKey: PropertyKey.postCodeKey) as? String
+        city = aDecoder.decodeObject(forKey: PropertyKey.cityKey) as? String
+        phone = aDecoder.decodeObject(forKey: PropertyKey.phoneKey) as? String
+        transferInfo = aDecoder.decodeObject(forKey: PropertyKey.transferInfoKey) as? String
+        timezone = aDecoder.decodeObject(forKey: PropertyKey.timezoneKey) as? String
     }
     
     
@@ -120,7 +120,7 @@ class Hotel: TripElement {
     
     
     // MARK: Methods
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherHotel = object as? Hotel {
@@ -141,36 +141,36 @@ class Hotel: TripElement {
     }
     
     
-    override func startTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+    override func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let checkInDate = checkInDate {
-            let dateFormatter = NSDateFormatter()
+            let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
             if let timeZoneName = timezone {
-                let timezone = NSTimeZone(name: timeZoneName)
+                let timezone = TimeZone(identifier: timeZoneName)
                 if timezone != nil {
                     dateFormatter.timeZone = timezone
                 }
             }
             
-            return dateFormatter.stringFromDate(checkInDate)
+            return dateFormatter.string(from: checkInDate)
         }
         return nil
     }
 
-    override func endTime(dateStyle dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle) -> String? {
+    override func endTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let checkOutDate = checkOutDate {
-            let dateFormatter = NSDateFormatter()
+            let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
             if let timeZoneName = timezone {
-                let timezone = NSTimeZone(name: timeZoneName)
+                let timezone = TimeZone(identifier: timeZoneName)
                 if timezone != nil {
                     dateFormatter.timeZone = timezone
                 }
             }
             
-            return dateFormatter.stringFromDate(checkOutDate)
+            return dateFormatter.string(from: checkOutDate)
         }
         return nil
     }

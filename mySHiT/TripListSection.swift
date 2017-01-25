@@ -28,17 +28,18 @@ class TripListSectionInfo: NSObject, NSCoding {
     }
     
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(visible, forKey: PropertyKey.visibleKey)
-        aCoder.encodeObject(type.rawValue, forKey: PropertyKey.typeKey)
-        aCoder.encodeInteger(firstTrip, forKey: PropertyKey.firstTripKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(visible, forKey: PropertyKey.visibleKey)
+        aCoder.encode(type.rawValue, forKey: PropertyKey.typeKey)
+        aCoder.encode(firstTrip, forKey: PropertyKey.firstTripKey)
     }
 
     required convenience init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        let visible  = aDecoder.decodeObjectForKey(PropertyKey.visibleKey) as! Bool
-        let type = TripListSection(rawValue: aDecoder.decodeObjectForKey(PropertyKey.typeKey) as! String)!
-        let firstTrip = aDecoder.decodeIntegerForKey(PropertyKey.firstTripKey)
+        let visible  = aDecoder.decodeObject(forKey: PropertyKey.visibleKey) as! Bool
+        let type = TripListSection(rawValue: aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String)!
+        //let firstTrip = aDecoder.decodeInteger(forKey: PropertyKey.firstTripKey)
+        let firstTrip = aDecoder.decodeObject(forKey: PropertyKey.firstTripKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.firstTripKey)
 
         // Must call designated initializer.
         self.init(visible: visible, type: type, firstTrip: firstTrip)

@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import FirebaseMessaging
 import UIKit
 
-class TripList:NSObject, SequenceType, NSCoding {
+class TripList:NSObject, Sequence, NSCoding {
     //typealias Index = Array<AnnotatedTrip>.Index
     typealias Index = Int
     //typealias SubSequence = Array<AnnotatedTrip>.SubSequence
@@ -19,63 +20,66 @@ class TripList:NSObject, SequenceType, NSCoding {
     static let sharedList = TripList()
     
     // Prevent other classes from instantiating - User is singleton!
-    override private init () {
+    override fileprivate init () {
     }
 
     required init?( coder aDecoder: NSCoder) {
         super.init()
         // NB: use conditional cast (as?) for any optional properties
-        trips  = aDecoder.decodeObjectForKey(PropertyKey.tripsKey) as! [AnnotatedTrip]
+        trips  = aDecoder.decodeObject(forKey: PropertyKey.tripsKey) as! [AnnotatedTrip]
     }
 
     // Public properties
     
     // Private properties
-    private var trips: [AnnotatedTrip]! = [AnnotatedTrip]()
-    private var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    private var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.GET, baseURL: "https://www.shitt.no/mySHiT", path: "trip", parameters: ["userName":"dummy@default.com","password":"******"])
+    fileprivate var trips: [AnnotatedTrip]! = [AnnotatedTrip]()
+    fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
+    fileprivate var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "trip", parameters: ["userName":"dummy@default.com","password":"******"])
 
 
-    private struct PropertyKey {
+    fileprivate struct PropertyKey {
         static let tripsKey = "trips"
     }
 
 
     // MARK: NSCoding
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(trips, forKey: PropertyKey.tripsKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(trips, forKey: PropertyKey.tripsKey)
     }
 
     // MARK: SequenceType
-    func generate() -> AnyGenerator<AnnotatedTrip> {
+    func makeIterator() -> AnyIterator<AnnotatedTrip> {
         // keep the index of the next trip in the iteration
         var nextIndex = 0
         
         // Construct a AnyGenerator<AnnotatedTrip> instance, passing a closure that returns the next car in the iteration
-        return anyGenerator {
+        return AnyIterator {
             if (nextIndex >= self.trips.count) {
                 return nil
             }
-            return self.trips[nextIndex++]
+            nextIndex += 1
+            return self.trips[nextIndex - 1]
         }
     }
 
 
-    func reverse() -> AnyGenerator<AnnotatedTrip> {
+    func reverse() -> AnyIterator<AnnotatedTrip> {
         // keep the index of the next trip in the iteration
         var nextIndex = trips.count-1
         
         // Construct a AnyGenerator<AnnotatedTrip> instance, passing a closure that returns the next car in the iteration
-        return anyGenerator {
+        return AnyIterator {
             if (nextIndex < 0) {
                 return nil
             }
-            return self.trips[nextIndex--]
+            nextIndex -= 1
+            //print(nextIndex)
+            return self.trips[nextIndex + 1]
         }
     }
     
     
-    var indices:Range<Int> {
+    var indices:CountableRange<Int> {
         return trips.indices
     }
     
@@ -97,7 +101,7 @@ class TripList:NSObject, SequenceType, NSCoding {
     
 
     // MARK: CollectionType
-    var count: Index.Distance {
+    var count: Index /*.Distance */ {
         return trips.count
     }
     /*
@@ -124,11 +128,22 @@ class TripList:NSObject, SequenceType, NSCoding {
     
     // Functions
     func getFromServer() {
+        getFromServer(parentCompletionHandler: nil)
+    }
+
+    func getFromServer(parentCompletionHandler: (() -> Void)?) {
         let userCred = User.sharedUser.getCredentials()
         
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
+        if ( userCred.name == nil || userCred.password == nil || userCred.urlsafePassword == nil ) {
+            print("User credentials missing or incomplete, cannot update from server")
+            if let parentCompletionHandler = parentCompletionHandler {
+                parentCompletionHandler()
+            }
+            return
+        }
+        //assert( userCred.name != nil );
+        //assert( userCred.password != nil );
+        //assert( userCred.urlsafePassword != nil );
         
         //Set the parameters for the RSTransaction object
         rsTransGetTripList.parameters = [ "userName":userCred.name!,
@@ -137,22 +152,26 @@ class TripList:NSObject, SequenceType, NSCoding {
             "details":"non-historic"]
         
         //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : NSURLResponse!, responseDictionary: NSDictionary!, error: NSError!) -> Void in
+        print("TripList: Send request to refresh data")
+        rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
                 //If there was an error, log it
-                print("Error : \(error.domain)")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary[Constant.JSON.queryError] {
+                print("Error : \(error.localizedDescription)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.networkError, object: self)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
-                let serverData = responseDictionary[Constant.JSON.queryResults] as! NSArray
+                let serverData = responseDictionary?[Constant.JSON.queryResults] as! NSArray
                 self.copyServerData(serverData)
                 print("TripList: Server data received, notifying view controllers")
-                NSNotificationCenter.defaultCenter().postNotificationName(Constant.notification.tripsRefreshed, object: self)
-
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripsRefreshed), object: self)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripElementsRefreshed), object: self)
+            }
+            if let parentCompletionHandler = parentCompletionHandler {
+                parentCompletionHandler()
             }
         })
         return
@@ -160,7 +179,7 @@ class TripList:NSObject, SequenceType, NSCoding {
     
     
     // Copy data received from server to memory structure
-    private func copyServerData(serverData: NSArray!) {
+    fileprivate func copyServerData(_ serverData: NSArray!) {
         // Clear current data and repopulate from server data
         var newTripList = [AnnotatedTrip]()
         for svrItem in serverData {
@@ -176,6 +195,7 @@ class TripList:NSObject, SequenceType, NSCoding {
                 })
                 if matchingOldTrips.isEmpty {
                     newTrip.modified = .New
+                    newTrip.trip.registerForPushNotifications()
                 } else {
                     newTrip.trip.compareTripElements(matchingOldTrips[0].trip)
                     if !newTrip.trip.isEqual(matchingOldTrips[0].trip) {
@@ -183,25 +203,41 @@ class TripList:NSObject, SequenceType, NSCoding {
                     }
                 }
             }
+
+            // Deregister notifications on old trips no longer present
+            for oldTrip in trips {
+                let matchingNewTrips = newTripList.filter( { (t:AnnotatedTrip) -> Bool in
+                    return t.trip.id == oldTrip.trip.id
+                })
+                if matchingNewTrips.isEmpty {
+                    oldTrip.trip.deregisterPushNotifications()
+                }
+            }
         }
 
         trips =  newTripList
         
+        // (Re)register for push notifications
+        registerForPushNotifications()
+        
         // Clear and refresh notifications to ensure there are no notifications from
         // "deleted" trips or trip elements.
-        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        UIApplication.shared.cancelAllLocalNotifications()
         refreshNotifications()
+        
+        // Set application badge
+        UIApplication.shared.applicationIconBadgeNumber = changes()
     }
     
     
     // Load from keyed archive
-    func loadFromArchive(path:String) {
-        let newTripList = NSKeyedUnarchiver.unarchiveObjectWithFile(path) as? [AnnotatedTrip]
+    func loadFromArchive(_ path:String) {
+        let newTripList = NSKeyedUnarchiver.unarchiveObject(withFile: path) as? [AnnotatedTrip]
         trips = newTripList ?? [AnnotatedTrip]()
     }
 
 
-    func saveToArchive(path:String) {
+    func saveToArchive(_ path:String) {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(trips, toFile: path)
         if !isSuccessfulSave {
             print("Failed to save trips...")
@@ -232,11 +268,33 @@ class TripList:NSObject, SequenceType, NSCoding {
     
     
     func clear() {
+        deregisterPushNotifications()
+
         // Empty list and cancel all notifications
         trips = [AnnotatedTrip]()
-        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        UIApplication.shared.cancelAllLocalNotifications()
     }
     
+    func changes() -> Int {
+        var changes = 0
+        for t in trips {
+            changes += t.trip.changes()
+        }
+        return changes
+    }
+    
+    func deregisterPushNotifications() {
+        for t in trips {
+            t.trip.deregisterPushNotifications()
+        }
+    }
+    
+    func registerForPushNotifications() {
+        for t in trips {
+            t.trip.registerForPushNotifications()
+        }
+    }
+
     func refreshNotifications() {
         for t in trips {
             t.trip.refreshNotifications()
