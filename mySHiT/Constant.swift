@@ -9,6 +9,7 @@
 //import Foundation
 struct Constant {
     static let test = "id"
+    static let deviceType = "iOS"
     
     // REST service
     struct REST {
@@ -23,7 +24,9 @@ struct Constant {
         
         static let userFullName = "fullName"
         static let userCommonName = "commonName"
+        static let userShortName = "shortName"
         static let userId = "userId"
+        static let userInitials = "initials"
         
         static let tripId = "id"
         static let tripItineraryId = "itineraryId"
@@ -83,7 +86,24 @@ struct Constant {
         static let eventVenuePhone = "venuePhone"
         static let eventAccessInfo = "accessInfo"
         static let eventTimezone = "timezone"
-    
+
+        static let messageList = "messages"
+        static let messageLastSeenByOthers = "lastSeenByOthers"
+        static let messageLastSeenByMe = "lastSeenByMe"
+        static let messageVersion = "messageVersion"
+        static let lastSeenVersion = "lastSeenVersion"
+
+        static let msgId = "id"
+        static let msgUserId = "userId"
+        static let msgUserName = "userName"
+        static let msgUserInitials = "userInitials"
+        static let msgDeviceType = "deviceType"
+        static let msgDeviceId = "deviceId"
+        static let msgLocalId = "localId"
+        static let msgText = "message"
+        static let msgStoredTS = "storedTS"
+        static let msgCreatedTS = "createdTS"
+
     }
     
     // User interface messages
@@ -101,8 +121,12 @@ struct Constant {
         static let logonFailureText = "Please check your user name and password"
         static let alertBoxTitle = "Alert"
         static let noTrips = "You have no SHiT trips yet"
+        static let noMessages = "No messages yet"
         static let unknownElement = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server."
-        
+        static let chatMsgSeenByOne = "CHAT.SEEN_BY.ONE"
+        static let chatMsgSeenByTwoOrMore = "CHAT.SEEN_BY.TWO_OR_MORE"
+        static let chatMsgSeenByEveryone = "CHAT.SEEN_BY.ALL"
+        static let retrievingChatThread = "CHAT.BCKGND.LOADING"
     }
     
     // Notifications
@@ -114,13 +138,34 @@ struct Constant {
         static let logonFailed = "logonFailed"
         static let refreshTripList = "RefreshTripList"
         static let refreshTripElements = "RefreshTripElements"
+        static let chatRefreshed = "chatRefreshed"
     }
 
+    struct notificationUserInfo {
+        static let tripId = "TripID"
+        static let tripElementId = "TripElementID"
+        static let timeZone = "TimeZone"
+        static let leadTimeType = "leadTimeType"
+    }
+    
+    struct changeType {
+        static let chatMessage = "CHATMESSAGE"
+        static let trip = "TRIP"
+        static let itinerary = "ITINERARY"
+        static let user = "USER"
+    }
+    
+    struct changeOperation {
+        static let insert = "INSERT"
+        static let update = "UPDATE"
+        static let delete = "DELETE"
+    }
+    
     // Firebase Cloud Messaging (FCM)
     struct Firebase {
         private static let topicRoot = "/topics"
         
-        // There are ready to use as is
+        // These are ready to use as is
         static let topicGlobal = "\(topicRoot)/GLOBAL"
         
         // These should be suffixed with IDs
@@ -137,6 +182,9 @@ struct Constant {
         static let showPrivateTransport = "showPrivateTransportInfoSegue"
         static let logout = "logoutSegue"
         static let showTripDetails = "tripDetails"
+        static let showChatTable = "showChatTableSegue"
+        static let showChatView = "showChatViewSegue"
+        static let embedChatTable = "embedChatTableSegue"
     }
     
     struct Settings {

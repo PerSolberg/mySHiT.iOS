@@ -11,6 +11,7 @@ import Foundation
 enum RSTransactionType {
     case get
     case post
+    case put
     case unknown
 }
 

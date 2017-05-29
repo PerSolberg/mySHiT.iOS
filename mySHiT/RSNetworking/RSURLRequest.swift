@@ -13,7 +13,7 @@ import SystemConfiguration
 
 class RSURLRequest: NSObject {
     
-    let dictKey = "results"
+    public static let dictKey = "results"
     
     typealias dataFromURLCompletionClosure = ((URLResponse?, Data?, NSError?) -> Void)
     typealias stringFromURLCompletionClosure = ((URLResponse?, NSString?, NSError?) -> Void)
@@ -37,22 +37,27 @@ class RSURLRequest: NSObject {
     
     
     func stringFromURL(_ url : URL, completionHandler handler: @escaping stringFromURLCompletionClosure) {
-        dataFromURL(url, completionHandler: {(response: URLResponse!, responseData: Data!, error: NSError!) -> Void in
-            
+        dataFromURL(url, completionHandler: {(response: URLResponse?, responseData: Data?, error: NSError?) -> Void in
+            guard let response = response, let responseData = responseData, let error = error else {
+                return
+            }
             let responseString = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue)
             handler(response,responseString,error)
-        } as! RSURLRequest.dataFromURLCompletionClosure)
+        } /*as! RSURLRequest.dataFromURLCompletionClosure*/ )
     }
     
     
     func dictionaryFromJsonURL(_ url : URL, completionHandler handler: @escaping dictionaryFromURLCompletionClosure) {
-        dataFromURL(url, completionHandler: {(response: URLResponse!, responseData: Data!, error: NSError!) -> Void in
+        dataFromURL(url, completionHandler: {(response: URLResponse?, responseData: Data?, error: NSError?) -> Void in
             
             if error != nil {
                 handler(response,nil,error)
                 return
             }
             
+            guard let response = response, let responseData = responseData else {
+                return
+            }
             var resultDictionary = NSMutableDictionary()
             var jsonResponse: Any?
             do {
@@ -64,29 +69,32 @@ class RSURLRequest: NSObject {
                 case is NSDictionary:
                     resultDictionary = jsonResponse as! NSMutableDictionary
                 case is NSArray:
-                    resultDictionary[self.dictKey] = jsonResponse
+                    resultDictionary[RSURLRequest.dictKey] = jsonResponse
                 default:
-                    resultDictionary[self.dictKey] = ""
+                    resultDictionary[RSURLRequest.dictKey] = ""
                 }
             } else {
-                resultDictionary[self.dictKey] = ""
+                resultDictionary[RSURLRequest.dictKey] = ""
             }
             handler(response, (resultDictionary.copy() as! NSDictionary), error)
             
-        } as! RSURLRequest.dataFromURLCompletionClosure)
+        } /*as! RSURLRequest.dataFromURLCompletionClosure */ )
     }
     
     func imageFromURL(_ url : URL, completionHandler handler: @escaping imageFromURLCompletionClosure) {
-        dataFromURL(url, completionHandler: {(response: URLResponse!, responseData: Data!, error: NSError!) -> Void in
+        dataFromURL(url, completionHandler: {(response: URLResponse?, responseData: Data?, error: NSError?) -> Void in
             
             if error != nil {
                 handler(response,nil,error)
                 return
             }
             
+            guard let response = response, let responseData = responseData else {
+                return
+            }
             let image = UIImage(data: responseData)
             handler(response, (image?.copy() as! UIImage), error)
-        } as! RSURLRequest.dataFromURLCompletionClosure)
+        } /* as! RSURLRequest.dataFromURLCompletionClosure */)
     }
     
     

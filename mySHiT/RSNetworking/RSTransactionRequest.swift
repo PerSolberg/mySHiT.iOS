@@ -26,11 +26,26 @@ class RSTransactionRequest: NSObject {
     
     func dataFromRSTransaction(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
     {
+        switch transaction.transactionType {
+        case RSTransactionType.get:
+            dataFromRSTransactionGet(transaction, completionHandler: handler);
+        
+        case RSTransactionType.post:
+            dataFromRSTransactionPost(transaction, completionHandler: handler);
+            
+        case RSTransactionType.put:
+            dataFromRSTransactionPut(transaction, completionHandler: handler);
+            
+        default:
+            fatalError("Unknown request type.")
+        }
+        /*
         if (transaction.transactionType == RSTransactionType.get) {
             dataFromRSTransactionGet(transaction, completionHandler: handler);
         } else if(transaction.transactionType == RSTransactionType.post) {
             dataFromRSTransactionPost(transaction, completionHandler: handler);
         }
+        */
     }
 
     fileprivate func dataFromRSTransactionPost(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
@@ -62,6 +77,35 @@ class RSTransactionRequest: NSObject {
         }).resume()
     }
 
+    fileprivate func dataFromRSTransactionPut(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
+    {
+        
+        let sessionConfiguration = URLSessionConfiguration.default
+        
+        let urlString = transaction.getFullURLString() + "?" + dictionaryToQueryString(transaction.parameters)
+        let url: URL = URL(string: urlString)!
+        
+        var request = URLRequest(url:url)
+        request.httpMethod = "PUT"
+        var params = Data()
+        if let payload = transaction.payload {
+            //params = dictionaryToQueryString(payload)
+            params = try! JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
+            print("JSON payload:")
+            print(params)
+            //using: String.Encoding.utf8)
+        }
+        request.httpBody = params //params.
+        //request.httpBody = params.data(using: String.Encoding.utf8, allowLossyConversion: true)
+        
+        let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
+        
+        urlSession.dataTask(with: request, completionHandler: {(responseData: Data?, response: URLResponse?, error: Error?) -> Void in
+            
+            handler(response, responseData, error)
+        }).resume()
+    }
+    
     fileprivate func dataFromRSTransactionGet(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
     {
         
@@ -69,7 +113,7 @@ class RSTransactionRequest: NSObject {
         
         let urlString = transaction.getFullURLString() + "?" + dictionaryToQueryString(transaction.parameters)
         let url: URL = URL(string: urlString)!
-        //print("URL = \(urlString)")
+        print("URL = \(urlString)")
         
         var request = URLRequest(url:url)
         request.httpMethod = "GET"
@@ -82,11 +126,15 @@ class RSTransactionRequest: NSObject {
     }
 
     func stringFromRSTransaction(_ transaction: RSTransaction, completionHandler handler: @escaping stringFromRSTransactionCompletionClosure) {
-        dataFromRSTransaction(transaction, completionHandler: {(response: URLResponse!, responseData: Data!, error: Error!) -> Void in
+        dataFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, responseData: Data?, error: Error?) -> Void in
             
-            let responseString = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue)
-            handler(response,responseString,error)
-        } as! (URLResponse?, Data?, Error?) -> Void)
+            if let responseData = responseData {
+                let responseString = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue)
+                handler(response, responseString, error)
+            } else {
+                handler(response, nil, error)
+            }
+        } /*as! (URLResponse?, Data?, Error?) -> Void */)
     }
     
     
@@ -98,6 +146,14 @@ class RSTransactionRequest: NSObject {
                 return
             }
             
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Response code = \(httpResponse.statusCode)")
+                if httpResponse.statusCode != 200 {
+                    let httpError = NSError(domain: "HTTP", code: httpResponse.statusCode, userInfo: nil)
+                    handler(response, nil, httpError)
+                    return
+                }
+            }
             /*if let responseData = responseData {
                 print("Response (base64): " + (responseData.base64EncodedString()))
             } else {
@@ -111,10 +167,11 @@ class RSTransactionRequest: NSObject {
                 jsonResponse  = try JSONSerialization.jsonObject(with: (responseData!), options: JSONSerialization.ReadingOptions.allowFragments)
             }
             catch let error as NSError {
-                errMsg = "A JSON parsing error occurred, here are the details:\n \(error) \n \(responseData)"
+                errMsg = "A JSON parsing error occurred, here are the details:\n \(error) \n \(String(describing: responseData))"
             }
             //print("JSON parsed successfully")
             if let jsonResponse = jsonResponse as? [String:Any] {
+                //print("JSON Dictionary")
                 //print(jsonResponse)
                 resultDictionary.setDictionary(jsonResponse)
                 //switch jsonResponse {
@@ -125,7 +182,11 @@ class RSTransactionRequest: NSObject {
                 //default:
                 //    resultDictionary[self.dictKey] = ""
                 //}
+            } else if let jsonResponse = jsonResponse as? [Any] {
+                print("JSON Array")
+                resultDictionary[self.dictKey] = jsonResponse
             } else {
+                print("Unknown JSON type")
                 resultDictionary[self.dictKey] = errMsg
             }
             //print("JSON Dictionary = \(resultDictionary)")

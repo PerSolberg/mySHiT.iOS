@@ -48,6 +48,7 @@
 "NTF.INSERT.ITINERARY" = "%@: Itinerary updated";
 "NTF.INSERT.TRIP" = "%@: New trip added";
 "NTF.INSERT.USERPROFILE" = "User profile updated";
+"NTF.INSERT.CHATMESSAGE" = "%@ to %@: %@";
 
 "NTF.UPDATE.ADDRESS" = "%@: Address information updated";
 "NTF.UPDATE.BOOKING" = "%@: Booking updated";
@@ -57,6 +58,7 @@
 "NTF.UPDATE.ITINERARY" = "%@: Itinerary updated";
 "NTF.UPDATE.TRIP" = "%@: Trip updated";
 "NTF.UPDATE.USERPROFILE" = "User profile updated";
+"NTF.UPDATE.CHATMESSAGE" = "%@ read message";  // This should never be displayed
 
 "NTF.DELETE.ADDRESS" = "%@: Address information updated";
 "NTF.DELETE.BOOKING" = "%@: Booking removed";
@@ -66,4 +68,11 @@
 "NTF.DELETE.ITINERARY" = "%@: Itinerary updated";
 "NTF.DELETE.TRIP" = "%@: Trip updated";
 "NTF.DELETE.USERPROFILE" = "User profile updated";
+"NTF.DELETE.CHATMESSAGE" = "Message deleted"; // This should never happen
+
+// Chat
+"CHAT.SEEN_BY.ONE" = "Seen by %@";
+"CHAT.SEEN_BY.TWO_OR_MORE" = "Seen by %@ and %@";
+"CHAT.SEEN_BY.ALL" = "Seen by everyone";
+"CHAT.BCKGND.LOADING" = "Loading messages";
 

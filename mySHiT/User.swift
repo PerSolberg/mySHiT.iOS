@@ -16,6 +16,17 @@ class User : NSObject, NSCoding {
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveUserURL = DocumentsDirectory.appendingPathComponent("user")
 
+    // Private properties
+    fileprivate var srvUserId:Int?
+    fileprivate var srvUserName:String?
+    fileprivate var srvCommonName:String?
+    fileprivate var srvFullName:String?
+    fileprivate var srvInitials:String?
+    fileprivate var srvShortName:String?
+    
+    fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
+    fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "user", parameters: ["userName":"dummy@default.com","password":"******"])
+    
 
     // Prevent other classes from instantiating - User is singleton!
     override fileprivate init () {
@@ -30,6 +41,8 @@ class User : NSObject, NSCoding {
         srvUserName = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String
         srvFullName  = aDecoder.decodeObject(forKey: PropertyKey.fullNameKey) as? String
         srvCommonName  = aDecoder.decodeObject(forKey: PropertyKey.commonNameKey) as? String
+        srvShortName  = aDecoder.decodeObject(forKey: PropertyKey.shortNameKey) as? String
+        srvInitials = aDecoder.decodeObject(forKey: PropertyKey.initialsKey) as? String
     }
 
     // Public properties
@@ -83,22 +96,20 @@ class User : NSObject, NSCoding {
     var fullName:String? {
         return srvFullName
     }
-
-    // Private properties
-    fileprivate var srvUserId:Int?
-    fileprivate var srvUserName:String?
-    fileprivate var srvCommonName:String?
-    fileprivate var srvFullName:String?
-
-    fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "user", parameters: ["userName":"dummy@default.com","password":"******"])
-
+    var initials:String! {
+        return srvInitials
+    }
+    var shortName:String! {
+        return srvShortName
+    }
 
     struct PropertyKey {
         static let userIdKey = "userId"
         static let userNameKey = "userName"
         static let fullNameKey = "fullName"
         static let commonNameKey = "commonName"
+        static let shortNameKey = "shortName"
+        static let initialsKey = "initals"
     }
     
     // Functions
@@ -120,7 +131,11 @@ class User : NSObject, NSCoding {
         let urlsafePassword = password.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         rsTransGetUser.parameters = ["userName":userName,"password":urlsafePassword]
         rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
+            if let error = error    {
+                if error._domain == "HTTP" && error._code == 401 {
+                    print("Authentication failed")
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.logonFailed), object: self)
+                }
                 print("Network error : \(error.localizedDescription)")
                 NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
@@ -134,8 +149,10 @@ class User : NSObject, NSCoding {
                 self.srvCommonName = responseDictionary?[Constant.JSON.userCommonName] as? String
                 self.srvFullName = responseDictionary?[Constant.JSON.userFullName] as? String
                 self.srvUserId = responseDictionary?[Constant.JSON.userId] as? Int
+                self.srvInitials = responseDictionary?[Constant.JSON.userInitials] as? String
+                self.srvShortName = responseDictionary?[Constant.JSON.userShortName] as? String
                 
-                print("User logged on. User ID = \(self.srvUserId), Common name = \(self.srvCommonName)")
+                print("User logged on. User ID = \(String(describing: self.srvUserId)), Common name = \(String(describing:self.srvCommonName))")
                 self.registerForPushNotifications()
                 self.saveUser()
 
@@ -204,11 +221,15 @@ class User : NSObject, NSCoding {
     func loadUser() {
         print("Loading user from iOS keyed archive")
         //TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-        if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: User.ArchiveUserURL.path) as? User {
-            self.srvUserId     = newUser.srvUserId
-            self.srvUserName   = newUser.srvUserName
-            self.srvFullName   = newUser.fullName
-            self.srvCommonName = newUser.commonName
+        if try! FileManager.default.fileExists(atPath: User.ArchiveUserURL.path) && FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! Int > 0 {
+            let fileSize = try! FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! NSNumber
+            print("User archive size = " + fileSize.stringValue)
+            if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: User.ArchiveUserURL.path) as? User {
+                self.srvUserId     = newUser.srvUserId
+                self.srvUserName   = newUser.srvUserName
+                self.srvFullName   = newUser.fullName
+                self.srvCommonName = newUser.commonName
+            }
         }
         
         //User.sharedUser = newUser ?? User()

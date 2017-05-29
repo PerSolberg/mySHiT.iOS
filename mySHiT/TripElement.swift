@@ -14,11 +14,16 @@ class TripElement: NSObject, NSCoding {
     static let RefTag_RefNo     = "refNo"
     static let RefTag_LookupURL = "urlLookup"
     
+    static let MinimumNotificationSeparation : TimeInterval = 10 * 60  // Minutes between notifications for same trip element
+    
     var type: String!
     var subType: String!
     var id: Int!
     var references: [ [String:String] ]?
     var serverData: NSDictionary?
+    
+    // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
+    var notifications = [ String: NotificationInfo ]()
     
     var startTime: Date? {
         return nil
@@ -102,6 +107,7 @@ class TripElement: NSObject, NSCoding {
         static let idKey = "id"
         static let referencesKey = "refs"
         static let serverDataKey = "serverData"
+        static let notificationsKey = "notifications"
     }
     
     // MARK: Factory
@@ -109,10 +115,14 @@ class TripElement: NSObject, NSCoding {
         let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
         let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
 
+        print("Building \(elemType).\(elemSubType) element from dictionary")
+
         var elem: TripElement?
         switch (elemType, elemSubType) {
         case ("TRA", "AIR"):
             elem = Flight(fromDictionary: elementData)
+        case ("TRA", "TRN"):
+            elem = ScheduledTransport(fromDictionary: elementData)
         case ("TRA", _):
             elem = GenericTransport(fromDictionary: elementData)
         case ("ACM", _):
@@ -134,6 +144,7 @@ class TripElement: NSObject, NSCoding {
         aCoder.encode(id, forKey: PropertyKey.idKey)
         aCoder.encode(references, forKey: PropertyKey.referencesKey)
         aCoder.encode(serverData, forKey: PropertyKey.serverDataKey)
+        aCoder.encode(notifications, forKey: PropertyKey.notificationsKey)
     }
     
     
@@ -148,7 +159,7 @@ class TripElement: NSObject, NSCoding {
         
         references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
         serverData = aDecoder.decodeObject(forKey: PropertyKey.serverDataKey) as? NSDictionary
-        //references = [ [String:String] ]() //NSDictionary()
+        notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
 
         // Must call designated initializer.
         //self.init(type: type, subType: subType)
@@ -175,7 +186,6 @@ class TripElement: NSObject, NSCoding {
         type = elementData[Constant.JSON.elementType] as? String
         subType = elementData[Constant.JSON.elementSubType] as? String
         references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
-        
         serverData = elementData
     }
     
@@ -220,7 +230,74 @@ class TripElement: NSObject, NSCoding {
     
     func setNotification() {
         // Generic trip element can't have notifications (start date/time not known)
-        // Subclasses that support notifications must override this method
+        // Subclasses that support notifications must override this method (and use method below to set notifications)
+    }
+    
+    func setNotification(notificationType: String, leadTime: Int, alertMessage: String, userInfo: [String:NSObject]?) {
+        // Logic starts here
+        let oldInfo = notifications[notificationType]
+        let newInfo = NotificationInfo(baseDate: startTime, leadTime: leadTime)
+        
+        if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
+            var combined:Bool = false
+            
+            print("Setting \(notificationType) notification for trip element \(id) at \(String(describing: newInfo?.notificationDate))")
+            
+            var actualUserInfo = userInfo ?? [String:NSObject]()
+            actualUserInfo[Constant.notificationUserInfo.leadTimeType] = notificationType as NSObject
+            actualUserInfo[Constant.notificationUserInfo.tripElementId] = id as NSObject
+            if let startTimeZone = startTimeZone {
+                actualUserInfo[Constant.notificationUserInfo.timeZone] = startTimeZone as NSObject
+            }
+            
+            for (nType, n) in notifications {
+                if nType == notificationType {
+                    continue;
+                }
+                if n.notificationDate < newInfo!.notificationDate && newInfo!.notificationDate.timeIntervalSince(n.notificationDate) < TripElement.MinimumNotificationSeparation {
+                    newInfo!.combine(with: n)
+                    combined = true
+                }
+            }
+            
+            
+            if !combined {
+                let dcf = DateComponentsFormatter()
+                dcf.unitsStyle = .short
+                dcf.zeroFormattingBehavior = .dropAll
+                
+                let startTimeText = startTime(dateStyle: .none, timeStyle: .short)!
+                let notification = UILocalNotification()
+                
+                let actualLeadTime = startTime!.timeIntervalSince((newInfo?.notificationDate)!)
+                let leadTimeText = dcf.string(from: actualLeadTime)
+                notification.alertBody = String.localizedStringWithFormat(alertMessage, title!, leadTimeText!, startTimeText) as String
+                notification.fireDate = newInfo?.notificationDate // alertTime
+                notification.soundName = UILocalNotificationDefaultSoundName
+                notification.userInfo = actualUserInfo
+                notification.category = "SHiT"
+
+                UIApplication.shared.scheduleLocalNotification(notification)
+            } else {
+                print("Not setting \(notificationType) notification for trip element \(id), combined with other notification")
+            }
+            
+            notifications[notificationType] = newInfo
+        } else {
+            print("Not refreshing \(notificationType) notification for trip element \(id), already triggered")
+        }
+        
+    }
+    
+    func cancelNotifications() {
+        for notification in UIApplication.shared.scheduledLocalNotifications! as [UILocalNotification] {
+            if (notification.userInfo![Constant.notificationUserInfo.tripElementId] as? Int == id) {
+                UIApplication.shared.cancelLocalNotification(notification)
+            }
+        }
     }
 
+    func copyState(from: TripElement) {
+        self.notifications = from.notifications
+    }
 }

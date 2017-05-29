@@ -46,6 +46,7 @@
 "NTF.INSERT.ITINERARY" = "%@: Resrutt uppdaterad";
 "NTF.INSERT.TRIP" = "%@: Ny resa lagd till";
 "NTF.INSERT.USERPROFILE" = "Användarprofil uppdaterad";
+"NTF.INSERT.CHATMESSAGE" = "%@ till %@: %@";
 
 "NTF.UPDATE.ADDRESS" = "%@: Adressinformation uppdaterad";
 "NTF.UPDATE.BOOKING" = "%@: Bokning uppdaterad";
@@ -55,6 +56,7 @@
 "NTF.UPDATE.ITINERARY" = "%@: Resrutt uppdaterad";
 "NTF.UPDATE.TRIP" = "%@: Resa uppdaterad";
 "NTF.UPDATE.USERPROFILE" = "Användarprofil uppdaterad";
+"NTF.UPDATE.CHATMESSAGE" = "%@ läste meddelande"; // This should never be displayed
 
 "NTF.DELETE.ADDRESS" = "%@: Adressinformation uppdaterad";
 "NTF.DELETE.BOOKING" = "%@: Bokning borttagen";
@@ -64,4 +66,11 @@
 "NTF.DELETE.ITINERARY" = "%@: Resrutt uppdaterad";
 "NTF.DELETE.TRIP" = "%@: Resa uppdaterad";
 "NTF.DELETE.USERPROFILE" = "Användarprofil uppdaterad";
+"NTF.DELETE.CHATMESSAGE" = "Meddelande raderat"; // This should never happen
 
+
+// Chat
+"CHAT.SEEN_BY.ONE" = "Läst av %@";
+"CHAT.SEEN_BY.TWO_OR_MORE" = "Läst av %@ och %@";
+"CHAT.SEEN_BY.ALL" = "Läst av alla";
+"CHAT.BCKGND.LOADING" = "Hämtar meddelanden";

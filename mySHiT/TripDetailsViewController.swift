@@ -36,6 +36,7 @@ class TripDetailsViewController: UITableViewController {
     
     // MARK: Properties
     @IBOutlet var tripDetailsTable: UITableView!
+    @IBOutlet weak var barButtonChat: UIBarButtonItem!
     
     var elementToRefresh: IndexPath?
     
@@ -101,8 +102,21 @@ class TripDetailsViewController: UITableViewController {
             if selectedElement.modified == .New || selectedElement.modified == .Changed {
                 elementToRefresh = indexPath
             }
-        }
-        else {
+        } else if let segueId = segue.identifier {
+            print("Trip Details: Preparing for segue '\(segueId)' (no trip element)")
+            switch (segueId) {
+            case Constant.segue.showChatTable:
+                let destinationController = segue.destination as! ChatTableController
+                destinationController.trip = trip
+
+            case Constant.segue.showChatView:
+                let destinationController = segue.destination as! ChatViewController
+                destinationController.trip = trip
+                
+            default:
+                print("No special preparation necessary")
+            }
+        } else {
             print("Trip Details: Preparing for unidentified segue")
         }
     }
@@ -142,6 +156,10 @@ class TripDetailsViewController: UITableViewController {
         refreshControl!.backgroundColor = tripDetailsTable.backgroundColor
         refreshControl!.tintColor = UIColor.blue  //whiteColor()
         refreshControl!.addTarget(self, action: #selector(TripDetailsViewController.reloadTripDetailsFromServer), for: .valueChanged)
+        
+        // Hide chat button until chat is fully implemented
+//        barButtonChat.isEnabled = false
+//        barButtonChat.tintColor = UIColor.clear
     }
 
 
@@ -276,8 +294,6 @@ class TripDetailsViewController: UITableViewController {
                 performSegue(withIdentifier: "showPrivateTransportInfoSegue", sender: selectedCell)
             case ("TRA", "PBUS"):
                 performSegue(withIdentifier: "showPrivateTransportInfoSegue", sender: selectedCell)
-            //case ("TRA", _):
-            //    performSegueWithIdentifier("showFlightInfoSegue", sender: selectedCell)
             default:
                 performSegue(withIdentifier: "showUnknownInfoSegue", sender: selectedCell)
                 break
@@ -344,7 +360,7 @@ class TripDetailsViewController: UITableViewController {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
-        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(tripCode)'")
+        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(String(describing: tripCode))'")
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.refreshNotifications()
@@ -365,10 +381,6 @@ class TripDetailsViewController: UITableViewController {
 
 
     func updateSections() {
-        //let dateFormatter = NSDateFormatter()
-        //dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        //dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
-
         sections = [TripElementListSectionInfo]()
         var lastSectionTitle = ""
         var lastElementTense = Tenses.future

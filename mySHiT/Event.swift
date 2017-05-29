@@ -169,56 +169,23 @@ class Event: TripElement {
     }
     
     override func setNotification() {
-        // First delete any existing notifications for this trip element (either one or two)
-        for notification in UIApplication.shared.scheduledLocalNotifications! as [UILocalNotification] {
-            if (notification.userInfo!["TripElementID"] as? Int == id) {
-                UIApplication.shared.cancelLocalNotification(notification)
-            }
-        }
+        // First delete any existing notifications for this trip element
+        cancelNotifications()
         
         // Set notification (if we have a start time)
-        if let eventStart = startTime {
-            if tense == .future {
+        //if let _ = startTime {
+            if (tense ?? .past) == .future {
                 let defaults = UserDefaults.standard
-                let eventLeadtime = Int(defaults.float(forKey: "event_notification_leadtime"))
-                let startTimeText = startTime(dateStyle: .none, timeStyle: .short)
-                let now = Date()
-                let dcf = DateComponentsFormatter()
+                var eventLeadtime = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
                 let genericAlertMessage = NSLocalizedString(Constant.msg.eventAlertMessage, comment: "Some dummy comment")
-                
-                dcf.unitsStyle = .short
-                dcf.zeroFormattingBehavior = .dropAll
-                
-                var userInfo: [String:NSObject] = ["TripElementID": id as NSObject]
-                if let eventTimezone = timezone {
-                    userInfo["TimeZone"] = eventTimezone as NSObject?
+
+                if let travelTime = travelTime {
+                    eventLeadtime += travelTime;
                 }
-                
-                if eventLeadtime > 0 {
-                    var alertTime = eventStart.addMinutes( -eventLeadtime )
-                    if let travelTime = travelTime {
-                        alertTime = alertTime.addMinutes( -travelTime )
-                    }
-                    // If we're already past the warning time, set a notification for right now instead
-                    if alertTime.isLessThanDate(now) {
-                        // Add 5 seconds to ensure alert time doesn't lapse while still processing
-                        alertTime = now.addSeconds(5)
-                    }
-                    let notification = UILocalNotification()
-                    
-                    let actualLeadTime = eventStart.timeIntervalSince(alertTime)
-                    let leadTimeText = dcf.string(from: actualLeadTime)
-                    //notification.alertBody = "\(title!) departs in \(leadTimeText!), at \(startTimeText!)"
-                    notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
-                    //notification.alertAction = "open" // text that is displayed after "slide to..." on the lock screen - defaults to "slide to view"
-                    notification.fireDate = alertTime
-                    notification.soundName = UILocalNotificationDefaultSoundName
-                    notification.userInfo = userInfo
-                    notification.category = "SHiT"
-                    UIApplication.shared.scheduleLocalNotification(notification)
-                }
+
+                setNotification(notificationType: Constant.Settings.eventLeadTime, leadTime: eventLeadtime, alertMessage: genericAlertMessage, userInfo: nil)
             }
-        }
+        //}
     }
 
 }

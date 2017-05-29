@@ -13,7 +13,9 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     // MARK: Properties
     @IBOutlet weak var companyTextField: UITextField!
     @IBOutlet weak var routeNoTextField: UITextField!
+    @IBOutlet weak var departureTimeTextField: UITextField!
     @IBOutlet weak var departureInfoTextView: UITextView!
+    @IBOutlet weak var arrivalTimeTextField: UITextField!
     @IBOutlet weak var arrivalInfoTextView: UITextView!
     @IBOutlet weak var referenceView: UIView!
 
@@ -28,7 +30,7 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Flight Details: Preparing for segue '\(segue.identifier)'")
+        print("Flight Details: Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
     
@@ -53,8 +55,37 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
             print(transportElement.routeNo as Any)
             companyTextField.text = transportElement.companyName
             routeNoTextField.text = transportElement.routeNo
-            departureInfoTextView.text = transportElement.departureLocation
-            arrivalInfoTextView.text = transportElement.arrivalLocation
+
+            departureTimeTextField.text = transportElement.startTime(dateStyle: .medium, timeStyle: .short)
+
+            var locationInfo = transportElement.departureStop ?? transportElement.departureLocation ?? ""
+            if let departureTerminal = transportElement.departureTerminalName {
+                locationInfo += (departureTerminal == "" ? "" : "\n" + departureTerminal)
+            }
+            if let departureAddress = transportElement.departureAddress {
+                locationInfo += (departureAddress == "" ? "" : "\n" + departureAddress)
+            }
+            if let _ = transportElement.departureStop {
+                locationInfo += "\n" + (transportElement.departureLocation ?? "")
+            }
+            departureInfoTextView.text = locationInfo //transportElement.departureLocation
+            departureInfoTextView.textContainerInset = UIEdgeInsets.zero
+            departureInfoTextView.textContainer.lineFragmentPadding = 0.0
+            
+            arrivalTimeTextField.text = transportElement.endTime(dateStyle: .medium, timeStyle: .short)
+            locationInfo = transportElement.arrivalStop ?? transportElement.arrivalLocation ?? ""
+            if let arrivalTerminal = transportElement.arrivalTerminalName {
+                locationInfo += (arrivalTerminal == "" ? "" : "\n" + arrivalTerminal)
+            }
+            if let arrivalAddress = transportElement.arrivalAddress {
+                locationInfo += (arrivalAddress == "" ? "" : "\n" + arrivalAddress)
+            }
+            if let _ = transportElement.arrivalStop {
+                locationInfo += "\n" + (transportElement.arrivalLocation ?? "")
+            }
+            arrivalInfoTextView.text = locationInfo //transportElement.arrivalLocation
+            arrivalInfoTextView.textContainerInset = UIEdgeInsets.zero
+            arrivalInfoTextView.textContainer.lineFragmentPadding = 0.0
             //referenceTextView.text = "references go here"
         } else {
             companyTextField.text = ""

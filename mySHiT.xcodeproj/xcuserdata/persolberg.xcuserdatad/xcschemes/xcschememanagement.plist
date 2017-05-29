@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>mySHiT-iOS.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>5</integer>
+		</dict>
 		<key>mySHiT.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -12,6 +17,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>85F02B261EBA09ED00E0C305</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>85FEFC3A1BC7FCF800D8E38E</key>
 		<dict>
 			<key>primary</key>

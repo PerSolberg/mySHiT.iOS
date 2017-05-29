@@ -183,7 +183,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
     
     func refreshTripList() {
-        refreshControl!.endRefreshing()
+        if let refreshControl = refreshControl, refreshControl.isRefreshing {
+            refreshControl.endRefreshing()
+        }
         print("TripListView: Refreshing list, probably because data were updated")
         if (TripList.sharedList.count == 0) {
             tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: "Some dummy comment"))
@@ -200,7 +202,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     func handleNetworkError() {
-        refreshControl!.endRefreshing()
+        if let refreshControl = refreshControl {
+            refreshControl.endRefreshing()
+        }
         print("TripListView: End refresh after network error")
 
         // First check if this view is currently active, if not, skip the alert

@@ -201,6 +201,7 @@ class TripList:NSObject, Sequence, NSCoding {
                     if !newTrip.trip.isEqual(matchingOldTrips[0].trip) {
                         newTrip.modified = .Changed
                     }
+                    newTrip.trip.copyState(from: matchingOldTrips[0].trip)
                 }
             }
 

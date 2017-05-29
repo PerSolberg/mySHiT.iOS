@@ -33,7 +33,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Flight Details: Preparing for segue '\(segue.identifier)'")
+        print("Flight Details: Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
 

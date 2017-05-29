@@ -30,7 +30,7 @@ class HotelDetailsViewController: UIViewController {
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Preparing for segue '\(segue.identifier)'")
+        print("Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
     

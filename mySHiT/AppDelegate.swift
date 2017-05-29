@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let gcmMessageIDKey = "gcm.message_id"
     var appSettings = Dictionary<AnyHashable, Any>()
+    var avPlayer:AVAudioPlayer?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // First save current app settings, so we can avoid refreshing when Firebase settings change
@@ -61,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             print("Firebase token not assigned yet")
         }
+
         return true
     }
 
@@ -92,7 +94,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // } else {
         //    Show alert if application is active
         // }
-
         if (application.applicationState == .active /* UIApplicationStateActive */ ) {
             let alertController = UIAlertController(title: notification.alertTitle, message: notification.alertBody, preferredStyle: UIAlertControllerStyle.alert)
             
@@ -124,18 +125,121 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if let messageId = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageId)")
+        print("Remote notification received: \(String(describing: userInfo))")
+
+        guard let changeType = userInfo["changeType"] as? String else {
+            fatalError("Invalid remote notification, no changeType element")
+        }
+        guard let changeOperation = userInfo["changeOperation"] as? String else {
+            fatalError("Invalid remote notification, no changeOperation element")
         }
 
-        // Update from server (should take place in background)
-        print("Remote notification received: Refreshing data")
-        TripList.sharedList.getFromServer(parentCompletionHandler: { 
-            completionHandler(UIBackgroundFetchResult.newData);
-        } )
+        print("Change type = \(changeType)")
+        
+        switch (changeType, changeOperation) {
+        case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+            handleNewChatMessage(userInfo: userInfo, parentCompletionHandler: {
+                completionHandler(UIBackgroundFetchResult.newData);
+            })
+
+        case (Constant.changeType.chatMessage, Constant.changeOperation.update):
+            handleReadChatMessage(userInfo: userInfo, parentCompletionHandler: {
+                completionHandler(UIBackgroundFetchResult.newData)
+            })
+        
+        case (Constant.changeType.chatMessage, _):
+            fatalError("Unknown change type/operation: (changeType, changeOperation)")
+
+        default:
+            // Update from server (should take place in background)
+            TripList.sharedList.getFromServer(parentCompletionHandler: {
+                completionHandler(UIBackgroundFetchResult.newData);
+            } )
+        }
     }
 
-    //func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+    
+    func handleNewChatMessage(userInfo: [AnyHashable : Any], parentCompletionHandler: @escaping () -> Void) {
+        guard let apsInfo = userInfo["aps"] as? NSDictionary, let alertInfo = apsInfo["alert"] as? NSDictionary, let _ = alertInfo["loc-key"] as? String, let _ = alertInfo["loc-args"] as? NSArray, let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId) else {
+            fatalError("Invalid remote notification, no aps element, alert info, message key, message arguments or trip ID.")
+        }
+        let soundName:String? = apsInfo["sound"] as? String
+
+        print("Notification for trip \(tripId)")
+
+        let rootVC = UIApplication.shared.keyWindow?.rootViewController
+        if let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
+            print("Message for current chat - no need to notify")
+        } else {
+            // Notify user of chat message
+            if let soundName = soundName {
+                playSound(name: soundName, type: nil)
+            }
+            
+            /* Notifications while app is active requires iOS 10 or bespoke GUI elements and code
+             let message = String(format: NSLocalizedString(locKey, comment:""), locale: NSLocale.current, arguments: msgArgs as! [CVarArg])
+             
+            let alertController = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
+            {
+                (result : UIAlertAction) -> Void in
+                print("You pressed OK")
+            }
+            alertController.addAction(okAction)
+            
+            //self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+            */
+
+            /*
+             @available(iOS 10.0, *)
+             func userNotificationCenter(center: UNUserNotificationCenter, willPresentNotification notification: UNNotification, withCompletionHandler completionHandler: (UNNotificationPresentationOptions) -> Void)
+             {
+             //Handle the notification
+             completionHandler(
+             [UNNotificationPresentationOptions.Alert,
+             UNNotificationPresentationOptions.Sound,
+             UNNotificationPresentationOptions.Badge])
+             }
+             */
+        }
+        parentCompletionHandler()
+    }
+
+
+    func handleReadChatMessage(userInfo: [AnyHashable : Any], parentCompletionHandler: @escaping () -> Void) {
+        guard let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId), let strLastSeenInfo = userInfo["lastSeenInfo"] as? String else {
+            print("Invalid remote notification, no/invalid trip ID or no last seen info: \(String(describing: userInfo))")
+            parentCompletionHandler()
+            return
+        }
+        var jsonLastSeenInfo:Any?
+        do {
+            jsonLastSeenInfo = try JSONSerialization.jsonObject(with: strLastSeenInfo.data(using: .utf8)!, options: JSONSerialization.ReadingOptions.allowFragments)
+        } catch {
+            print("Invalid remote notification, invalid JSON: \(strLastSeenInfo)")
+            parentCompletionHandler()
+            return
+        }
+        guard let lastSeenInfo = jsonLastSeenInfo as? NSDictionary, let lastSeenByUsers = lastSeenInfo[ Constant.JSON.messageLastSeenByOthers] as? NSDictionary, let lastSeenVersion = lastSeenInfo[Constant.JSON.lastSeenVersion] as? Int else {
+            print("Invalid remote notification, invalid last seen info: \(String(describing: jsonLastSeenInfo))")
+            parentCompletionHandler()
+            return
+        }
+
+        print("Message read update for trip \(String(describing: tripId))")
+        
+        guard let aTrip = TripList.sharedList.trip(byId: tripId) else {
+            print("Chat update for unknown trip")
+            parentCompletionHandler()
+            return
+        }
+        
+        aTrip.trip.chatThread.updateReadStatus(lastSeenByUsers: lastSeenByUsers, lastSeenVersion: lastSeenVersion)
+        parentCompletionHandler()
+    }
+    
+    
     func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
         print("Registered with Firebase")
         FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
@@ -143,22 +247,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         TripList.sharedList.registerForPushNotifications()
     }
     
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
 
+    
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        FIRMessaging.messaging().disconnect()
         print("Application in background, disconnected from Firebase")
+        FIRMessaging.messaging().disconnect()
+        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
     }
 
+    
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     }
 
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         if (RSUtilities.isNetworkAvailable("www.shitt.no")) {
@@ -174,8 +283,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         print("Application applicationWillTerminate")
+        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
     }
 
+    
     func registerDefaultsFromSettingsBundle() {
         guard let settingsBundle = Bundle.main.url(forResource: "Settings", withExtension:"bundle") else {
             NSLog("Could not find Settings.bundle")
@@ -202,6 +313,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UserDefaults.standard.register(defaults: defaultsToRegister)
     }
 
+    
     func defaultsChanged(_ notification:Notification){
         if let defaults = notification.object as? UserDefaults {
             //let defaults = UserDefaults.standard
@@ -220,10 +332,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 oldLegLeadTime != newLegLeadTime ||
                 oldEventLeadTime != newEventLeadTime {
                 print("SHiT Settings changed - updating alerts...")
-                print("Trip lead time: \(oldTripLeadTime) -> \(newTripLeadTime)")
-                print("Dept lead time: \(oldDeptLeadTime) -> \(newDeptLeadTime)")
-                print("Leg lead time: \(oldLegLeadTime) -> \(newLegLeadTime)")
-                print("Event lead time: \(oldEventLeadTime) -> \(newEventLeadTime)")
+                print("Trip lead time: \(String(describing: oldTripLeadTime)) -> \(newTripLeadTime)")
+                print("Dept lead time: \(String(describing: oldDeptLeadTime)) -> \(newDeptLeadTime)")
+                print("Leg lead time: \(String(describing: oldLegLeadTime)) -> \(newLegLeadTime)")
+                print("Event lead time: \(String(describing: oldEventLeadTime)) -> \(newEventLeadTime)")
                 //print(defaults.dictionaryRepresentation())
                 TripList.sharedList.refreshNotifications()
                 
@@ -237,6 +349,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    
     func tokenRefreshNotification( _ notification: Notification) {
         /*
         if let refreshedToken = FIRInstanceID.instanceID().token() {
@@ -248,6 +361,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         connectToFirebase()
     }
     
+    
     func connectToFirebase() {
         guard FIRInstanceID.instanceID().token() != nil else {
             return
@@ -258,13 +372,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FIRMessaging.messaging().connect { (error) in
             if error != nil {
-                print("Unable to connect to Firebase. \(error)")
+                print("Unable to connect to Firebase. \(String(describing: error))")
             } else {
                 print("Connected to Firebase")
                 FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
 
                 User.sharedUser.registerForPushNotifications()
             }
+        }
+    }
+
+    
+    func playSound(name: String, type: String?) {
+        guard let path = Bundle.main.path(forResource: name, ofType:type) else {
+            print("ERROR: Sound file '\(name)' not found.")
+            return
+        }
+        let url = URL(fileURLWithPath: path)
+        do {
+            avPlayer = try AVAudioPlayer(contentsOf: url)
+            avPlayer?.play()
+        } catch {
+            print("ERROR: Playing sound file '\(name)' failed")
         }
     }
 

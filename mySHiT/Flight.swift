@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Flight: GenericTransport {
+class Flight: ScheduledTransport {
     static let RefType_ETicketNo  = "ETKT"
     static let RefType_Amadeus    = "Amadeus"
     
@@ -19,21 +19,8 @@ class Flight: GenericTransport {
         static let airlineCodeKey = "airlineCode"
     }
     
-
     override var title: String? {
         return (airlineCode ?? "XX") + " " + (routeNo ?? "***") + ": " + (departureLocation ?? "<Departure>") + " - " + (arrivalLocation ?? "<Arrival>")
-    }
-    override var startInfo: String? {
-        let timeInfo = startTime(dateStyle: .none, timeStyle: .short)
-        let airportName = departureStop ?? "<Departure Airport>"
-        let terminalInfo = (departureTerminalCode != nil && departureTerminalCode != "" ? " [" + departureTerminalCode! + "]" : "")
-        return (timeInfo != nil ? timeInfo! + ": " : "") + airportName + terminalInfo
-    }
-    override var endInfo: String? {
-        let timeInfo = endTime(dateStyle: .none, timeStyle: .short)
-        let airportName = arrivalStop ?? "<Arrival Airport>"
-        let terminalInfo = (arrivalTerminalCode != nil && arrivalTerminalCode != "" ? " [" + arrivalTerminalCode! + "]" : "")
-        return (timeInfo != nil ? timeInfo! + ": " : "") + airportName + terminalInfo
     }
     override var detailInfo: String? {
         if let references = references {

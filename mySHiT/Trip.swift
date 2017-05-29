@@ -45,7 +45,12 @@ class Trip: NSObject, NSCoding {
     var name: String?
     var type: String?
     var elements: [AnnotatedTripElement]?
-    
+//    var messages: [ChatMessage]?
+    var chatThread:ChatThread!
+
+    // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
+    var notifications = [ String: NotificationInfo ]()
+
     var startTime: Date? {
         return startDate
     }
@@ -132,11 +137,15 @@ class Trip: NSObject, NSCoding {
         static let nameKey = "name"
         static let typeKey = "type"
         static let elementsKey = "elements"
+//        static let messagesKey = "messages"
+        static let chatThreadKey = "chatThread"
     }
 
-    static let webServiceRootPath = "trip/code/"
+    static let webServiceTripPath = "trip/"
+    static let webServiceChatPath = "message"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"])
+    var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceTripPath, parameters: ["userName":"dummy@default.com","password":"******"])
+    var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
 
     // MARK: Factory
     class func createFromDictionary( _ elementData: NSDictionary! ) -> Trip? {
@@ -168,12 +177,14 @@ class Trip: NSObject, NSCoding {
         aCoder.encode(name, forKey: PropertyKey.nameKey)
         aCoder.encode(type, forKey: PropertyKey.typeKey)
         aCoder.encode(elements, forKey: PropertyKey.elementsKey)
+        aCoder.encode(chatThread, forKey: PropertyKey.chatThreadKey)
     }
 
     
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         super.init()
+        print("Decoding Trip")
         // NB: use conditional cast (as?) for any optional properties
         //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
@@ -185,6 +196,8 @@ class Trip: NSObject, NSCoding {
         name  = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String
         type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as? String
         elements  = aDecoder.decodeObject(forKey: PropertyKey.elementsKey) as? [AnnotatedTripElement]
+//        messages = aDecoder.decodeObject(forKey: PropertyKey.messagesKey) as? [ChatMessage]
+        chatThread = (aDecoder.decodeObject(forKey: PropertyKey.chatThreadKey) as? ChatThread) ?? ChatThread(tripId: id)
         
         setNotification()
     }
@@ -192,6 +205,7 @@ class Trip: NSObject, NSCoding {
     
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
+        print("Initialising Trip from dictionary")
         id = elementData[Constant.JSON.tripId] as! Int  // "id"
         itineraryId = elementData[Constant.JSON.tripItineraryId] as? Int
         startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
@@ -209,7 +223,8 @@ class Trip: NSObject, NSCoding {
                 }
             }
         }
-        
+        chatThread = ChatThread(tripId: id)
+
         setNotification()
     }
     
@@ -310,43 +325,62 @@ class Trip: NSObject, NSCoding {
         if let tripStart = startTime {
             if tense == .future {
                 let defaults = UserDefaults.standard
-                let tripLeadtime = Int(defaults.float(forKey: "trip_notification_leadtime"))
+                let tripLeadtime = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
                 let startTimeText = startTime(dateStyle: .short, timeStyle: .short)
-                let now = Date()
+                //let now = Date()
                 let dcf = DateComponentsFormatter()
                 let genericAlertMessage = NSLocalizedString(Constant.msg.tripAlertMessage, comment: "Some dummy comment")
                 
                 dcf.unitsStyle = .short
                 dcf.zeroFormattingBehavior = .dropAll
                 
-                var userInfo: [String:NSObject] = ["TripID": id as NSObject]
+                var userInfo: [String:NSObject] = [Constant.notificationUserInfo.tripId: id as NSObject]
                 if let startTimeZone = startTimeZone {
-                    userInfo["TimeZone"] = startTimeZone as NSObject?
+                    userInfo[Constant.notificationUserInfo.timeZone] = startTimeZone as NSObject?
                 }
                 
                 if tripLeadtime > 0 {
+                    /*
                     var alertTime = tripStart.addHours( -tripLeadtime )
                     // If we're already past the warning time, set a notification for right now instead
                     if alertTime.isLessThanDate(now) {
                         alertTime = now
                     }
-                    let notification = UILocalNotification()
-                    
-                    let actualLeadTime = tripStart.timeIntervalSince(alertTime)
-                    let leadTimeText = dcf.string(from: actualLeadTime)
-                    //notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
-                    notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
-                    notification.fireDate = alertTime
-                    notification.soundName = UILocalNotificationDefaultSoundName
-                    notification.userInfo = userInfo
-                    notification.category = "SHiT"
-                    UIApplication.shared.scheduleLocalNotification(notification)
+                    */
+                    // NotificationInfo expects lead time to be minutes
+                    let oldInfo = notifications[Constant.Settings.tripLeadTime]
+                    let newInfo = NotificationInfo(baseDate: tripStart, leadTime: tripLeadtime * 60)
+
+                    if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
+                        print("Setting notification for trip \(id) at \(String(describing: newInfo?.notificationDate))")
+                        let notification = UILocalNotification()
+
+                        userInfo[Constant.notificationUserInfo.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
+                        
+                        let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!) //alertTime)
+                        let leadTimeText = dcf.string(from: actualLeadTime)
+                        //notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                        notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                        notification.fireDate = newInfo?.notificationDate //alertTime
+                        notification.soundName = UILocalNotificationDefaultSoundName
+                        notification.userInfo = userInfo
+                        notification.category = "SHiT"
+                        UIApplication.shared.scheduleLocalNotification(notification)
+
+                        notifications[Constant.Settings.deptLeadTime] = newInfo
+                    } else {
+                        print("Not refreshing notification for trip \(id), already triggered")
+                    }
                 }
+            } else {
+                //print("Not setting notification for past trip \(id)")
             }
         }
     }
-
+        
+    
     func refreshNotifications() {
+        //print("Refreshing notifications for trip \(id)")
         setNotification()
         if let elements = elements {
             for e in elements {
@@ -363,7 +397,7 @@ class Trip: NSObject, NSCoding {
         assert( userCred.urlsafePassword != nil );
         
         //Set the parameters for the RSTransaction object
-        rsTransGetTripList.path = type(of: self).webServiceRootPath + code!
+        rsTransGetTripList.path = type(of: self).webServiceTripPath + code!
         rsTransGetTripList.parameters = [ "userName":userCred.name!,
             "password":userCred.urlsafePassword! ]
         
@@ -379,10 +413,10 @@ class Trip: NSObject, NSCoding {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
-                print("Trip details retrieved from server")
+                //print("Trip details retrieved from server: \(String(describing:responseDictionary))")
                 if let tripsFound = responseDictionary?[Constant.JSON.queryCount] as? Int {
                     if tripsFound != 1 {
-                        print("ERROR: Found \(tripsFound) for trip code \(self.code)")
+                        print("ERROR: Found \(tripsFound) for trip code \(String(describing: self.code))")
                     }
                     else {
                         let serverData = (responseDictionary?[Constant.JSON.queryResults] as! NSArray)[0] as! NSDictionary
@@ -413,12 +447,15 @@ class Trip: NSObject, NSCoding {
                         */
                     }
                 } else {
-                    print("ERROR: Didn't find expected elements in dictionary: \(responseDictionary)")
+                    print("ERROR: Didn't find expected elements in dictionary: \(String(describing: responseDictionary))")
                 }
             }
         })
     }
 
+    func refreshMessages() {
+        chatThread.refresh(mode:.full)
+    }
 
     func deregisterPushNotifications() {
         let topicTrip = Constant.Firebase.topicRootTrip + String(id)
@@ -444,6 +481,22 @@ class Trip: NSObject, NSCoding {
             FIRMessaging.messaging().subscribe(toTopic: topicItinerary)
         }
     }
-    
 
+    
+    func copyState(from: Trip) {
+        //this.notifications = from.notifications
+        chatThread = from.chatThread
+
+        // Copy state for all elements
+        if let newElements = self.elements, let oldElements = from.elements {
+            for newElement in newElements {
+                let matchingOldElements = oldElements.filter( { (te:AnnotatedTripElement) -> Bool in
+                    return te.tripElement.id == newElement.tripElement.id
+                })
+                if !matchingOldElements.isEmpty {
+                    newElement.tripElement.copyState(from: matchingOldElements[0].tripElement)
+                }
+            }
+        }
+    }
 }

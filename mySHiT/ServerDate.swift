@@ -43,4 +43,11 @@ class ServerDate {
             return nil
         }
     }
+
+    class func convertServerDate (_ localDate: Date, timeZoneName: String?) -> String {
+        let locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.locale = locale
+        return dateFormatter.string(from: localDate)
+    }
 }
