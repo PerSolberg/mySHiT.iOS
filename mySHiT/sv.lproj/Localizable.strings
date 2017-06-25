@@ -74,3 +74,4 @@
 "CHAT.SEEN_BY.TWO_OR_MORE" = "Läst av %@ och %@";
 "CHAT.SEEN_BY.ALL" = "Läst av alla";
 "CHAT.BCKGND.LOADING" = "Hämtar meddelanden";
+"CHAT.BCKGND.NOMSG"   = "Inga meddelanden än";

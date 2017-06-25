@@ -20,12 +20,14 @@ class ChatThread:NSObject, NSCoding {
     private var lastSeenByOthers = NSDictionary()
     private var lastDisplayedId:ChatMessage.LocalId?
     private var lastDisplayedPosition:UITableViewScrollPosition?
-    //private var lastDisplayedIndex:Int?
     private var lastSeenByUserLocal:Int?
     private var lastSeenByUserServer:Int?
     private var lastSeenVersion:Int?
     private var tripId:Int!
+    var messageBeingEntered:String?
+    private var savedExactPosition:CGPoint?
     
+    private var savedPosition:(ChatMessage.LocalId, UITableViewScrollPosition)?
     private var retryCount:Int = 0
 
     static let LastSeenByNone = "(NONE)"
@@ -110,8 +112,6 @@ class ChatThread:NSObject, NSCoding {
                     return (m.id ?? 0) == id
                 })
             }
-            
-            //print("Last seen item = \(String(describing: lastDisplayedId)), Last seen local = \(String(describing: lastSeenByUserLocal)), Last seen server = \(String(describing: lastSeenByUserServer))")
         }
         
         return item
@@ -128,7 +128,16 @@ class ChatThread:NSObject, NSCoding {
         return pos
     }
     
-    
+    var exactPosition:CGPoint? {
+        get {
+            let returnValue = savedExactPosition
+            savedExactPosition = nil
+            return returnValue
+        }
+        set(newValue) {
+            savedExactPosition = newValue
+        }
+    }
     subscript(index: Int) -> ChatMessage {
         get {
             var message:ChatMessage!
@@ -136,10 +145,10 @@ class ChatThread:NSObject, NSCoding {
                 guard index < self.messages.count else {
                     fatalError("Trying to retrieve non-existing message [\(index)] of \(self.messages.count)")
                 }
-//                print("Get [\(index)]")
                 message = self.messages[index]
                 lastDisplayedPosition = index > (lastDisplayedItem ?? -1) ? .bottom : .top
                 lastDisplayedId = message.localId
+
                 if let msgId = message.id, msgId > (lastSeenByUserLocal ?? 0) {
                     lastSeenByUserLocal = msgId
                     read(message: message)
@@ -178,11 +187,10 @@ class ChatThread:NSObject, NSCoding {
 
     // MARK: NSCoding
     required init?(coder aDecoder: NSCoder) {
-        print("Decoding ChatThread")
+//        print("Decoding ChatThread")
         // NB: use conditional cast (as?) for any optional properties
         tripId = aDecoder.decodeObject(forKey: PropertyKey.tripIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.tripIdKey)
 
-        //lastDisplayedId = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedIdKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.lastDisplayedIdKey)
         let savedDeviceType = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_deviceTypeKey) as? String
         let savedDeviceId = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_deviceIdKey) as? String
         let savedLocalId = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_localIdKey) as? String
@@ -196,13 +204,12 @@ class ChatThread:NSObject, NSCoding {
         lastSeenByOthers = (aDecoder.decodeObject(forKey: PropertyKey.lastSeenByOthersKey) as? NSDictionary) ?? NSDictionary()
         messages = (aDecoder.decodeObject(forKey: PropertyKey.messagesKey) as? [ChatMessage]) ?? [ChatMessage]()
         messageVersion = aDecoder.decodeObject(forKey: PropertyKey.messageVersionKey) as? Int
-        //lastDisplayedPosition = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedPositionKey) as? UITableViewScrollPosition
         if let rawLastDisplayedPosition = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedPositionKey) as? Int {
             lastDisplayedPosition = UITableViewScrollPosition(rawValue: rawLastDisplayedPosition)
         }
         lastSeenVersion = aDecoder.decodeObject(forKey: PropertyKey.lastSeenVersionKey) as? Int
 
-        print("Decoded last displayed ID: \(String(describing: lastDisplayedId))")
+//        print("Decoded last displayed ID: \(String(describing: lastDisplayedId))")
     }
 
     func encode(with aCoder: NSCoder) {
@@ -219,13 +226,12 @@ class ChatThread:NSObject, NSCoding {
         aCoder.encode(lastSeenVersion, forKey: PropertyKey.lastSeenVersionKey)
         aCoder.encode(messages, forKey: PropertyKey.messagesKey)
         
-        print("Encoded thread \(tripId), last displayed ID: \(String(describing: lastDisplayedId))")
+//        print("Encoded thread \(tripId), last displayed ID: \(String(describing: lastDisplayedId))")
     }
 
 
     // MARK: Initialisers
     init(tripId:Int!) {
-        print("Initialising ChatThread")
         super.init()
         self.tripId = tripId
     }
@@ -430,11 +436,11 @@ class ChatThread:NSObject, NSCoding {
                                 print("ChatThread refreshed fully, notifying screen")
                             }
                         }
-                        ChatThread.dqAccess.async {
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
-                        }
                     } else {
                         print("INFO: Didn't find any messages in dictionary: \(String(describing: responseDictionary))")
+                    }
+                    ChatThread.dqAccess.async {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
                     }
                 } else {
                     print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
@@ -481,5 +487,23 @@ class ChatThread:NSObject, NSCoding {
         ChatThread.dqAccess.async {
             NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
         }
+    }
+    
+    func savePosition() {
+        print("ChatThread: Saving position")
+        if let lastItem = lastDisplayedItem {
+            savedPosition = (messages[lastItem].localId, lastDisplayedItemPosition)
+        }
+    }
+    
+    func restorePosition() -> Bool {
+        if let savedPosition = savedPosition {
+            print("ChatThread: Restoring position")
+            lastDisplayedId = savedPosition.0
+            lastDisplayedPosition = savedPosition.1
+            self.savedPosition = nil
+            return true
+        }
+        return false
     }
 }

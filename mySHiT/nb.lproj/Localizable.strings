@@ -77,4 +77,5 @@
 "CHAT.SEEN_BY.TWO_OR_MORE" = "Sett av %@ og %@";
 "CHAT.SEEN_BY.ALL" = "Sett av alle";
 "CHAT.BCKGND.LOADING" = "Henter meldinger";
+"CHAT.BCKGND.NOMSG"   = "Ingen meldinger ennå";
 

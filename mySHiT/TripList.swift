@@ -11,11 +11,7 @@ import FirebaseMessaging
 import UIKit
 
 class TripList:NSObject, Sequence, NSCoding {
-    //typealias Index = Array<AnnotatedTrip>.Index
     typealias Index = Int
-    //typealias SubSequence = Array<AnnotatedTrip>.SubSequence
-    //typealias SubSequence = ArraySlice<AnnotatedTrip>
-    //typealias Element = AnnotatedTrip
     
     static let sharedList = TripList()
     
@@ -90,40 +86,12 @@ class TripList:NSObject, Sequence, NSCoding {
         }
         return trips[position]
     }
-    /*
-    var startIndex: Index {
-        return trips.startIndex
-    }
-    var endIndex: Index {
-        return trips.endIndex
-    }
-    */
     
 
     // MARK: CollectionType
     var count: Index /*.Distance */ {
         return trips.count
     }
-    /*
-    var first: Element? {
-        return trips.first
-    }
-    var isEmpty: Bool {
-        return trips.isEmpty
-    }
-    subscript (bounds: Range<Index>) -> SubSequence {
-        return trips[bounds]
-    }
-    func prefixThrough(position: Index) -> SubSequence {
-        return trips.prefixThrough(position)
-    }
-    func prefixUpTo(end: Index) -> SubSequence {
-        return trips.prefixUpTo(end)
-    }
-    func suffixFrom(start: Index) -> SubSequence {
-        return trips.suffixFrom(start)
-    }
-    */
 
     
     // Functions
@@ -141,9 +109,6 @@ class TripList:NSObject, Sequence, NSCoding {
             }
             return
         }
-        //assert( userCred.name != nil );
-        //assert( userCred.password != nil );
-        //assert( userCred.urlsafePassword != nil );
         
         //Set the parameters for the RSTransaction object
         rsTransGetTripList.parameters = [ "userName":userCred.name!,

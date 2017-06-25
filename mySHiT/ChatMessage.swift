@@ -80,7 +80,6 @@ class ChatMessage: NSObject, NSCoding {
     
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
-//        print("Decoding ChatMessage")
         // NB: use conditional cast (as?) for any optional properties
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         userId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
@@ -93,7 +92,7 @@ class ChatMessage: NSObject, NSCoding {
         let savedLocalId = aDecoder.decodeObject(forKey: PropertyKey.localIdKey) as! String
         
         localId = (savedDeviceType, savedDeviceId, savedLocalId)
-
+        
         messageText = aDecoder.decodeObject(forKey: PropertyKey.messageTextKey) as! String
         storedTimestamp = aDecoder.decodeObject(forKey: PropertyKey.storedTimestampKey) as? Date
         createdTimestamp = aDecoder.decodeObject(forKey: PropertyKey.createdTimestampKey) as! Date

@@ -36,7 +36,6 @@ class AnnotatedTripElement: NSObject, NSCoding {
         self.init(tripElement: tripElement, modified: modified)
     }
     
-    //init?(section: TripElementListSection, tripElement: NSDictionary) {
     init?(tripElement: TripElement) {
         // Initialize stored properties.
         self.modified = .Unchanged

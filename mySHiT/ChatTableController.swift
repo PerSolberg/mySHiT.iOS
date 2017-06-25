@@ -16,8 +16,6 @@ class ChatTableController: UITableViewController {
     // MARK: Properties
     @IBOutlet var chatListTable: UITableView!
     
-    //var sections: [TripListSectionInfo]!
-    //var tripToRefresh: IndexPath?
     var trip:AnnotatedTrip?
     
     // MARK: Archiving paths
@@ -87,18 +85,8 @@ class ChatTableController: UITableViewController {
 
         chatListTable.delegate = self
         
-        if let trip = trip {
-            print("Chat Table: Refreshing messages from server")
-            trip.trip.refreshMessages()
-        } else {
-            print("ERROR: Trip not set correctly")
-        }
-        print("Chat Table: Data should be ready - refresh list")
         chatListTable.estimatedRowHeight = 44
         chatListTable.rowHeight = UITableViewAutomaticDimension
-        DispatchQueue.main.async(execute: {
-            self.chatListTable.reloadData()
-        })
         
         // Set up refresh
         refreshControl = UIRefreshControl()
@@ -115,6 +103,21 @@ class ChatTableController: UITableViewController {
         view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        if let trip = trip {
+            print("Chat Table: Refreshing messages from server")
+            if let savedPosition = trip.trip.chatThread.exactPosition {
+                print("ChatTable: Restoring exact position: \(String(describing: savedPosition))")
+                self.chatListTable.contentOffset = savedPosition
+            } else {
+                trip.trip.chatThread.savePosition()
+            }
+            trip.trip.refreshMessages()
+        } else {
+            print("ERROR: Trip not set correctly")
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         print("ChatTable appeared")
         if !User.sharedUser.hasCredentials() {
@@ -122,13 +125,11 @@ class ChatTableController: UITableViewController {
             print("Show logon screen")
             showLogonScreen(animated: false)
         }
-        
-        print("Normal processing")
     }
-    
     
     override func viewWillDisappear(_ animated: Bool) {
         print("View will disappear, save status")
+        trip!.trip.chatThread.exactPosition = chatListTable.contentOffset
         saveTrips()
     }
 
@@ -148,16 +149,26 @@ class ChatTableController: UITableViewController {
             chatListTable.setBackgroundMessage(nil)
         }
         DispatchQueue.main.async(execute: {
+            guard let trip = self.trip else {
+                print("ERROR: Trip not set up correctly, cannot reload")
+                return
+            }
+            //trip.trip.chatThread.savePosition()
             self.chatListTable.reloadData()
-            if let lastSeenRow = trip.trip.chatThread.lastDisplayedItem {
-                let ip = IndexPath(row: lastSeenRow, section: 0)
-                self.chatListTable.scrollToRow(at: ip, at: trip.trip.chatThread.lastDisplayedItemPosition, animated: false)
+            if trip.trip.chatThread.restorePosition() {
+                self.restorePosition()
             }
         })
         saveTrips()
     }
     
-    
+    func restorePosition() {
+        if let trip = trip, let lastSeenRow = trip.trip.chatThread.lastDisplayedItem {
+            let ip = IndexPath(row: lastSeenRow, section: 0)
+            self.chatListTable.scrollToRow(at: ip, at: trip.trip.chatThread.lastDisplayedItemPosition, animated: false)
+        }
+    }
+
     func handleNetworkError() {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
@@ -228,6 +239,15 @@ class ChatTableController: UITableViewController {
         return nil
     }
 
+//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        //let height = super.tableView(tableView, heightForRowAt: indexPath)
+//        
+//        let cell = self.tableView(tableView, cellForRowAt: indexPath)
+//        let height = cell.bounds.height
+//        print("ChatTable: Height of \(String(describing: indexPath)) = \(String(describing: height))")
+//        return height
+//    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var kCellIdentifier: String
         var seenByInfo:String = ""
@@ -284,6 +304,7 @@ class ChatTableController: UITableViewController {
         return nil
     }
     
+    
     //
     // MARK: Section header callbacks
     //
@@ -296,16 +317,6 @@ class ChatTableController: UITableViewController {
     }
     
     
-    /*
-    func loadTrips() -> [TripListSectionInfo]? {
-        print("Loading trips from iOS keyed archive")
-        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-        print("Loading sections from iOS keyed archive")
-        let sectionList = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo]
-        return sectionList
-    }
-    */
-
     //
     // MARK: Actions
     //

@@ -95,7 +95,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     // MARK: Callbacks
     override func viewDidLoad() {
         print("Trip List View loaded")
-        print("Current language = \((Locale.current as NSLocale).object(forKey: NSLocale.Key.languageCode)!)")
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.logonComplete(_:)), name: NSNotification.Name(rawValue: Constant.notification.logonSuccessful), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.refreshTripList), name: NSNotification.Name(rawValue: Constant.notification.refreshTripList), object: nil)
@@ -156,7 +155,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             showLogonScreen(animated: false)
         }
 
-        print("Normal processing")
         if let indexPath = tripToRefresh {
             let s = getSectionById(indexPath.section)
             let selectedTrip = TripList.sharedList[s!.section.firstTrip + indexPath.row]!
@@ -377,38 +375,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
 
-    
-    
-// ----------------------------------------------------------------------------
-    /*
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return heightForBasicCellAtIndexPath(indexPath)
-    }
-    
-    func heightForBasicCellAtIndexPath(indexPath:NSIndexPath) -> CGFloat {
-        var sizingCell:UITableViewCell?
-        var onceToken = dispatch_once_t()
-        dispatch_once(&onceToken, {
-            sizingCell = self.tableView.dequeueReusableCellWithIdentifier("MyTripCell")
-        });
-        
-        
-        //[self configureBasicCell:sizingCell atIndexPath:indexPath];
-        
-        return calculateHeightForConfiguredSizingCell(sizingCell!);
-    }
-    
-    func calculateHeightForConfiguredSizingCell(sizingCell: UITableViewCell) -> CGFloat {
-        sizingCell.setNeedsLayout()
-        sizingCell.layoutIfNeeded()
-    
-        let size:CGSize = sizingCell.contentView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize)
-        return size.height + 1.0 // Add 1.0f for the cell separator height
-    }
-    */
-// ----------------------------------------------------------------------------
-    
-    
+
     // MARK: Actions
 
     

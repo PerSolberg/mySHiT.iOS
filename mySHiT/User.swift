@@ -62,7 +62,6 @@ class User : NSObject, NSCoding {
     var password:String? {
         get {
             if let userName = userName {
-                print("Retrieving password for \(userName)")
                 return Keychain.stringForAccount(userName)
             } else {
                 return nil

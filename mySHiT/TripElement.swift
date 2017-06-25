@@ -115,8 +115,6 @@ class TripElement: NSObject, NSCoding {
         let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
         let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
 
-        print("Building \(elemType).\(elemSubType) element from dictionary")
-
         var elem: TripElement?
         switch (elemType, elemSubType) {
         case ("TRA", "AIR"):
@@ -240,8 +238,6 @@ class TripElement: NSObject, NSCoding {
         
         if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
             var combined:Bool = false
-            
-            print("Setting \(notificationType) notification for trip element \(id) at \(String(describing: newInfo?.notificationDate))")
             
             var actualUserInfo = userInfo ?? [String:NSObject]()
             actualUserInfo[Constant.notificationUserInfo.leadTimeType] = notificationType as NSObject

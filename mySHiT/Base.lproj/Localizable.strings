@@ -75,4 +75,5 @@
 "CHAT.SEEN_BY.TWO_OR_MORE" = "Seen by %@ and %@";
 "CHAT.SEEN_BY.ALL" = "Seen by everyone";
 "CHAT.BCKGND.LOADING" = "Loading messages";
+"CHAT.BCKGND.NOMSG"   = "No messages yet";
 

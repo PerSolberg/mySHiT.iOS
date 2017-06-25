@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bLV-pR-mfM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bLV-pR-mfM">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -30,10 +30,10 @@
             </objects>
             <point key="canvasLocation" x="-635" y="-352"/>
         </scene>
-        <!--Alert List View Controller-->
+        <!--Alerts-->
         <scene sceneID="VQV-UB-AoE">
             <objects>
-                <tableViewController id="tk8-Nj-BWl" customClass="AlertListViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="Alerts" id="tk8-Nj-BWl" customClass="AlertListViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ew2-fg-gRx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -139,7 +139,7 @@
                     <toolbarItems>
                         <barButtonItem image="Alerts" id="B6o-Fn-LSu">
                             <connections>
-                                <segue destination="tk8-Nj-BWl" kind="show" id="3Z3-xK-Nfh"/>
+                                <segue destination="tk8-Nj-BWl" kind="show" identifier="showAlertListFromTripListSegue" id="3Z3-xK-Nfh"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="ifa-xy-TYe"/>
@@ -935,7 +935,7 @@
                                 <rect key="frame" x="0.0" y="180" width="320" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WhU-Sd-jMd" id="Pgc-ZL-f3u">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="63.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="gGz-PI-I78" customClass="UIChatMessage" customModule="mySHiT" customModuleProvider="target">
@@ -974,7 +974,7 @@
                                 <rect key="frame" x="0.0" y="244" width="320" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WY0-xL-9hA" id="Inu-QN-pon">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="63.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Jgq-z7-c0w" customClass="UIChatMessage" customModule="mySHiT" customModuleProvider="target">
@@ -1003,6 +1003,7 @@
                             <outlet property="delegate" destination="0zw-Qa-5Oi" id="pRT-5H-3a8"/>
                         </connections>
                     </tableView>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="chatListTable" destination="YM0-32-Xaw" id="6hI-Yl-7Qj"/>
                     </connections>
@@ -1154,15 +1155,15 @@
             </objects>
             <point key="canvasLocation" x="2041" y="635"/>
         </scene>
-        <!--Chat View Controller-->
+        <!--Messages-->
         <scene sceneID="pjV-Tn-B67">
             <objects>
-                <viewController id="xJA-ve-Rcc" customClass="ChatViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Messages" automaticallyAdjustsScrollViewInsets="NO" id="xJA-ve-Rcc" customClass="ChatViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Cf0-8m-Ydo"/>
                         <viewControllerLayoutGuide type="bottom" id="dy1-JC-WJI"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Y3y-9E-7a3">
+                    <view key="view" contentMode="scaleToFill" id="Y3y-9E-7a3" userLabel="Chat View">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1221,7 +1222,21 @@
                             <constraint firstItem="dy1-JC-WJI" firstAttribute="top" secondItem="6dH-Dh-Yvm" secondAttribute="bottom" id="vA5-Of-gdy"/>
                         </constraints>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem image="Alerts" id="Qiv-5z-nMu" userLabel="Alert Button">
+                            <connections>
+                                <segue destination="tk8-Nj-BWl" kind="show" identifier="showAlertListFromChatSegue" id="8zu-e3-VTz"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="jZZ-Ch-2hr"/>
+                        <barButtonItem image="Settings" id="nOX-Yp-1mN" userLabel="Settings Button">
+                            <connections>
+                                <action selector="openSettings:" destination="xJA-ve-Rcc" id="SBY-LJ-Jzy"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
                     <connections>
+                        <outlet property="bottomSpacingConstraint" destination="vA5-Of-gdy" id="FOl-lE-WNw"/>
                         <outlet property="messageTextView" destination="RC6-hl-cuL" id="NlU-pi-fMG"/>
                         <outlet property="rootView" destination="Y3y-9E-7a3" id="nGQ-Rd-j8r"/>
                         <outlet property="sendButton" destination="FQQ-29-apY" id="D3T-Ed-eWL"/>

@@ -167,4 +167,7 @@
 /* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet."; ObjectID = "zkl-d5-RHg"; */
 "zkl-d5-RHg.text" = "Lorem ipsum dolor sit er elit lamet.";
 
+/* Class = "UIViewController"; title = "Messages", ObjectID = "xJA-ve-Rcc" */
+"xJA-ve-Rcc.title" = "Meddelanden";
+
 

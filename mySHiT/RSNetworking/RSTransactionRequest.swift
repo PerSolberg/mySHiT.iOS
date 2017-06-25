@@ -39,13 +39,6 @@ class RSTransactionRequest: NSObject {
         default:
             fatalError("Unknown request type.")
         }
-        /*
-        if (transaction.transactionType == RSTransactionType.get) {
-            dataFromRSTransactionGet(transaction, completionHandler: handler);
-        } else if(transaction.transactionType == RSTransactionType.post) {
-            dataFromRSTransactionPost(transaction, completionHandler: handler);
-        }
-        */
     }
 
     fileprivate func dataFromRSTransactionPost(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
@@ -154,11 +147,6 @@ class RSTransactionRequest: NSObject {
                     return
                 }
             }
-            /*if let responseData = responseData {
-                print("Response (base64): " + (responseData.base64EncodedString()))
-            } else {
-                print("Empty response")
-            }*/
             
             let resultDictionary = NSMutableDictionary()
             var jsonResponse : Any?
@@ -171,17 +159,7 @@ class RSTransactionRequest: NSObject {
             }
             //print("JSON parsed successfully")
             if let jsonResponse = jsonResponse as? [String:Any] {
-                //print("JSON Dictionary")
-                //print(jsonResponse)
                 resultDictionary.setDictionary(jsonResponse)
-                //switch jsonResponse {
-                //case is NSDictionary:
-                //    resultDictionary = jsonResponse as NSMutableDictionary
-                //case is NSArray:
-                //    resultDictionary[self.dictKey] = jsonResponse
-                //default:
-                //    resultDictionary[self.dictKey] = ""
-                //}
             } else if let jsonResponse = jsonResponse as? [Any] {
                 print("JSON Array")
                 resultDictionary[self.dictKey] = jsonResponse
@@ -189,7 +167,6 @@ class RSTransactionRequest: NSObject {
                 print("Unknown JSON type")
                 resultDictionary[self.dictKey] = errMsg
             }
-            //print("JSON Dictionary = \(resultDictionary)")
             handler(response, resultDictionary.copy() as? NSDictionary, error)
         } /* as! (URLResponse?, Data?, Error?) -> Void */)
     }

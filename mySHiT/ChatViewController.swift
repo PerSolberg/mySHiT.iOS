@@ -16,9 +16,18 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     @IBOutlet var rootView: UIView!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var messageTextView: UITextView!
+    @IBOutlet weak var bottomSpacingConstraint: NSLayoutConstraint!
     
     var trip:AnnotatedTrip?
-    
+    var initialBottomConstraint:CGFloat?
+
+    // MARK: Actions
+    @IBAction func openSettings(_ sender: Any) {
+        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
+            UIApplication.shared.openURL(appSettings)
+        }
+    }
+
     // MARK: Archiving paths
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveTripsURL = DocumentsDirectory.appendingPathComponent("trips")
@@ -35,11 +44,11 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     }
     
     
-    @IBAction func openSettings(_ sender: AnyObject) {
-        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.openURL(appSettings)
-        }
-    }
+//    @IBAction func openSettings(_ sender: AnyObject) {
+//        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
+//            UIApplication.shared.openURL(appSettings)
+//        }
+//    }
     
     
     // Prepare for navigation
@@ -73,7 +82,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         // Initialisation logic common to all constructurs can go here
     }
     
-    
     required init?( coder: NSCoder) {
         super.init(coder: coder)
         initCommon()
@@ -86,11 +94,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         print("Current language = \((Locale.current as NSLocale).object(forKey: NSLocale.Key.languageCode)!)")
         super.viewDidLoad()
         
-        controlSendButton()
-        /*
-        NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
-        */
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.refreshChat), name: NSNotification.Name(rawValue: Constant.notification.chatRefreshed), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.refreshChat), name: NSNotification.Name(rawValue: Constant.notification.chatRefreshed), object: nil)
 
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
@@ -104,6 +109,12 @@ class ChatViewController: UIViewController, UITextViewDelegate {
             //Present alert
             self.present(alert, animated: true, completion: nil)
         }
+        
+        messageTextView.delegate = self
+        if let trip = trip {
+             messageTextView.text = trip.trip.chatThread.messageBeingEntered
+        }
+        controlSendButton()
 
         /*
         if let trip = trip {
@@ -118,35 +129,64 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         //    self.chatListTable.reloadData()
         //})
         
-        // Set up refresh
-        /*
-        refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = chatListTable.backgroundColor //UIColor.cyanColor()
-        refreshControl!.tintColor = UIColor.blue  //whiteColor()
-        refreshControl!.addTarget(self, action: #selector(TripListViewController.reloadTripsFromServer), for: .valueChanged)
-        */
+
+        initialBottomConstraint = bottomSpacingConstraint.constant
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillChangeFrame, object: nil)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        print("ChatView appeared")
+        if !User.sharedUser.hasCredentials() {
+            showLogonScreen(animated: false)
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        if let trip = trip {
+            trip.trip.chatThread.messageBeingEntered = messageTextView.text
+        }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    func manageKeyboard (notification: Notification) {
+        print("Keyboard manager")
+        let isShowing = (notification.name == .UIKeyboardWillShow)
+        
+        var tabbarHeight: CGFloat = 0
+        if let tabBarController = self.tabBarController {
+            tabbarHeight = tabBarController.tabBar.frame.height
+        }
+        
+        if let userInfo = notification.userInfo {
+            let endFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+            let duration:TimeInterval = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+            let animationCurveRawNSN = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber
+            let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIViewAnimationOptions.curveEaseInOut.rawValue
+            let animationCurve:UIViewAnimationOptions = UIViewAnimationOptions(rawValue: animationCurveRaw)
+            bottomSpacingConstraint?.constant = isShowing ? (endFrame!.size.height - tabbarHeight) : (initialBottomConstraint ?? 0.0)
+            UIView.animate(withDuration: duration,
+                           delay: TimeInterval(0),
+                           options: animationCurve,
+                           animations: { self.view.layoutIfNeeded() },
+                           completion: nil)
+        }
+    }
+    
+    //MARK: Functions
     func showLogonScreen(animated: Bool) {
-        // Get login screen from storyboard and present it
         let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
         let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
         view.window!.makeKeyAndVisible()
         view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        print("ChatView appeared")
-        if !User.sharedUser.hasCredentials() {
-            // Show login view
-            print("Show logon screen")
-            showLogonScreen(animated: false)
-        }
-        
-        print("Normal processing")
-    }
-    
-    
+    /*
     func refreshChat() {
         //refreshControl!.endRefreshing()
         print("ChatView: Refreshing list, probably because data were updated")
@@ -166,26 +206,10 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         saveTrips()
         */
     }
-    
-    /*
-    func refreshTripList() {
-        refreshControl!.endRefreshing()
-        print("TripListView: Refreshing list, probably because data were updated")
-        if (TripList.sharedList.count == 0) {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: "Some dummy comment"))
-        } else {
-            chatListTable.setBackgroundMessage(nil)
-        }
-        DispatchQueue.main.async(execute: {
-            self.chatListTable.reloadData()
-        })
-        saveTrips()
-    }
-     */
+    */
     
     
     func handleNetworkError() {
-        //refreshControl!.endRefreshing()
         print("ChatListView: End refresh after network error")
         
         // First check if this view is currently active, if not, skip the alert
@@ -201,46 +225,9 @@ class ChatViewController: UIViewController, UITextViewDelegate {
                 self.present(alert, animated: true, completion: nil)
             })
         }
-        /*
-        if (TripList.sharedList.count == 0) {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: "Some dummy comment"))
-        } else {
-            chatListTable.setBackgroundMessage(nil)
-        }
-        */
     }
-    
-    
-    func reloadTripsFromServer() {
-        //chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
-        TripList.sharedList.getFromServer()
-        //refreshTripList()
-    }
-    
-    
-    func logonComplete(_ notification:Notification) {
-        print("ChatListView: Logon complete")
-        reloadTripsFromServer()
-    }
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
-    // MARK: NSCoding
-    func saveTrips() {
-        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
-        saveSections()
-    }
-    
-    
-    func saveSections() {
-    }
-    
-    
+
+    /*
     func loadTrips() -> [TripListSectionInfo]? {
         print("Loading trips from iOS keyed archive")
         TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
@@ -248,6 +235,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         let sectionList = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo]
         return sectionList
     }
+ */
     
 
     // MARK: TextViewDelegate
@@ -269,6 +257,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
         messageTextView.text = ""
         controlSendButton()
+        messageTextView.resignFirstResponder()
     }
 
 

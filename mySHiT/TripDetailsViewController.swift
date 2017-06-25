@@ -138,7 +138,8 @@ class TripDetailsViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.handleNetworkError), name: NSNotification.Name(rawValue: "networkError"), object: nil)
 
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
-            self.trip = trip    
+            self.trip = trip
+            self.title = trip.trip.name
             if trip.trip.elements != nil && trip.trip.elements?.count > 0 {
                 print("Trip details already loaded")
                 updateSections()
@@ -150,6 +151,7 @@ class TripDetailsViewController: UITableViewController {
         }
         tripDetailsTable.estimatedRowHeight = 40
         tripDetailsTable.rowHeight = UITableViewAutomaticDimension
+        tripDetailsTable.contentInset = UIEdgeInsets.zero
         
         // Set up refresh
         refreshControl = UIRefreshControl()

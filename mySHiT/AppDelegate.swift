@@ -169,7 +169,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let rootVC = UIApplication.shared.keyWindow?.rootViewController
         if let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
-            print("Message for current chat - no need to notify")
+            print("Message for current chat - refresh but don't notify")
+            trip.chatThread.refresh(mode: .incremental)
         } else {
             // Notify user of chat message
             if let soundName = soundName {

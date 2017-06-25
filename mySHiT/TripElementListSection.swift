@@ -8,15 +8,6 @@
 
 import Foundation
 
-/*
-enum TripElementListSection:String {
-    case Future, Next, Current, Historic
-    
-    // Iteration support
-    static let allValues = [Future, Next, Current, Historic]
-
-}
-*/
 
 class TripElementListSectionInfo: NSObject, NSCoding {
     var visible: Bool!

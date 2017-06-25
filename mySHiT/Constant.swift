@@ -121,7 +121,7 @@ struct Constant {
         static let logonFailureText = "Please check your user name and password"
         static let alertBoxTitle = "Alert"
         static let noTrips = "You have no SHiT trips yet"
-        static let noMessages = "No messages yet"
+        static let noMessages = "CHAT.BCKGND.NOMSG"
         static let unknownElement = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server."
         static let chatMsgSeenByOne = "CHAT.SEEN_BY.ONE"
         static let chatMsgSeenByTwoOrMore = "CHAT.SEEN_BY.TWO_OR_MORE"

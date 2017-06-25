@@ -13,6 +13,5 @@ class UIChatMessage : UITextView {
     // May not need this after all
     override func layoutSubviews() {
         super.layoutSubviews()
-        //print("ChatMsg: \(self.contentSize.width) x \(self.contentSize.height)")
     }
 }

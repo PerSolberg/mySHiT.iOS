@@ -14,10 +14,6 @@ class NotificationInfo: NSObject, NSCoding {
     var notificationDate: Date!
     var leadTime: Int!
     
-    //var startTime: Date? {
-    //    return nil
-    //}
-    
     struct PropertyKey {
         static let baseDateKey = "baseDate"
         static let notificationDateKey = "notificationDate"
@@ -43,7 +39,6 @@ class NotificationInfo: NSObject, NSCoding {
     
     init?(baseDate: Date!, leadTime: Int!) {
         // Initialize stored properties.
-        //self.visible = visible
         super.init()
 
         let now = Date()
