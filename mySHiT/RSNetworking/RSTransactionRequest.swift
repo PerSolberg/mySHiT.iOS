@@ -55,8 +55,8 @@ class RSTransactionRequest: NSObject {
         if let payload = transaction.payload {
             //params = dictionaryToQueryString(payload)
             params = try! JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
-            print("JSON payload:")
-            print(params)
+//            print("JSON payload:")
+//            print(params)
             //using: String.Encoding.utf8)
         }
         request.httpBody = params //params.
@@ -84,8 +84,8 @@ class RSTransactionRequest: NSObject {
         if let payload = transaction.payload {
             //params = dictionaryToQueryString(payload)
             params = try! JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
-            print("JSON payload:")
-            print(params)
+//            print("JSON payload:")
+//            print(params)
             //using: String.Encoding.utf8)
         }
         request.httpBody = params //params.
@@ -106,7 +106,7 @@ class RSTransactionRequest: NSObject {
         
         let urlString = transaction.getFullURLString() + "?" + dictionaryToQueryString(transaction.parameters)
         let url: URL = URL(string: urlString)!
-        print("URL = \(urlString)")
+//        print("URL = \(urlString)")
         
         var request = URLRequest(url:url)
         request.httpMethod = "GET"

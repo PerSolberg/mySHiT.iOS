@@ -482,7 +482,7 @@ class ChatThread:NSObject, NSCoding {
                 }
             }
             self.lastSeenByOthers = newLastSeenInfo
-            print("Updated last seen by me: \(String(describing: self.lastSeenByUserServer)), other users: \(String(describing: self.lastSeenByOthers))")
+//            print("Updated last seen by me: \(String(describing: self.lastSeenByUserServer)), other users: \(String(describing: self.lastSeenByOthers))")
         }
         ChatThread.dqAccess.async {
             NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)

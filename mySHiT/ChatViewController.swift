@@ -20,6 +20,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     
     var trip:AnnotatedTrip?
     var initialBottomConstraint:CGFloat?
+    var chatTableController:ChatTableController?
 
     // MARK: Actions
     @IBAction func openSettings(_ sender: Any) {
@@ -63,8 +64,14 @@ class ChatViewController: UIViewController, UITextViewDelegate {
             //    logout()
                 
             case Constant.segue.embedChatTable:
-                let destinationController = segue.destination as! ChatTableController
-                destinationController.trip = trip
+//                let destinationController = segue.destination as! ChatTableController
+//                destinationController.trip = trip
+                chatTableController = segue.destination as? ChatTableController
+                if let chatTableController = chatTableController {
+                    chatTableController.trip = trip
+                } else {
+                    fatalError("Embedding chat table but incorrect controller type")
+                }
                 
             default:
                 // No particular preparation needed.
@@ -91,7 +98,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     // MARK: Callbacks
     override func viewDidLoad() {
         print("Chat View loaded")
-        print("Current language = \((Locale.current as NSLocale).object(forKey: NSLocale.Key.languageCode)!)")
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
@@ -155,7 +161,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     }
     
     func manageKeyboard (notification: Notification) {
-        print("Keyboard manager")
         let isShowing = (notification.name == .UIKeyboardWillShow)
         
         var tabbarHeight: CGFloat = 0
@@ -245,7 +250,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Actions
     @IBAction func sendMessage(_ sender: Any) {
-        print("sendMessage triggered")
         guard let trip = trip else {
             print("ERROR: Trip not correctly set up for chat")
             return
@@ -258,6 +262,12 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         messageTextView.text = ""
         controlSendButton()
         messageTextView.resignFirstResponder()
+        
+        if let chatTableController = chatTableController {
+            chatTableController.chatListTable.reloadData()
+            let ip = IndexPath(row: trip.trip.chatThread.count - 1, section: 0)
+            chatTableController.chatListTable.scrollToRow(at: ip, at: .bottom, animated: true)
+        }
     }
 
 

@@ -85,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     
     func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
-        print("Received notification: " + notification.description)
+//        print("Received notification: " + notification.description)
         // if remote notification {
         /*
         NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripList), object: self)
@@ -125,7 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("Remote notification received: \(String(describing: userInfo))")
+//        print("Remote notification received: \(String(describing: userInfo))")
 
         guard let changeType = userInfo["changeType"] as? String else {
             fatalError("Invalid remote notification, no changeType element")
@@ -165,12 +165,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let soundName:String? = apsInfo["sound"] as? String
 
-        print("Notification for trip \(tripId)")
+//        print("Notification for trip \(tripId)")
 
         let rootVC = UIApplication.shared.keyWindow?.rootViewController
         if let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
-            print("Message for current chat - refresh but don't notify")
+//            print("Message for current chat - refresh but don't notify")
             trip.chatThread.refresh(mode: .incremental)
+
+            // Notify user of chat message
+            if let soundName = soundName {
+                playSound(name: soundName, type: nil)
+            }
         } else {
             // Notify user of chat message
             if let soundName = soundName {
@@ -228,7 +233,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
 
-        print("Message read update for trip \(String(describing: tripId))")
+//        print("Message read update for trip \(String(describing: tripId))")
         
         guard let aTrip = TripList.sharedList.trip(byId: tripId) else {
             print("Chat update for unknown trip")
