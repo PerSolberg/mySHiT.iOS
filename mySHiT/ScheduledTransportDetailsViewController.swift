@@ -121,5 +121,14 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         })
     }
     
+    override func isSame(_ vc:UIViewController) -> Bool {
+        if type(of:vc) != type(of:self) {
+            return false
+        } else if let vc = vc as? ScheduledTransportDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
+            return te.tripElement.id == vcte.tripElement.id
+        } else {
+            return false
+        }
+    }
 }
 

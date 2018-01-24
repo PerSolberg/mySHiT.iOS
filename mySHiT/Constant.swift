@@ -127,6 +127,9 @@ struct Constant {
         static let chatMsgSeenByTwoOrMore = "CHAT.SEEN_BY.TWO_OR_MORE"
         static let chatMsgSeenByEveryone = "CHAT.SEEN_BY.ALL"
         static let retrievingChatThread = "CHAT.BCKGND.LOADING"
+        static let chatNtfIgnoreAction = "CHAT.NTF.IGNORE"
+        static let chatNtfReplyAction = "CHAT.NTF.REPLY"
+        static let chatNtfReplySend = "CHAT.NTF.REPLY.SEND"
     }
     
     // Notifications
@@ -141,6 +144,15 @@ struct Constant {
         static let chatRefreshed = "chatRefreshed"
     }
 
+    struct notificationCategory {
+        static let newChatMessage = "NTF.INSERT.CHATMESSAGE"
+    }
+
+    struct notificationAction {
+        static let replyToChatMessage = "REPLY.CHAT.MSG"
+        static let ignoreChatMessage = "IGNORE.CHAT.MSG"
+    }
+    
     struct notificationUserInfo {
         static let tripId = "TripID"
         static let tripElementId = "TripElementID"

@@ -186,4 +186,18 @@ class Event: TripElement {
         }
     }
 
+    
+    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
+        guard element.tripElement == self else {
+            fatalError("Inconsistent trip element and annotated trip element")
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "EventDetailsViewController")
+        if let evc = vc as? EventDetailsViewController {
+            evc.tripElement = element
+            evc.trip = trip
+            return evc
+        }
+        return nil
+    }
 }

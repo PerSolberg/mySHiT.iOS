@@ -45,6 +45,11 @@
 		85C52A211BD4681D00F625B5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 85C52A231BD4681D00F625B5 /* Localizable.strings */; };
 		85CAD2E21EBFCB280061607C /* Chat-NewMessage.wav in Resources */ = {isa = PBXBuildFile; fileRef = 85CAD2E11EBFCB280061607C /* Chat-NewMessage.wav */; };
 		85D73AEE1C29398E00998461 /* ChangeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D73AED1C29398E00998461 /* ChangeState.swift */; };
+		85EA06F6200CDFC800C61D48 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06F5200CDFC800C61D48 /* DeepLinkManager.swift */; };
+		85EA06F8200E290200C61D48 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06F7200E290200C61D48 /* DeepLink.swift */; };
+		85EA06FA200E2CCA00C61D48 /* NotificationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */; };
+		85EA06FC2019307D00C61D48 /* AlertLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06FB2019307D00C61D48 /* AlertLink.swift */; };
+		85EA06FE20193D3F00C61D48 /* UIViewController+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */; };
 		85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F490ED1E892BD4004D9A5D /* ChatTableController.swift */; };
 		85F6A5241BEECA2C00141938 /* GUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85F6A5231BEECA2C00141938 /* GUI.storyboard */; };
 		85F7696E1E8540B80085151F /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F7696D1E8540B80085151F /* ChatMessage.swift */; };
@@ -151,6 +156,11 @@
 		85C52A261BD4682300F625B5 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		85CAD2E11EBFCB280061607C /* Chat-NewMessage.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Chat-NewMessage.wav"; sourceTree = "<group>"; };
 		85D73AED1C29398E00998461 /* ChangeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeState.swift; sourceTree = "<group>"; };
+		85EA06F5200CDFC800C61D48 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
+		85EA06F7200E290200C61D48 /* DeepLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
+		85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationLink.swift; sourceTree = "<group>"; };
+		85EA06FB2019307D00C61D48 /* AlertLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertLink.swift; sourceTree = "<group>"; };
+		85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+mySHiT.swift"; sourceTree = "<group>"; };
 		85F490ED1E892BD4004D9A5D /* ChatTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableController.swift; sourceTree = "<group>"; };
 		85F6A5231BEECA2C00141938 /* GUI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = GUI.storyboard; sourceTree = "<group>"; };
 		85F7696D1E8540B80085151F /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
@@ -236,6 +246,7 @@
 				856D66531BD671A300C62D79 /* Flight.swift */,
 				856D66551BD673C100C62D79 /* GenericTransport.swift */,
 				856D66591BD6F73100C62D79 /* Hotel.swift */,
+				85EA06F7200E290200C61D48 /* DeepLink.swift */,
 				85BF602E1E6453E900E5D785 /* NotificationInfo.swift */,
 				85BF60301E66FCA500E5D785 /* ScheduledTransport.swift */,
 				856D66611BD824E300C62D79 /* SecurityWrapper.swift */,
@@ -247,6 +258,9 @@
 				855F335A1BDF6C2F002CB89B /* TripList.swift */,
 				85C52A191BD419E300F625B5 /* TripListSection.swift */,
 				859D44161BD4EC7E0068E5B3 /* User.swift */,
+				85EA06F5200CDFC800C61D48 /* DeepLinkManager.swift */,
+				85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */,
+				85EA06FB2019307D00C61D48 /* AlertLink.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -258,6 +272,7 @@
 				85FE1CC91C31C4C100BA19FA /* UIImage+mySHiT.swift */,
 				85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */,
 				853ADF501C32996D0092832C /* UITableView+mySHiT.swift */,
+				85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */,
 				8519D67B1E97B6410077FB52 /* UIChatMessage.swift */,
 			);
 			name = Extensions;
@@ -690,10 +705,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */,
+				85EA06F8200E290200C61D48 /* DeepLink.swift in Sources */,
 				853ADF511C32996D0092832C /* UITableView+mySHiT.swift in Sources */,
 				85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */,
 				85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */,
 				85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */,
+				85EA06FE20193D3F00C61D48 /* UIViewController+mySHiT.swift in Sources */,
 				85C52A181BD3004F00F625B5 /* AnnotatedTrip.swift in Sources */,
 				85FFD37B1C5000840083C72B /* Constant.swift in Sources */,
 				859F903B1E3620EF0006AEC4 /* Event.swift in Sources */,
@@ -712,6 +729,7 @@
 				859D44171BD4EC7E0068E5B3 /* User.swift in Sources */,
 				85FEFC7B1BCA7F4000D8E38E /* RSTransaction.swift in Sources */,
 				85BF60311E66FCA500E5D785 /* ScheduledTransport.swift in Sources */,
+				85EA06F6200CDFC800C61D48 /* DeepLinkManager.swift in Sources */,
 				855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */,
 				85F7696E1E8540B80085151F /* ChatMessage.swift in Sources */,
 				85179B4D1BDDB09F0097F571 /* UIView+mySHiT.swift in Sources */,
@@ -723,9 +741,11 @@
 				855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */,
 				85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */,
 				85ABD35E1BD5987500B26F07 /* AnnotatedTripElement.swift in Sources */,
+				85EA06FA200E2CCA00C61D48 /* NotificationLink.swift in Sources */,
 				856D665E1BD7933E00C62D79 /* Tenses.swift in Sources */,
 				8507431B1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift in Sources */,
 				85D73AEE1C29398E00998461 /* ChangeState.swift in Sources */,
+				85EA06FC2019307D00C61D48 /* AlertLink.swift in Sources */,
 				856D66541BD671A300C62D79 /* Flight.swift in Sources */,
 				85FEFC6D1BC818FA00D8E38E /* LogonViewController.swift in Sources */,
 				85C52A1D1BD446C100F625B5 /* NSDate+mySHiT.swift in Sources */,
@@ -844,7 +864,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -887,7 +907,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -906,6 +926,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = mySHiT/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -925,6 +946,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = mySHiT/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";

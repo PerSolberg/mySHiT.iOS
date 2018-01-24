@@ -25,7 +25,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     // MARK: Actions
     @IBAction func openSettings(_ sender: Any) {
         if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.openURL(appSettings)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+            //UIApplication.shared.openURL(appSettings)
         }
     }
 
@@ -38,7 +39,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     // MARK: Navigation
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-        print("ChatView: Unwinding to main")
+//        print("ChatView: Unwinding to main")
         //chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
         //TripList.sharedList.getFromServer()
         return
@@ -58,7 +59,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         // print("Preparing for segue '\(segue.identifier)'")
         
         if let segueId = segue.identifier {
-            print("Chat View: Preparing for segue '\(segueId)'")
+//            print("Chat View: Preparing for segue '\(segueId)'")
             switch (segueId) {
             //case Constant.segue.logout:
             //    logout()
@@ -97,7 +98,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Chat View loaded")
+//        print("Chat View loaded")
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
@@ -143,7 +144,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        print("ChatView appeared")
+//        print("ChatView appeared")
         if !User.sharedUser.hasCredentials() {
             showLogonScreen(animated: false)
         }
@@ -191,28 +192,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
     }
     
-    /*
-    func refreshChat() {
-        //refreshControl!.endRefreshing()
-        print("ChatView: Refreshing list, probably because data were updated")
-        /*
-        if let msgList = trip?.trip.messages {
-            if msgList.count == 0 {
-                chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noMessages, comment: "Some dummy comment"))
-            } else {
-                chatListTable.setBackgroundMessage(nil)
-            }
-        } else {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noMessages, comment: "Some dummy comment"))
-        }
-        DispatchQueue.main.async(execute: {
-            self.chatListTable.reloadData()
-        })
-        saveTrips()
-        */
-    }
-    */
-    
     
     func handleNetworkError() {
         print("ChatListView: End refresh after network error")
@@ -231,16 +210,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
             })
         }
     }
-
-    /*
-    func loadTrips() -> [TripListSectionInfo]? {
-        print("Loading trips from iOS keyed archive")
-        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-        print("Loading sections from iOS keyed archive")
-        let sectionList = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo]
-        return sectionList
-    }
- */
     
 
     // MARK: TextViewDelegate

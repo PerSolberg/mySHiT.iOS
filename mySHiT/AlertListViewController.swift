@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class AlertListViewController: UITableViewController {
     // MARK: Constants
@@ -14,6 +15,8 @@ class AlertListViewController: UITableViewController {
     
     // MARK: Properties
     @IBOutlet weak var alertListTable: UITableView!
+    
+    var notifications:[UNNotificationRequest]? = nil
     
     // MARK: Navigation
     // Prepare for navigation
@@ -39,16 +42,18 @@ class AlertListViewController: UITableViewController {
         super.viewDidLoad()
 
         // Load data & check if section list is complete (if not, add missing elements)
-        DispatchQueue.main.async(execute: {
-            self.alertListTable.reloadData()
-        })
+        getNotifications()
+        //DispatchQueue.main.async(execute: {
+        //    self.alertListTable.reloadData()
+        //})
     }
     
     
     func refreshAlertList() {
-        DispatchQueue.main.async(execute: {
-            self.alertListTable.reloadData()
-        })
+        getNotifications()
+        //DispatchQueue.main.async(execute: {
+        //    self.alertListTable.reloadData()
+        //})
     }
     
     
@@ -60,7 +65,7 @@ class AlertListViewController: UITableViewController {
     
     // MARK: UITableViewDataSource methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let notifications = UIApplication.shared.scheduledLocalNotifications {
+        if let notifications = notifications /*UIApplication.shared.scheduledLocalNotifications*/ {
             return notifications.count
         } else {
             return 0
@@ -83,23 +88,27 @@ class AlertListViewController: UITableViewController {
             cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: kCellIdentifier)
         }
 
-        if let notifications = UIApplication.shared.scheduledLocalNotifications {
+        if let notifications = notifications /*UIApplication.shared.scheduledLocalNotifications*/ {
             if indexPath.row >= notifications.count {
                 cell!.textLabel!.text = "Unknown notification! Deleted?"  /* LOCALISE */
                 cell!.detailTextLabel!.text = ""
             } else {
                 let notification = notifications[indexPath.row]
 
-                let timeZoneName = notification.userInfo!["TimeZone"] as? String ?? "UTC"
+                let timeZoneName = notification.content.userInfo["TimeZone"] as? String ?? "UTC"
                 dateFormatter.timeZone = TimeZone(identifier: timeZoneName )
-                var notificationTime: String = dateFormatter.string(from: notification.fireDate!)
-                if timeZoneName != "UTC" {
-                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                    dateFormatter.timeZone = TimeZone(identifier: "UTC")
-                    notificationTime += " (" + dateFormatter.string(from: notification.fireDate!) + " UTC)"
+                if let ntfTrigger = notification.trigger as? UNCalendarNotificationTrigger, let ntfTime = ntfTrigger.nextTriggerDate() {
+                    var notificationTime: String = dateFormatter.string(from: ntfTime)
+                    if timeZoneName != "UTC" {
+                        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                        dateFormatter.timeZone = TimeZone(identifier: "UTC")
+                        notificationTime += " (" + dateFormatter.string(from: ntfTime) + " UTC)"
+                    }
+                    cell!.textLabel!.text = notificationTime
+                } else {
+                    cell!.textLabel!.text = "Unknown"
                 }
-                cell!.textLabel!.text = notificationTime
-                cell!.detailTextLabel!.text = "\(notification.alertBody!)"
+                cell!.detailTextLabel!.text = "\(notification.content.body)"
             }
         }
         
@@ -108,7 +117,15 @@ class AlertListViewController: UITableViewController {
     
     
     // MARK: Actions
-    
+    func getNotifications() -> Void {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { (_ ntfList: [UNNotificationRequest]) in
+            self.notifications = ntfList
+
+            DispatchQueue.main.async(execute: {
+                self.alertListTable.reloadData()
+            })
+        }
+    }
     
     // MARK: Functions
     

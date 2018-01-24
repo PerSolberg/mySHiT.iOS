@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bLV-pR-mfM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bLV-pR-mfM">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -167,7 +168,7 @@
         <!--Trip Details-->
         <scene sceneID="AJ3-mS-cKK">
             <objects>
-                <tableViewController title="Trip Details" id="f3k-6O-YsJ" customClass="TripDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="TripDetailsViewController" title="Trip Details" id="f3k-6O-YsJ" customClass="TripDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" id="zzv-Ce-ODC">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -279,7 +280,7 @@
         <!--Event Details-->
         <scene sceneID="eLZ-cy-aXw">
             <objects>
-                <viewController id="xje-c2-ozq" userLabel="Event Details" customClass="EventDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EventDetailsViewController" id="xje-c2-ozq" userLabel="Event Details" customClass="EventDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="VCP-at-yCW"/>
                         <viewControllerLayoutGuide type="bottom" id="on8-Kl-II3"/>
@@ -438,7 +439,7 @@
         <!--Unknown Details-->
         <scene sceneID="m0W-Sn-SgA">
             <objects>
-                <viewController title="Unknown Details" id="mDV-4p-VuG" customClass="UnknownElementDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="UnknownElementDetailsViewController" title="Unknown Details" id="mDV-4p-VuG" customClass="UnknownElementDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Gys-3r-2ey"/>
                         <viewControllerLayoutGuide type="bottom" id="eEw-GA-Zc7"/>
@@ -481,7 +482,7 @@
         <!--Flight Details-->
         <scene sceneID="LhW-Po-Qpf">
             <objects>
-                <viewController title="Flight Details" id="O3H-bw-HTi" customClass="FlightDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FlightDetailsViewController" title="Flight Details" id="O3H-bw-HTi" customClass="FlightDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="STN-oA-Ffq"/>
                         <viewControllerLayoutGuide type="bottom" id="E2b-Dd-3ng"/>
@@ -639,7 +640,7 @@
         <!--Hotel Details-->
         <scene sceneID="k6F-yr-65b">
             <objects>
-                <viewController title="Hotel Details" id="M5Q-7t-65k" customClass="HotelDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HotelDetailsViewController" title="Hotel Details" id="M5Q-7t-65k" customClass="HotelDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="amM-C5-gIv"/>
                         <viewControllerLayoutGuide type="bottom" id="UPE-Rp-SZL"/>
@@ -1015,7 +1016,7 @@
         <!--Scheduled Transport Details-->
         <scene sceneID="5Ae-wA-ttU">
             <objects>
-                <viewController id="TGe-I8-qRA" userLabel="Scheduled Transport Details" customClass="ScheduledTransportDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ScheduledTransportDetailsViewController" id="TGe-I8-qRA" userLabel="Scheduled Transport Details" customClass="ScheduledTransportDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="zJH-6O-tvT"/>
                         <viewControllerLayoutGuide type="bottom" id="Vt3-sP-1Kk"/>
@@ -1158,7 +1159,7 @@
         <!--Messages-->
         <scene sceneID="pjV-Tn-B67">
             <objects>
-                <viewController title="Messages" automaticallyAdjustsScrollViewInsets="NO" id="xJA-ve-Rcc" customClass="ChatViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChatViewController" title="Messages" automaticallyAdjustsScrollViewInsets="NO" id="xJA-ve-Rcc" customClass="ChatViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Cf0-8m-Ydo"/>
                         <viewControllerLayoutGuide type="bottom" id="dy1-JC-WJI"/>
@@ -1249,7 +1250,7 @@
         <!--Private Transport Details-->
         <scene sceneID="k3q-av-U4J">
             <objects>
-                <viewController id="Ved-ln-a2G" userLabel="Private Transport Details" customClass="PrivateTransportDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PrivateTransportDetailsViewController" id="Ved-ln-a2G" userLabel="Private Transport Details" customClass="PrivateTransportDetailsViewController" customModule="mySHiT" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="PNT-2l-Psk"/>
                         <viewControllerLayoutGuide type="bottom" id="rj8-ZW-F8X"/>
@@ -1515,6 +1516,6 @@ To access your travel details, please log on using the user name and password pr
         <image name="Settings" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="l9F-9B-NNf"/>
+        <segue reference="8zu-e3-VTz"/>
     </inferredMetricsTieBreakers>
 </document>

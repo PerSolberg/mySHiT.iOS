@@ -17,7 +17,7 @@
 // transportAlertMessage
 "%@ departs in %@, at %@" = "%@ går om %@, kl. %@";
 // eventAlertMessage
-"%@ starts in %@, at %@" = "%@ begynner om %@, at %@";
+"%@ starts in %@, at %@" = "%@ begynner om %@, kl. %@";
 // noDetailsAvailable
 "No details available yet" = "Ingen detaljer tilgjengelig ennå";
 // networkUnavailable
@@ -79,3 +79,7 @@
 "CHAT.BCKGND.LOADING" = "Henter meldinger";
 "CHAT.BCKGND.NOMSG"   = "Ingen meldinger ennå";
 
+// Notification custom actions
+"CHAT.NTF.REPLY" = "Svar";
+"CHAT.NTF.IGNORE" = "Ignorer";
+"CHAT.NTF.REPLY.SEND" = "Send";

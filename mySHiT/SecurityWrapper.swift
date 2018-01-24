@@ -124,8 +124,8 @@ struct Keychain {
     
     static func stringForAccount(_ account: String) -> String? {
         if let data = dataForAccount(account) {
-            return NSString(data: data,
-                encoding: String.Encoding.utf8.rawValue) as? String
+            return String(data: data, encoding: String.Encoding.utf8)
+            //return NSString(data: data, encoding: String.Encoding.utf8.rawValue) as? String
         } else {
             return nil
         }

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class Flight: ScheduledTransport {
     static let RefType_ETicketNo  = "ETKT"
@@ -77,5 +78,17 @@ class Flight: ScheduledTransport {
     }
     
     
-
+    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
+        guard element.tripElement == self else {
+            fatalError("Inconsistent trip element and annotated trip element")
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "FlightDetailsViewController")
+        if let fvc = vc as? FlightDetailsViewController {
+            fvc.tripElement = element
+            fvc.trip = trip
+            return fvc
+        }
+        return nil
+    }
 }

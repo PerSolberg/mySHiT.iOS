@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import FirebaseMessaging
+import UserNotifications
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
@@ -149,18 +150,8 @@ class Trip: NSObject, NSCoding {
 
     // MARK: Factory
     class func createFromDictionary( _ elementData: NSDictionary! ) -> Trip? {
-        //let tripType = elementData["type"] as? String ?? ""
-        
         var trip: Trip?
         trip = Trip(fromDictionary: elementData)
-        /*
-        switch (tripType) {
-        case (_):
-            trip = Trip(fromDictionary: elementData)
-        default:
-            trip = Trip(fromDictionary: elementData)
-        }
-        */
         
         return trip
     }
@@ -184,7 +175,7 @@ class Trip: NSObject, NSCoding {
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         super.init()
-        print("Decoding Trip")
+//        print("Decoding Trip")
         // NB: use conditional cast (as?) for any optional properties
         //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
@@ -205,7 +196,7 @@ class Trip: NSObject, NSCoding {
     
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
-        print("Initialising Trip from dictionary")
+        //print("Initialising Trip from dictionary")
         id = elementData[Constant.JSON.tripId] as! Int  // "id"
         itineraryId = elementData[Constant.JSON.tripItineraryId] as? Int
         startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
@@ -231,8 +222,6 @@ class Trip: NSObject, NSCoding {
 
     // MARK: Methods
     override func isEqual(_ object: Any?) -> Bool {
-        //print("Comparing objects: self.class = \(object_getClassName(self)), object.class = \(object_getClassName(object!))")
-        //print("Comparing objects: self.class = \(_stdlib_getDemangledTypeName(self)), object.class = \(_stdlib_getDemangledTypeName(object!))")
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherTrip = object as? Trip {
@@ -310,16 +299,21 @@ class Trip: NSObject, NSCoding {
         return nil
     }
     
+    func tripElement(byId tripElementId: Int) -> AnnotatedTripElement? {
+        if let elements = elements {
+            for te in elements {
+                if te.tripElement.id == tripElementId {
+                    return te
+                }
+            }
+        }
+        return nil
+    }
 
     func setNotification() {
         // First delete any existing notifications for this trip
-        for notification in UIApplication.shared.scheduledLocalNotifications! as [UILocalNotification] {
-            if (notification.userInfo!["TripID"] as? Int == id) {
-                UIApplication.shared.cancelLocalNotification(notification)
-                // there should be a maximum of one match on TripID
-                break
-            }
-        }
+        let ntfIdentifier = Constant.Settings.deptLeadTime + String(id)
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [ntfIdentifier])
 
         // Set notification (if we have a start date)
         if let tripStart = startTime {
@@ -327,7 +321,6 @@ class Trip: NSObject, NSCoding {
                 let defaults = UserDefaults.standard
                 let tripLeadtime = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
                 let startTimeText = startTime(dateStyle: .short, timeStyle: .short)
-                //let now = Date()
                 let dcf = DateComponentsFormatter()
                 let genericAlertMessage = NSLocalizedString(Constant.msg.tripAlertMessage, comment: "Some dummy comment")
                 
@@ -340,34 +333,35 @@ class Trip: NSObject, NSCoding {
                 }
                 
                 if tripLeadtime > 0 {
-                    /*
-                    var alertTime = tripStart.addHours( -tripLeadtime )
-                    // If we're already past the warning time, set a notification for right now instead
-                    if alertTime.isLessThanDate(now) {
-                        alertTime = now
-                    }
-                    */
                     // NotificationInfo expects lead time to be minutes
                     let oldInfo = notifications[Constant.Settings.tripLeadTime]
                     let newInfo = NotificationInfo(baseDate: tripStart, leadTime: tripLeadtime * 60)
 
                     if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
                         print("Setting notification for trip \(id) at \(String(describing: newInfo?.notificationDate))")
-                        let notification = UILocalNotification()
-
                         userInfo[Constant.notificationUserInfo.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
                         
                         let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!) //alertTime)
                         let leadTimeText = dcf.string(from: actualLeadTime)
-                        //notification.alertBody = NSString.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
-                        notification.alertBody = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
-                        notification.fireDate = newInfo?.notificationDate //alertTime
-                        notification.soundName = UILocalNotificationDefaultSoundName
-                        notification.userInfo = userInfo
-                        notification.category = "SHiT"
-                        UIApplication.shared.scheduleLocalNotification(notification)
+                        
+                        let ntfContent = UNMutableNotificationContent()
+                        ntfContent.body = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                        ntfContent.sound = UNNotificationSound.default()
+                        ntfContent.userInfo = userInfo
+                        ntfContent.categoryIdentifier = "SHiT"
+                        
+                        let ntfDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: (newInfo?.notificationDate)!)
+                        
+                        let ntfTrigger = UNCalendarNotificationTrigger(dateMatching: ntfDateComponents, repeats: false)
+                        let notification = UNNotificationRequest(identifier: ntfIdentifier, content: ntfContent, trigger: ntfTrigger)
+                        
+                        UNUserNotificationCenter.current().add(notification) {(error) in
+                            if let error = error {
+                                print("Unable to schedule trip notification: \(error)")
+                            }
+                        }
 
-                        notifications[Constant.Settings.deptLeadTime] = newInfo
+                        notifications[Constant.Settings.tripLeadTime] = newInfo
                     } else {
                         print("Not refreshing notification for trip \(id), already triggered")
                     }
@@ -380,7 +374,6 @@ class Trip: NSObject, NSCoding {
         
     
     func refreshNotifications() {
-        //print("Refreshing notifications for trip \(id)")
         setNotification()
         if let elements = elements {
             for e in elements {

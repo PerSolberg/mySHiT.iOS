@@ -17,7 +17,7 @@
 // transportAlertMessage
 "%@ departs in %@, at %@" = "%@ avgår om %@, kl. %@";
 // eventAlertMessage
-"%@ starts in %@, at %@" = "%@ börjar om %@, at %@";
+"%@ starts in %@, at %@" = "%@ börjar om %@, kl. %@";
 // noDetailsAvailable
 "No details available yet" = "Inga detaljer än";
 // networkUnavailable
@@ -75,3 +75,8 @@
 "CHAT.SEEN_BY.ALL" = "Läst av alla";
 "CHAT.BCKGND.LOADING" = "Hämtar meddelanden";
 "CHAT.BCKGND.NOMSG"   = "Inga meddelanden än";
+
+// Notification custom actions
+"CHAT.NTF.REPLY" = "Svara";
+"CHAT.NTF.IGNORE" = "Ignorera";
+"CHAT.NTF.REPLY.SEND" = "Skicka";

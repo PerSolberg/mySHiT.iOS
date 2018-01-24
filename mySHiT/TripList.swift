@@ -9,6 +9,7 @@
 import Foundation
 import FirebaseMessaging
 import UIKit
+import UserNotifications
 
 class TripList:NSObject, Sequence, NSCoding {
     typealias Index = Int
@@ -117,7 +118,7 @@ class TripList:NSObject, Sequence, NSCoding {
             "details":"non-historic"]
         
         //Send request
-        print("TripList: Send request to refresh data")
+        //print("TripList: Send request to refresh data")
         rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
                 //If there was an error, log it
@@ -131,7 +132,7 @@ class TripList:NSObject, Sequence, NSCoding {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 let serverData = responseDictionary?[Constant.JSON.queryResults] as! NSArray
                 self.copyServerData(serverData)
-                print("TripList: Server data received, notifying view controllers")
+                //print("TripList: Server data received, notifying view controllers")
                 NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripsRefreshed), object: self)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripElementsRefreshed), object: self)
             }
@@ -188,7 +189,9 @@ class TripList:NSObject, Sequence, NSCoding {
         
         // Clear and refresh notifications to ensure there are no notifications from
         // "deleted" trips or trip elements.
-        UIApplication.shared.cancelAllLocalNotifications()
+        //UIApplication.shared.cancelAllLocalNotifications()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        
         refreshNotifications()
         
         // Set application badge
@@ -208,7 +211,7 @@ class TripList:NSObject, Sequence, NSCoding {
         if !isSuccessfulSave {
             print("Failed to save trips...")
         } else {
-            print("Trips saved to iOS keyed archive")
+            //print("Trips saved to iOS keyed archive")
         }
     }
     
@@ -233,12 +236,23 @@ class TripList:NSObject, Sequence, NSCoding {
     }
     
     
+    func tripElement(byId tripElementId: Int) -> (AnnotatedTrip, AnnotatedTripElement)? {
+        for t in trips {
+            if let te = t.trip.tripElement(byId: tripElementId) {
+                return (t, te)
+            }
+        }
+        return nil
+    }
+    
+    
     func clear() {
         deregisterPushNotifications()
 
         // Empty list and cancel all notifications
         trips = [AnnotatedTrip]()
-        UIApplication.shared.cancelAllLocalNotifications()
+        //UIApplication.shared.cancelAllLocalNotifications()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
     
     func changes() -> Int {

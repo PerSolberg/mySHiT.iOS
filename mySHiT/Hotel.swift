@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class Hotel: TripElement {
     // MARK: Properties
@@ -175,4 +176,18 @@ class Hotel: TripElement {
         return nil
     }
     
+    
+    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
+        guard element.tripElement == self else {
+            fatalError("Inconsistent trip element and annotated trip element")
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "HotelDetailsViewController")
+        if let hvc = vc as? HotelDetailsViewController {
+            hvc.tripElement = element
+            hvc.trip = trip
+            return hvc
+        }
+        return nil
+    }
 }

@@ -77,3 +77,8 @@
 "CHAT.BCKGND.LOADING" = "Loading messages";
 "CHAT.BCKGND.NOMSG"   = "No messages yet";
 
+// Notification custom actions
+"CHAT.NTF.REPLY" = "Reply";
+"CHAT.NTF.IGNORE" = "Ignore";
+"CHAT.NTF.REPLY.SEND" = "Send";
+

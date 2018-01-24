@@ -36,7 +36,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.openURL(appSettings)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+            //UIApplication.shared.openURL(appSettings)
         }
     }
     
@@ -94,7 +95,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Trip List View loaded")
+//        print("Trip List View loaded")
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.logonComplete(_:)), name: NSNotification.Name(rawValue: Constant.notification.logonSuccessful), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.refreshTripList), name: NSNotification.Name(rawValue: Constant.notification.refreshTripList), object: nil)
@@ -125,7 +126,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         classifyTrips()
         updateSections()
         saveTrips()
-        print("Data should be ready - refresh list")
+//        print("Data should be ready - refresh list")
         tripListTable.estimatedRowHeight = 40
         tripListTable.rowHeight = UITableViewAutomaticDimension
         DispatchQueue.main.async(execute: {
@@ -148,7 +149,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        print("TripList view appeared")
+//        print("TripList view appeared")
         if !User.sharedUser.hasCredentials() {
             // Show login view
             print("Show logon screen")
@@ -184,7 +185,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         if let refreshControl = refreshControl, refreshControl.isRefreshing {
             refreshControl.endRefreshing()
         }
-        print("TripListView: Refreshing list, probably because data were updated")
+//        print("TripListView: Refreshing list, probably because data were updated")
         if (TripList.sharedList.count == 0) {
             tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: "Some dummy comment"))
         } else {
@@ -203,7 +204,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
-        print("TripListView: End refresh after network error")
+//        print("TripListView: End refresh after network error")
 
         // First check if this view is currently active, if not, skip the alert
         if self.isViewLoaded && view.window != nil {
@@ -367,9 +368,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
     
     func loadTrips() -> [TripListSectionInfo]? {
-        print("Loading trips from iOS keyed archive")
+//        print("Loading trips from iOS keyed archive")
         TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-        print("Loading sections from iOS keyed archive")
+//        print("Loading sections from iOS keyed archive")
         let sectionList = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo]
         return sectionList
     }

@@ -11,9 +11,10 @@ import Firebase
 import FirebaseInstanceID
 import FirebaseMessaging
 import AVFoundation
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     let gcmMessageIDKey = "gcm.message_id"
@@ -30,12 +31,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("Application didFinishLaunchingWithOptions")
         // Override point for customization after application launch.
-        application.registerUserNotificationSettings(UIUserNotificationSettings(types: [UIUserNotificationType.alert, UIUserNotificationType.badge, UIUserNotificationType.sound], categories: nil))
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (success : Bool, err : Error?) -> Void in } )
         self.registerDefaultsFromSettingsBundle();
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
         
-        //NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: kFIRInstanceIDTokenRefreshNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.firInstanceIDTokenRefresh, object: nil)
+
+        //
+        // Set up notification categories
+        //
+        let chatIgnoreAction = UNNotificationAction(identifier: Constant.notificationAction.ignoreChatMessage,
+                                              title: String(format: NSLocalizedString(Constant.msg.chatNtfIgnoreAction, comment:""), locale: NSLocale.current),
+                                              options: .foreground)
+
+        let chatReplyAction = UNTextInputNotificationAction(identifier: Constant.notificationAction.replyToChatMessage, title: String(format: NSLocalizedString(Constant.msg.chatNtfReplyAction, comment:""), locale: NSLocale.current), options: .foreground, textInputButtonTitle: String(format: NSLocalizedString(Constant.msg.chatNtfReplySend, comment:""), locale: NSLocale.current), textInputPlaceholder: "")
+        
+        let newChatMsgCategory = UNNotificationCategory(identifier: Constant.notificationCategory.newChatMessage,
+                                                     actions: [chatReplyAction, chatIgnoreAction],
+                                                     intentIdentifiers: [],
+                                                     options: UNNotificationCategoryOptions(rawValue: 0))
+        
+        UNUserNotificationCenter.current().setNotificationCategories([newChatMsgCategory])
+        UNUserNotificationCenter.current().delegate = self
+       
         
         // Register with APNs
         UIApplication.shared.registerForRemoteNotifications()
@@ -43,22 +61,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initialise Firebase
         FIRApp.configure();
 
-        // Not supporting iOS 10 yet
-        //if #available(iOS 10.0, *) {
-        //    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        //    UNUserNotificationCenter.current().requestAuthorization(options: authOptions, completionHandler: {_, _ in} )
-        //    UNUserNotificationCenter.current().delegate = self
-        //    FIRMessaging.messaging().remoteMessageDelegate = self
-        //} else {
-            let settings: UIUserNotificationSettings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
-            application.registerUserNotificationSettings(settings)
-        //}
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(options: authOptions, completionHandler: {_, _ in} )
+        UNUserNotificationCenter.current().delegate = self
+        FIRMessaging.messaging().remoteMessageDelegate = self as? FIRMessagingDelegate
         
         application.registerForRemoteNotifications()
         
         if let firebaseToken = FIRInstanceID.instanceID().token() {
             print("Firebase token = " + firebaseToken)
-            //self.forwardTokenToServer(tokenString: firebaseToken)
         } else {
             print("Firebase token not assigned yet")
         }
@@ -84,63 +95,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     
-    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
-//        print("Received notification: " + notification.description)
-        // if remote notification {
-        /*
-        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripList), object: self)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripElements), object: self)
-        */
-        // } else {
-        //    Show alert if application is active
-        // }
-        if (application.applicationState == .active /* UIApplicationStateActive */ ) {
-            let alertController = UIAlertController(title: notification.alertTitle, message: notification.alertBody, preferredStyle: UIAlertControllerStyle.alert)
-            
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
-            {
-                (result : UIAlertAction) -> Void in
-                print("You pressed OK")
-            }
-            alertController.addAction(okAction)
-            
-            AudioServicesPlaySystemSound(1005)
-            self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
-
-    /*
-    func application(_ application: UIApplication,
-                     didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
-        print("didReceiveRemoteNotification w/o completionHandler")
-        // TO DO: Handle remote notication
-        if let messageId = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageId)")
-        }
-        print(userInfo)
-    }
-    */
-    
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
 //        print("Remote notification received: \(String(describing: userInfo))")
-
-        guard let changeType = userInfo["changeType"] as? String else {
-            fatalError("Invalid remote notification, no changeType element")
+        // appState is:
+        //  - active if application is active,
+        //  - inactive if application is being opened from notification
+        //  - background if application is in the background
+//        let appState = application.applicationState
+        guard let changeType = userInfo["changeType"] as? String, let changeOperation = userInfo["changeOperation"] as? String else {
+            fatalError("Invalid remote notification, no changeType or changeOperation element")
         }
-        guard let changeOperation = userInfo["changeOperation"] as? String else {
-            fatalError("Invalid remote notification, no changeOperation element")
-        }
 
-        print("Change type = \(changeType)")
+        print("didReceiveRemoteNotification: Change type & operation = \(changeType), \(changeOperation)")
         
         switch (changeType, changeOperation) {
         case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
-            handleNewChatMessage(userInfo: userInfo, parentCompletionHandler: {
-                completionHandler(UIBackgroundFetchResult.newData);
-            })
+            if let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId), trip.id == tripId {
+                // print("Message for current chat - refresh but don't notify")
+                trip.chatThread.refresh(mode: .incremental)
+            }
+            completionHandler(UIBackgroundFetchResult.newData)
 
         case (Constant.changeType.chatMessage, Constant.changeOperation.update):
             handleReadChatMessage(userInfo: userInfo, parentCompletionHandler: {
@@ -148,7 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             })
         
         case (Constant.changeType.chatMessage, _):
-            fatalError("Unknown change type/operation: (changeType, changeOperation)")
+            fatalError("Unknown change type/operation: \(changeType), \(changeOperation)")
 
         default:
             // Update from server (should take place in background)
@@ -156,60 +132,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 completionHandler(UIBackgroundFetchResult.newData);
             } )
         }
-    }
-
-    
-    func handleNewChatMessage(userInfo: [AnyHashable : Any], parentCompletionHandler: @escaping () -> Void) {
-        guard let apsInfo = userInfo["aps"] as? NSDictionary, let alertInfo = apsInfo["alert"] as? NSDictionary, let _ = alertInfo["loc-key"] as? String, let _ = alertInfo["loc-args"] as? NSArray, let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId) else {
-            fatalError("Invalid remote notification, no aps element, alert info, message key, message arguments or trip ID.")
-        }
-        let soundName:String? = apsInfo["sound"] as? String
-
-//        print("Notification for trip \(tripId)")
-
-        let rootVC = UIApplication.shared.keyWindow?.rootViewController
-        if let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
-//            print("Message for current chat - refresh but don't notify")
-            trip.chatThread.refresh(mode: .incremental)
-
-            // Notify user of chat message
-            if let soundName = soundName {
-                playSound(name: soundName, type: nil)
-            }
-        } else {
-            // Notify user of chat message
-            if let soundName = soundName {
-                playSound(name: soundName, type: nil)
-            }
-            
-            /* Notifications while app is active requires iOS 10 or bespoke GUI elements and code
-             let message = String(format: NSLocalizedString(locKey, comment:""), locale: NSLocale.current, arguments: msgArgs as! [CVarArg])
-             
-            let alertController = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.alert)
-            
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
-            {
-                (result : UIAlertAction) -> Void in
-                print("You pressed OK")
-            }
-            alertController.addAction(okAction)
-            
-            //self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
-            */
-
-            /*
-             @available(iOS 10.0, *)
-             func userNotificationCenter(center: UNUserNotificationCenter, willPresentNotification notification: UNNotification, withCompletionHandler completionHandler: (UNNotificationPresentationOptions) -> Void)
-             {
-             //Handle the notification
-             completionHandler(
-             [UNNotificationPresentationOptions.Alert,
-             UNNotificationPresentationOptions.Sound,
-             UNNotificationPresentationOptions.Badge])
-             }
-             */
-        }
-        parentCompletionHandler()
     }
 
 
@@ -245,8 +167,113 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         parentCompletionHandler()
     }
     
-    
-    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let category = response.notification.request.content.categoryIdentifier
+        let action = response.actionIdentifier
+        let userInfo = response.notification.request.content.userInfo
+        
+        print("userNotificationCenter.didReceiveResponse: Category & action = \(category), \(action)")
+        switch (category, action) {
+        case (_, UNNotificationDismissActionIdentifier):
+            print("User dismissed notification, no need to do anything - or maybe flag it as read")
+
+        case (_, UNNotificationDefaultActionIdentifier):
+            if let _ = response.notification.request.trigger as? UNPushNotificationTrigger, let changeType = userInfo["changeType"] as? String, let changeOperation = userInfo["changeOperation"] as? String {
+                switch (changeType, changeOperation) {
+                case (Constant.changeType.chatMessage, Constant.changeOperation.update):
+                    // This shouldn't happen because these notifications aren't presented to the user
+                    break;
+                    
+                case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+                    print("User opened app from notification, open chat screen")
+                    let ntfLink = NotificationLink(userInfo: userInfo)
+                    DeepLinkManager.current().set(linkHandler: ntfLink)
+                    DeepLinkManager.current().checkAndHandle()
+
+                case (_, Constant.changeOperation.insert):
+                    fallthrough
+                case (_, Constant.changeOperation.update):
+                    print("Trip or itinerary updated")
+                    let ntfLink = NotificationLink(userInfo: userInfo)
+                    DeepLinkManager.current().set(linkHandler: ntfLink)
+                    DeepLinkManager.current().checkAndHandle()
+                    
+                default:
+                    break
+                }
+            } else if let _ = response.notification.request.trigger as? UNCalendarNotificationTrigger {
+                print("User opened app from alert")
+                let alertLink = AlertLink(userInfo: userInfo)
+                DeepLinkManager.current().set(linkHandler: alertLink)
+                DeepLinkManager.current().checkAndHandle()
+            }
+            
+        case (Constant.notificationCategory.newChatMessage, Constant.notificationAction.replyToChatMessage):
+            // Handle reply to chat message
+            guard let textResponse = response as? UNTextInputNotificationResponse else {
+                fatalError("Response to chat message is not UNTextInputNotificationResponse")
+            }
+            guard let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId), let trip = TripList.sharedList.trip(byId: tripId) else {
+                fatalError("Invalid remote notification, no aps element, alert info, message key, message arguments or trip ID.")
+            }
+            ChatMessage.read(fromUserInfo: userInfo, responseHandler: {_,_,_ in })
+            let newMsg = ChatMessage(message: textResponse.userText)
+            trip.trip.chatThread.append(newMsg)
+
+        case (Constant.notificationCategory.newChatMessage, Constant.notificationAction.ignoreChatMessage):
+            ChatMessage.read(fromUserInfo: userInfo, responseHandler: {_,_,_ in })
+            
+        default:
+            print("Invalid action for new chat message: \(response.actionIdentifier)")
+        }
+        
+        completionHandler()
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
+    {
+        var handlerOption:UNNotificationPresentationOptions = [.alert, .sound]
+        if let _ = notification.request.trigger as? UNPushNotificationTrigger {
+            let userInfo = notification.request.content.userInfo
+            guard let changeType = userInfo["changeType"] as? String, let changeOperation = userInfo["changeOperation"] as? String else {
+                fatalError("Invalid remote notification, no changeType or changeOperation element")
+            }
+            print("userNotificationCenter.willPresent: Change type & operation = \(changeType), \(changeOperation)")
+            
+            switch (changeType, changeOperation) {
+            case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+                guard let apsInfo = userInfo["aps"] as? NSDictionary, let ntfFromUserId = userInfo["fromUserId"] as? String, let fromUserId = Int(ntfFromUserId), let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId) else {
+                    fatalError("Invalid remote notification, chat message without aps data, trip ID or sending user ID.")
+                }
+                guard let currentUserId = User.sharedUser.userId else {
+                    fatalError("Unable to get logged on user ID.")
+                }
+                if fromUserId == currentUserId {
+                    handlerOption = []
+                } else if let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
+                    // print("Message for current chat - refresh but don't notify")
+                    trip.chatThread.refresh(mode: .incremental)
+                    let soundName:String? = apsInfo["sound"] as? String
+                    playSound(name: soundName, type: nil)
+                    handlerOption = []
+                }
+                
+            default:
+                break;
+            }
+        } else if let _ = notification.request.trigger as? UNCalendarNotificationTrigger {
+            
+        }
+        
+        completionHandler(handlerOption)
+    }
+
+    private func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationRequest) {
         print("Registered with Firebase")
         FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
         User.sharedUser.registerForPushNotifications()
@@ -271,11 +298,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        print("applicationWillEnterForeground")
     }
 
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        print("applicationDidBecomeActive")
         if (RSUtilities.isNetworkAvailable("www.shitt.no")) {
             print("Network available, refreshing information from server")
             TripList.sharedList.getFromServer()
@@ -283,6 +312,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripList), object: self)
         NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.refreshTripElements), object: self)
+        
+        DeepLinkManager.current().checkAndHandle()
     }
     
 
@@ -337,11 +368,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 oldDeptLeadTime != newDeptLeadTime ||
                 oldLegLeadTime != newLegLeadTime ||
                 oldEventLeadTime != newEventLeadTime {
-                print("SHiT Settings changed - updating alerts...")
-                print("Trip lead time: \(String(describing: oldTripLeadTime)) -> \(newTripLeadTime)")
-                print("Dept lead time: \(String(describing: oldDeptLeadTime)) -> \(newDeptLeadTime)")
-                print("Leg lead time: \(String(describing: oldLegLeadTime)) -> \(newLegLeadTime)")
-                print("Event lead time: \(String(describing: oldEventLeadTime)) -> \(newEventLeadTime)")
+                //print("SHiT Settings changed - updating alerts...")
+//                print("Trip lead time: \(String(describing: oldTripLeadTime)) -> \(newTripLeadTime)")
+//                print("Dept lead time: \(String(describing: oldDeptLeadTime)) -> \(newDeptLeadTime)")
+//                print("Leg lead time: \(String(describing: oldLegLeadTime)) -> \(newLegLeadTime)")
+//                print("Event lead time: \(String(describing: oldEventLeadTime)) -> \(newEventLeadTime)")
                 //print(defaults.dictionaryRepresentation())
                 TripList.sharedList.refreshNotifications()
                 
@@ -357,13 +388,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     func tokenRefreshNotification( _ notification: Notification) {
-        /*
-        if let refreshedToken = FIRInstanceID.instanceID().token() {
-            print("New Firebase token = \(refreshedToken)")
-            forwardTokenToServer(tokenString: refreshedToken)
-        }
-        */
-        
         connectToFirebase()
     }
     
@@ -389,7 +413,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     
-    func playSound(name: String, type: String?) {
+    func playSound(name: String?, type: String?) {
+        guard let name = name else {
+            return
+        }
         guard let path = Bundle.main.path(forResource: name, ofType:type) else {
             print("ERROR: Sound file '\(name)' not found.")
             return
@@ -403,102 +430,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    
-    // Probably won't need this...
-    func forwardTokenToServer(token: Data) {
-        print("Register token with server")
-        let userCred = User.sharedUser.getCredentials()
-        
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
-
-        var tokenString = ""
-        for i in 0..<token.count {
-            tokenString += String(format: "%02.2hhx", token[i] as CVarArg)
-        }
-        
-        //let tokenString = String(data: token, encoding: .utf8) ?? "Unable to print token"
-        print("Token: " + tokenString)
-        let webServiceRootPath = "device/"
-        let rsRequest: RSTransactionRequest = RSTransactionRequest()
-        //let tokenString = String(data:token, encoding: .utf8)
-        let tokenPayload = [ "userName":userCred.name!,
-                             "password":userCred.password!,
-                             "platform": "IOS",
-                             "env": "DEV",
-                             "key1": tokenString
-        ]
-        let rsRegisterToken: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"], payload: tokenPayload)
-    
-        //Set the parameters for the RSTransaction object
-        rsRegisterToken.path = webServiceRootPath
-        /*rsRegisterToken.parameters = [ "userName":userCred.name!,
-                                       "password":userCred.password!,
-                                       "platform": "IOS",
-                                       "env": "DEV",
-                                       "key1": token.base64EncodedString()
-                                     ]
-        */
-        //Send request
-        print("Send token registration request")
-        rsRequest.dictionaryFromRSTransaction(rsRegisterToken, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                //If there was an error, log it
-                print("Token registration system error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                print("Token registration server error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else {
-                //Set the tableData NSArray to the results returned from www.shitt.no
-                print("Token successfully registered with server")
-            }
-        })
-        print("Token registration submitted")
-    }
-
-    func forwardTokenToServer(tokenString: String) {
-        print("Register token with server")
-        let userCred = User.sharedUser.getCredentials()
-        
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
-        
-        //let tokenString = String(data: token, encoding: .utf8) ?? "Unable to print token"
-        print("Token: " + tokenString)
-        let webServiceRootPath = "device/"
-        let rsRequest: RSTransactionRequest = RSTransactionRequest()
-        //let tokenString = String(data:token, encoding: .utf8)
-        let tokenPayload = [ "userName":userCred.name!,
-                             "password":userCred.password!,
-                             "platform": "IOS",
-                             "env": "DEV",
-                             "key1": tokenString
-        ]
-        let rsRegisterToken: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceRootPath, parameters: ["userName":"dummy@default.com","password":"******"], payload: tokenPayload)
-        
-        //Set the parameters for the RSTransaction object
-        rsRegisterToken.path = webServiceRootPath
-        //Send request
-        print("Send token registration request")
-        rsRequest.dictionaryFromRSTransaction(rsRegisterToken, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                //If there was an error, log it
-                print("Token registration system error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                print("Token registration server error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else {
-                //Set the tableData NSArray to the results returned from www.shitt.no
-                print("Token successfully registered with server")
-            }
-        })
-        print("Token registration submitted")
-    }
 }
 

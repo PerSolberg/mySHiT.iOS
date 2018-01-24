@@ -114,6 +114,28 @@ class ChatMessage: NSObject, NSCoding {
 
     }
     
+    /*
+    required init?(fromUserInfo userInfo: [AnyHashable:Any]) {
+        //super.init(fromDictionary: elementData)
+        guard let changeType = userInfo["changeType"] as? String, let changeOp = userInfo["changeOperation"] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
+            fatalError("Invalid usage, can only be used to initialise message from notification")
+        }
+        guard let ntfMsgId = userInfo["id"] as? String, let msgId = Int(ntfMsgId), let ntfFromUserId = userInfo["fromUserId"] as? String, let fromUserId = Int(ntfFromUserId), let message = userInfo["message"] as? String else {
+            fatalError("Invalid chat message notification, no message ID, trip ID, sending user ID or message.")
+        }
+        
+        id = msgId
+        userId = fromUserId
+        userName = ""
+        userInitials = ""
+        localId = (Constant.deviceType, UIDevice.current.identifierForVendor!.uuidString, NSUUID().uuidString)
+        messageText = message
+        storedTimestamp = nil
+        createdTimestamp = Date()
+        
+    }
+    */
+    
     init(message: String!) {
         id = nil
         userId = User.sharedUser.userId
@@ -166,6 +188,7 @@ class ChatMessage: NSObject, NSCoding {
         })
     }
 
+    /*
     func read(tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void ) {
         guard let id = id else {
             fatalError("Cannot update read status on message without ID")
@@ -192,8 +215,51 @@ class ChatMessage: NSObject, NSCoding {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
                 NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else if let responseDictionary = responseDictionary {
-                print("Chat message read: \(String(describing: responseDictionary))")
+            } else if let _ /*responseDictionary*/ = responseDictionary {
+                //print("Chat message read: \(String(describing: responseDictionary))")
+            } else {
+                print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
+            }
+            parentResponseHandler(response, responseDictionary, error)
+        })
+    }
+    */
+
+    func read(tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void ) {
+        guard let id = id else {
+            fatalError("Cannot update read status on message without ID")
+        }
+        type(of:self).read(msgId: id, tripId: tripId, responseHandler: parentResponseHandler)
+    }
+    
+    
+    static func read(msgId: Int!, tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void ) {
+        let userCred = User.sharedUser.getCredentials()
+        assert( userCred.name != nil );
+        assert( userCred.password != nil );
+        assert( userCred.urlsafePassword != nil );
+
+        let rsRequest: RSTransactionRequest = RSTransactionRequest()
+        let rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
+        
+        //Set the parameters for the RSTransaction object
+        rsTransReadMsg.path = webServiceChatPath + "/" + String(tripId) + "/" + webServiceReadMessageVerb + "/" + String(msgId)
+        rsTransReadMsg.parameters = [ "userName":userCred.name!
+            , "password":userCred.urlsafePassword!
+        ]
+        
+        //Send request
+        rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            if let error = error {
+                //If there was an error, log it
+                print("Error : \(error.localizedDescription)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let error = responseDictionary?[Constant.JSON.queryError] {
+                let errMsg = error as! String
+                print("Error : \(errMsg)")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+            } else if let _ /*responseDictionary*/ = responseDictionary {
+                //print("Chat message read: \(String(describing: responseDictionary))")
             } else {
                 print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
             }
@@ -201,4 +267,15 @@ class ChatMessage: NSObject, NSCoding {
         })
     }
     
+    static func read(fromUserInfo userInfo: [AnyHashable:Any], responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
+        //super.init(fromDictionary: elementData)
+        guard let changeType = userInfo["changeType"] as? String, let changeOp = userInfo["changeOperation"] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
+            fatalError("Invalid usage, can only be used to initialise message from notification")
+        }
+        guard let ntfMsgId = userInfo["id"] as? String, let msgId = Int(ntfMsgId), let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId) else {
+            fatalError("Invalid chat message notification, no message ID or trip ID.")
+        }
+        read(msgId: msgId, tripId: tripId, responseHandler: parentResponseHandler)
+    }
+
 }

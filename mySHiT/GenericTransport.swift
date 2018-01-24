@@ -253,4 +253,21 @@ class GenericTransport: TripElement {
         return nil
     }
 
+    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
+        guard element.tripElement == self else {
+            fatalError("Inconsistent trip element and annotated trip element")
+        }
+        if subType == "LIMO" || subType == "PBUS" {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "PrivateTransportDetailsViewController")
+            if let ptvc = vc as? PrivateTransportDetailsViewController {
+                ptvc.tripElement = element
+                ptvc.trip = trip
+                return ptvc
+            }
+            return nil
+        } else {
+            return super.viewController(trip: trip, element: element)
+        }
+    }
 }

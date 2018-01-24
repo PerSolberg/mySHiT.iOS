@@ -35,7 +35,8 @@ class ChatTableController: UITableViewController {
     
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.openURL(appSettings)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+            //UIApplication.shared.openURL(appSettings)
         }
     }
     
@@ -63,7 +64,7 @@ class ChatTableController: UITableViewController {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Chat Table loaded")
+        //print("Chat Table loaded")
         //print("Current language = \((Locale.current as NSLocale).object(forKey: NSLocale.Key.languageCode)!)")
         super.viewDidLoad()
 
@@ -105,7 +106,7 @@ class ChatTableController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if let trip = trip {
-            print("Chat Table: Refreshing messages from server")
+            //print("Chat Table: Refreshing messages from server")
             if let savedPosition = trip.trip.chatThread.exactPosition {
                 print("ChatTable: Restoring exact position: \(String(describing: savedPosition))")
                 self.chatListTable.contentOffset = savedPosition
@@ -119,7 +120,7 @@ class ChatTableController: UITableViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        print("ChatTable appeared")
+//        print("ChatTable appeared")
         if !User.sharedUser.hasCredentials() {
             // Show login view
             print("Show logon screen")
@@ -128,7 +129,7 @@ class ChatTableController: UITableViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        print("View will disappear, save status")
+//        print("View will disappear, save status")
         trip!.trip.chatThread.exactPosition = chatListTable.contentOffset
         saveTrips()
     }
@@ -138,7 +139,7 @@ class ChatTableController: UITableViewController {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
-        print("ChatTable: Refreshing list, probably because data were updated")
+//        print("ChatTable: Refreshing list, probably because data were updated")
         guard let trip = trip else {
             print("ERROR: trip not correctly set up")
             return
@@ -173,7 +174,7 @@ class ChatTableController: UITableViewController {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
-        print("ChatTableView: End refresh after network error")
+//        print("ChatTableView: End refresh after network error")
         
         // First check if this view is currently active, if not, skip the alert
         if self.isViewLoaded && view.window != nil {

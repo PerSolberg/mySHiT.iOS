@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import UserNotifications
 
 class TripElement: NSObject, NSCoding {
     static let RefTag_Type      = "type"
@@ -119,7 +120,11 @@ class TripElement: NSObject, NSCoding {
         switch (elemType, elemSubType) {
         case ("TRA", "AIR"):
             elem = Flight(fromDictionary: elementData)
+        case ("TRA", "BUS"):
+            elem = ScheduledTransport(fromDictionary: elementData)
         case ("TRA", "TRN"):
+            elem = ScheduledTransport(fromDictionary: elementData)
+        case ("TRA", "BOAT"):
             elem = ScheduledTransport(fromDictionary: elementData)
         case ("TRA", _):
             elem = GenericTransport(fromDictionary: elementData)
@@ -149,10 +154,8 @@ class TripElement: NSObject, NSCoding {
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        //let visible  = aDecoder.decodeObjectForKey(PropertyKey.visibleKey) as! Bool
         type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String
         subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as! String
-        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         
         references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
@@ -262,18 +265,29 @@ class TripElement: NSObject, NSCoding {
                 dcf.unitsStyle = .short
                 dcf.zeroFormattingBehavior = .dropAll
                 
-                let startTimeText = startTime(dateStyle: .none, timeStyle: .short)!
-                let notification = UILocalNotification()
-                
+                let startTimeText = startTime(dateStyle: .none, timeStyle: .short)!                
                 let actualLeadTime = startTime!.timeIntervalSince((newInfo?.notificationDate)!)
                 let leadTimeText = dcf.string(from: actualLeadTime)
-                notification.alertBody = String.localizedStringWithFormat(alertMessage, title!, leadTimeText!, startTimeText) as String
-                notification.fireDate = newInfo?.notificationDate // alertTime
-                notification.soundName = UILocalNotificationDefaultSoundName
-                notification.userInfo = actualUserInfo
-                notification.category = "SHiT"
 
-                UIApplication.shared.scheduleLocalNotification(notification)
+                let ntfContent = UNMutableNotificationContent()
+                ntfContent.body = String.localizedStringWithFormat(alertMessage, title!, leadTimeText!, startTimeText) as String
+                ntfContent.sound = UNNotificationSound.default()
+                ntfContent.userInfo = actualUserInfo
+                ntfContent.categoryIdentifier = "SHiT"
+                
+                //let calendar = Calendar(identifier: .gregorian)
+                //let components = calendar.dateComponents(in: .current, from: date)
+                let ntfDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: (newInfo?.notificationDate)!)
+                
+                let ntfTrigger = UNCalendarNotificationTrigger(dateMatching: ntfDateComponents, repeats: false)
+                let notification10 = UNNotificationRequest(identifier: notificationType + String(id), content: ntfContent, trigger: ntfTrigger)
+                
+                UNUserNotificationCenter.current().add(notification10) {(error) in
+                    if let error = error {
+                        print("Unable to schedule notification: \(error)")
+                    }
+                }
+                
             } else {
                 print("Not setting \(notificationType) notification for trip element \(id), combined with other notification")
             }
@@ -286,14 +300,24 @@ class TripElement: NSObject, NSCoding {
     }
     
     func cancelNotifications() {
-        for notification in UIApplication.shared.scheduledLocalNotifications! as [UILocalNotification] {
-            if (notification.userInfo![Constant.notificationUserInfo.tripElementId] as? Int == id) {
-                UIApplication.shared.cancelLocalNotification(notification)
-            }
-        }
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Constant.Settings.deptLeadTime + String(id), Constant.Settings.legLeadTime + String(id)])
     }
 
     func copyState(from: TripElement) {
         self.notifications = from.notifications
+    }
+    
+    func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
+        guard element.tripElement == self else {
+            fatalError("Inconsistent trip element and annotated trip element")
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "UnknownElementDetailsViewController")
+        if let uevc = vc as? UnknownElementDetailsViewController {
+            uevc.tripElement = element
+            uevc.trip = trip
+            return uevc
+        }
+        return nil
     }
 }

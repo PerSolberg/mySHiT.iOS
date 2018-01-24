@@ -54,7 +54,8 @@ class TripDetailsViewController: UITableViewController {
     // MARK: Navigation
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.openURL(appSettings)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+            //UIApplication.shared.openURL(appSettings)
         }
     }
     

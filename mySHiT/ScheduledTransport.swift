@@ -64,4 +64,19 @@ class ScheduledTransport: GenericTransport {
             //print("Not setting notifications for past trip element \(id)")
         }
     }
+
+    
+    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
+        guard element.tripElement == self else {
+            fatalError("Inconsistent trip element and annotated trip element")
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ScheduledTransportDetailsViewController")
+        if let stvc = vc as? ScheduledTransportDetailsViewController {
+            stvc.tripElement = element
+            stvc.trip = trip
+            return stvc
+        }
+        return nil
+    }
 }
