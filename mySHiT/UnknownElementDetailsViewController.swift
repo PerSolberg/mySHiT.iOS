@@ -26,7 +26,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Unknown Element Details: Preparing for segue '\(String(describing: segue.identifier))'")
+//        print("Unknown Element Details: Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
     
@@ -72,7 +72,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
     
     // MARK: Functions
     func refreshTripElements() {
-        print("Refreshing trip details - probably because data were refreshed")
+//        print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
         DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name

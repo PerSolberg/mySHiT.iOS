@@ -43,10 +43,7 @@ class ChatTableController: UITableViewController {
     
     // MARK: Constructors
     func initCommon() {
-        //sections = [TripListSectionInfo]()
-        //for tls in TripListSection.allValues {
-        //    sections.append( TripListSectionInfo(visible: true, type: tls, firstTrip: -1)! )
-        //}
+
     }
     
     
@@ -240,14 +237,6 @@ class ChatTableController: UITableViewController {
         return nil
     }
 
-//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        //let height = super.tableView(tableView, heightForRowAt: indexPath)
-//        
-//        let cell = self.tableView(tableView, cellForRowAt: indexPath)
-//        let height = cell.bounds.height
-//        print("ChatTable: Height of \(String(describing: indexPath)) = \(String(describing: height))")
-//        return height
-//    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var kCellIdentifier: String

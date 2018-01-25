@@ -65,8 +65,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
             //    logout()
                 
             case Constant.segue.embedChatTable:
-//                let destinationController = segue.destination as! ChatTableController
-//                destinationController.trip = trip
                 chatTableController = segue.destination as? ChatTableController
                 if let chatTableController = chatTableController {
                     chatTableController.trip = trip
@@ -102,7 +100,6 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.refreshChat), name: NSNotification.Name(rawValue: Constant.notification.chatRefreshed), object: nil)
 
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
@@ -122,21 +119,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
              messageTextView.text = trip.trip.chatThread.messageBeingEntered
         }
         controlSendButton()
-
-        /*
-        if let trip = trip {
-            print("Refreshing messages from server")
-            trip.trip.refreshMessages()
-        } else {
-            print("ERROR: Trip not set correctly")
-        }
-        print("Data should be ready - refresh list")
-        */
-        //DispatchQueue.main.async(execute: {
-        //    self.chatListTable.reloadData()
-        //})
         
-
         initialBottomConstraint = bottomSpacingConstraint.constant
         NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillHide, object: nil)

@@ -30,7 +30,7 @@ class HotelDetailsViewController: UIViewController {
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Preparing for segue '\(String(describing: segue.identifier))'")
+//        print("Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
     
@@ -39,7 +39,7 @@ class HotelDetailsViewController: UIViewController {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Hotel Details View loaded")
+//        print("Hotel Details View loaded")
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(HotelDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "RefreshTripElements"), object: nil)
@@ -106,7 +106,7 @@ class HotelDetailsViewController: UIViewController {
     
     // MARK: Functions
     func refreshTripElements() {
-        print("Refreshing trip details - probably because data were refreshed")
+//        print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
         DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name

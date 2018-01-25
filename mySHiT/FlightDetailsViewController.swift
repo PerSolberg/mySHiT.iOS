@@ -33,7 +33,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Flight Details: Preparing for segue '\(String(describing: segue.identifier))'")
+//        print("Flight Details: Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
 
@@ -45,12 +45,9 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Flight Details View loaded")
+//        print("Flight Details View loaded")
         super.viewDidLoad()
         
-        //NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "RefreshTripElements", object: nil)
-        //NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "dataRefreshed", object: nil)
-
         departureLocationTextView.isScrollEnabled = false
         arrivalLocationTextView.isScrollEnabled = false
         
@@ -135,7 +132,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Functions
     func refreshTripElements() {
-        print("Refreshing trip details - probably because data were refreshed")
+//        print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
         DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name

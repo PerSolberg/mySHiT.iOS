@@ -64,7 +64,7 @@ class TripDetailsViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         if let segueId = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
-            print("Trip Details: Preparing for segue '\(segueId)'")
+//            print("Trip Details: Preparing for segue '\(segueId)'")
             let indexPath = tableView.indexPath(for: selectedTripCell)!
             let s = getSectionById(indexPath.section)
             let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
@@ -104,7 +104,7 @@ class TripDetailsViewController: UITableViewController {
                 elementToRefresh = indexPath
             }
         } else if let segueId = segue.identifier {
-            print("Trip Details: Preparing for segue '\(segueId)' (no trip element)")
+//            print("Trip Details: Preparing for segue '\(segueId)' (no trip element)")
             switch (segueId) {
             case Constant.segue.showChatTable:
                 let destinationController = segue.destination as! ChatTableController
@@ -131,7 +131,7 @@ class TripDetailsViewController: UITableViewController {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Trip Details View loaded")
+//        print("Trip Details View loaded")
         super.viewDidLoad()
 
         NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "RefreshTripElements"), object: nil)
@@ -324,7 +324,7 @@ class TripDetailsViewController: UITableViewController {
     
     // MARK: Functions
     func reloadTripDetailsFromServer() {
-        print("Reloading trip details")
+//        print("Reloading trip details")
         tripDetailsTable.setBackgroundMessage("Retrieving trip details from SHiT")   /* LOCALISE */
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
@@ -335,7 +335,7 @@ class TripDetailsViewController: UITableViewController {
 
     func handleNetworkError() {
         refreshControl!.endRefreshing()
-        print("TripDetailsView: End refresh after network error")
+//        print("TripDetailsView: End refresh after network error")
         
         // Notify user
         if self.isViewLoaded && view.window != nil {
@@ -363,7 +363,7 @@ class TripDetailsViewController: UITableViewController {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
-        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(String(describing: tripCode))'")
+//        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(String(describing: tripCode))'")
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.refreshNotifications()
@@ -374,9 +374,9 @@ class TripDetailsViewController: UITableViewController {
             }
         }
         updateSections()
-        print("Trip detail sections updated, now refreshing view")
+//        print("Trip detail sections updated, now refreshing view")
         DispatchQueue.main.async(execute: {
-            print("Refreshing trip details list view")
+//            print("Refreshing trip details list view")
             self.title = self.trip?.trip.name
             self.tripDetailsTable.reloadData()
         })

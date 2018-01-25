@@ -208,7 +208,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
         // First check if this view is currently active, if not, skip the alert
         if self.isViewLoaded && view.window != nil {
-            print("TripListView: Present error message")
+//            print("TripListView: Present error message")
             // Notify user
             DispatchQueue.main.async(execute: {
                 let alert = UIAlertController(
@@ -362,7 +362,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         if !isSuccessfulSave {
             print("Failed to save sections...")
         } else {
-            print("Trip sections saved to iOS keyed archive")
+//            print("Trip sections saved to iOS keyed archive")
         }
     }
     

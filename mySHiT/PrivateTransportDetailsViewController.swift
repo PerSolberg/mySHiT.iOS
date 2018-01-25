@@ -32,7 +32,7 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        print("Flight Details: Preparing for segue '\(String(describing: segue.identifier))'")
+//        print("Private Transport Details: Preparing for segue '\(String(describing: segue.identifier))'")
     }
     
     
@@ -44,16 +44,11 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Scheduled Transport Details View loaded")
+//        print("Private Transport Details View loaded")
         super.viewDidLoad()
-        
-        //NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "RefreshTripElements", object: nil)
-        //NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTripElements", name: "dataRefreshed", object: nil)
         
         if let transportElement = tripElement?.tripElement as? GenericTransport {
             companyTextField.text = transportElement.companyName ?? "<Unknown company>"
-            //routeNoTextField.text = transportElement.routeNo
-            
             
             var locationInfo = transportElement.departureStop ?? ""
             if let departureTerminal = transportElement.departureTerminalName {
@@ -149,7 +144,7 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     
     // MARK: Functions
     func refreshTripElements() {
-        print("Refreshing trip details - probably because data were refreshed")
+//        print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
         DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name
