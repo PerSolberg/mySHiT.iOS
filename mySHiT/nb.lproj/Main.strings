@@ -149,3 +149,59 @@
 /* Class = "UIViewController"; title = "Messages", ObjectID = "xJA-ve-Rcc" */
 "xJA-ve-Rcc.title" = "Meldinger";
 
+/* Class = "UITextView"; text = "Lorem ipsum"; ObjectID = "4cN-7I-4N5"; */
+"4cN-7I-4N5.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UITextView"; text = "Lorem ipsum"; ObjectID = "I8V-PR-YZU"; */
+"I8V-PR-YZU.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UITextView"; text = "Lorem ipsum "; ObjectID = "Jgq-z7-c0w"; */
+"Jgq-z7-c0w.text" = "Lorem ipsum dolor sit er elit lamet. ";
+
+/* Class = "UILabel"; text = "Reference"; ObjectID = "RHx-U1-tjj"; */
+"RHx-U1-tjj.text" = "Referanse";
+
+/* Class = "UILabel"; text = "Travel Time"; ObjectID = "U5M-E0-ukH"; */
+"U5M-E0-ukH.text" = "Reisetid";
+
+/* Class = "UILabel"; text = "Start Time"; ObjectID = "W4p-OF-FEY"; */
+"W4p-OF-FEY.text" = "Starttid";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet"; ObjectID = "a46-4W-bMM"; */
+"a46-4W-bMM.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UILabel"; text = "Venue"; ObjectID = "b6A-U0-ZSP"; */
+"b6A-U0-ZSP.text" = "Navn";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "bgu-un-rvc"; (User Init) */
+"bgu-un-rvc.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "cKD-J9-ag2"; (Chat) */
+"cKD-J9-ag2.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "fus-AH-QhV"; (Chat) */
+"fus-AH-QhV.text" = "Label";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet "; ObjectID = "gGz-PI-I78"; (Chat) */
+"gGz-PI-I78.text" = "Lorem ipsum dolor sit er elit lamet. ";
+
+/* Class = "UILabel"; text = "Phone"; ObjectID = "hCS-0j-dPH"; */
+"hCS-0j-dPH.text" = "Telefon";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet "; ObjectID = "hSz-0c-dQB"; (Chat) */
+"hSz-0c-dQB.text" = "Lorem ipsum dolor sit er elit lamet. ";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet"; ObjectID = "lkE-co-GoQ"; (Chat) */
+"lkE-co-GoQ.text" = "Lorem ipsum dolor sit er elit lamet.";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet"; ObjectID = "mZO-Lv-fHg"; (Chat) */
+"mZO-Lv-fHg.text" = "Lorem ipsum dolor sit er elit lamet. ";
+
+/* Class = "UILabel"; text = "Access Info"; ObjectID = "nuk-1W-LBA"; */
+"nuk-1W-LBA.text" = "Informasjon";
+
+/* Class = "UITableViewController"; title = "Alerts"; ObjectID = "tk8-Nj-BWl"; */
+"tk8-Nj-BWl.title" = "Varslinger";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet"; ObjectID = "toL-Te-mmb"; (Venue address) */
+"toL-Te-mmb.text" = "Lorem ipsum dolor sit er elit lamet.";

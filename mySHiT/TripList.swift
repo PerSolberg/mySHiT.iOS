@@ -203,6 +203,7 @@ class TripList:NSObject, Sequence, NSCoding {
     func loadFromArchive(_ path:String) {
         let newTripList = NSKeyedUnarchiver.unarchiveObject(withFile: path) as? [AnnotatedTrip]
         trips = newTripList ?? [AnnotatedTrip]()
+        refreshNotifications()
     }
 
 

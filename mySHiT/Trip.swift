@@ -140,6 +140,7 @@ class Trip: NSObject, NSCoding {
         static let elementsKey = "elements"
 //        static let messagesKey = "messages"
         static let chatThreadKey = "chatThread"
+        static let notificationsKey = "notifications"
     }
 
     static let webServiceTripPath = "trip/"
@@ -169,6 +170,7 @@ class Trip: NSObject, NSCoding {
         aCoder.encode(type, forKey: PropertyKey.typeKey)
         aCoder.encode(elements, forKey: PropertyKey.elementsKey)
         aCoder.encode(chatThread, forKey: PropertyKey.chatThreadKey)
+        aCoder.encode(notifications, forKey: PropertyKey.notificationsKey)
     }
 
     
@@ -188,6 +190,7 @@ class Trip: NSObject, NSCoding {
         type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as? String
         elements  = aDecoder.decodeObject(forKey: PropertyKey.elementsKey) as? [AnnotatedTripElement]
 //        messages = aDecoder.decodeObject(forKey: PropertyKey.messagesKey) as? [ChatMessage]
+        notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
         chatThread = (aDecoder.decodeObject(forKey: PropertyKey.chatThreadKey) as? ChatThread) ?? ChatThread(tripId: id)
         
         setNotification()
@@ -216,7 +219,7 @@ class Trip: NSObject, NSCoding {
         }
         chatThread = ChatThread(tripId: id)
 
-        setNotification()
+        //setNotification()
     }
     
 
@@ -426,6 +429,7 @@ class Trip: NSObject, NSCoding {
                             self.elements        = newTrip.elements
                             
                             UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
+                            self.refreshNotifications()
                         }
 
                         //let tripName = serverData["name"] as! String
@@ -491,5 +495,6 @@ class Trip: NSObject, NSCoding {
                 }
             }
         }
+        notifications = from.notifications
     }
 }
