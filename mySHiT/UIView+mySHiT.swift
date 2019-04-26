@@ -130,10 +130,10 @@ extension UIView
                 valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
                 //if (value as AnyObject).isKind(of: NSAttributedString) {
                 if (value is NSAttributedString) {
-                    valueField.attributedText = value as! NSAttributedString
+                    valueField.attributedText = value as? NSAttributedString
                 //} else if (value as AnyObject).isKind(of: NSString) {
                 } else if (value is NSString) {
-                    valueField.text = value as! String
+                    valueField.text = value as? String
                 //} else if (value as AnyObject).isKind(of: NSNumber) {
                 } else if (value is NSNumber) {
                     valueField.text = String(describing: value as! NSNumber)
@@ -258,7 +258,7 @@ extension UIView
                 valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
                 //if (value as AnyObject).isKind(of: NSString) {
                 if (value is NSString) {
-                    valueField.text = value as! String
+                    valueField.text = value as? String
                 //} else if (value as AnyObject).isKind(of: NSNumber) {
                 } else if (value is NSNumber) {
                     valueField.text = String(describing: value as! NSNumber)

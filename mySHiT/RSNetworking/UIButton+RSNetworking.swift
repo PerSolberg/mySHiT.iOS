@@ -9,12 +9,12 @@
 import UIKit
 
 extension UIButton {
-    func setButtonImageForURL(_ urlStr: String, placeHolder: UIImage, state: UIControlState) -> Void{
+    func setButtonImageForURL(_ urlStr: String, placeHolder: UIImage, state: UIControl.State) -> Void{
         self.setBackgroundImage(placeHolder, for:state)
         setButtonImageForURL(urlStr,state: state)
     }
     
-    func setButtonImageForURL(_ urlStr: String, state: UIControlState) -> Void {
+    func setButtonImageForURL(_ urlStr: String, state: UIControl.State) -> Void {
         let url = URL(string: urlStr)
         let client = RSURLRequest()
         client.imageFromURL(url!, completionHandler: {(response : URLResponse?, image: UIImage?, error: Error?) -> Void in
@@ -23,12 +23,12 @@ extension UIButton {
         })
     }
  
-    func setButtonImageForRSTransaction(_ transaction:RSTransaction, placeHolder: UIImage, state: UIControlState) -> Void {
+    func setButtonImageForRSTransaction(_ transaction:RSTransaction, placeHolder: UIImage, state: UIControl.State) -> Void {
         self.setBackgroundImage(placeHolder, for:state)
         setButtonImageForRSTransaction(transaction, state: state)
     }
     
-    func setButtonImageForRSTransaction(_ transaction:RSTransaction, state: UIControlState) -> Void {
+    func setButtonImageForRSTransaction(_ transaction:RSTransaction, state: UIControl.State) -> Void {
         let RSRequest = RSTransactionRequest();
         
         RSRequest.imageFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, image: UIImage?, error: Error?) -> Void in

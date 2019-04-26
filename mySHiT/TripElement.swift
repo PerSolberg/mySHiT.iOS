@@ -154,8 +154,8 @@ class TripElement: NSObject, NSCoding {
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String
-        subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as! String
+        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as? String
+        subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as? String
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         
         references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
@@ -183,7 +183,7 @@ class TripElement: NSObject, NSCoding {
     
     
     required init?(fromDictionary elementData: NSDictionary!) {
-        id = elementData[Constant.JSON.elementId] as! Int
+        id = elementData[Constant.JSON.elementId] as? Int
         type = elementData[Constant.JSON.elementType] as? String
         subType = elementData[Constant.JSON.elementSubType] as? String
         references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
@@ -271,7 +271,7 @@ class TripElement: NSObject, NSCoding {
 
                 let ntfContent = UNMutableNotificationContent()
                 ntfContent.body = String.localizedStringWithFormat(alertMessage, title!, leadTimeText!, startTimeText) as String
-                ntfContent.sound = UNNotificationSound.default()
+                ntfContent.sound = UNNotificationSound.default
                 ntfContent.userInfo = actualUserInfo
                 ntfContent.categoryIdentifier = "SHiT"
                 
@@ -289,12 +289,12 @@ class TripElement: NSObject, NSCoding {
                 }
                 
             } else {
-                print("Not setting \(notificationType) notification for trip element \(id), combined with other notification")
+                print("Not setting \(String(describing:notificationType)) notification for trip element \(String(describing:id)), combined with other notification")
             }
             
             notifications[notificationType] = newInfo
         } else {
-            print("Not refreshing \(notificationType) notification for trip element \(id), already triggered")
+            print("Not refreshing \(String(describing:notificationType)) notification for trip element \(String(describing:id)), already triggered")
         }
         
     }

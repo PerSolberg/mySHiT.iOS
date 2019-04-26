@@ -34,8 +34,8 @@ class ChatTableController: UITableViewController {
     
     
     @IBAction func openSettings(_ sender: AnyObject) {
-        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             //UIApplication.shared.openURL(appSettings)
         }
     }
@@ -53,7 +53,7 @@ class ChatTableController: UITableViewController {
     }
     
     
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         initCommon()
     }
@@ -84,7 +84,7 @@ class ChatTableController: UITableViewController {
         chatListTable.delegate = self
         
         chatListTable.estimatedRowHeight = 44
-        chatListTable.rowHeight = UITableViewAutomaticDimension
+        chatListTable.rowHeight = UITableView.automaticDimension
         
         // Set up refresh
         refreshControl = UIRefreshControl()
@@ -132,7 +132,7 @@ class ChatTableController: UITableViewController {
     }
 
 
-    func refreshChat() {
+    @objc func refreshChat() {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
@@ -181,8 +181,8 @@ class ChatTableController: UITableViewController {
                 let alert = UIAlertController(
                     title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
                     message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             })
         }
@@ -195,7 +195,7 @@ class ChatTableController: UITableViewController {
     }
     
     
-    func reloadChatThreadFromServer() {
+    @objc func reloadChatThreadFromServer() {
         chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingChatThread, comment: "Some dummy comment"))
         guard let trip = trip else {
             fatalError("Trip not configured correctly for chat thread")
@@ -317,3 +317,8 @@ class ChatTableController: UITableViewController {
     //
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

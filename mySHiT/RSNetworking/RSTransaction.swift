@@ -46,7 +46,8 @@ class RSTransaction: NSObject {
     fileprivate func removeSlashFromEndOfString(_ string: String) -> String
     {
         if string.hasSuffix("/") {
-            return string.substring(to: string.characters.index(before: string.endIndex))
+            // SWIFT 3: return string.substring(to: string.characters.index(before: string.endIndex))
+            return String(string.prefix(string.count - 1))
         } else {
             return string
         }
@@ -55,7 +56,8 @@ class RSTransaction: NSObject {
     
     fileprivate func removeSlashFromStartOfString(_ string : String) -> String {
         if string.hasPrefix("/") {
-            return string.substring(from: string.characters.index(after: string.startIndex))
+            // SWIFT 3: return string.substring(from: string.characters.index(after: string.startIndex))
+            return String(string.suffix(string.count - 1))
         } else {
             return string
         }

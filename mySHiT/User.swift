@@ -181,7 +181,7 @@ class User : NSObject, NSCoding {
         if let userId = userId {
             let topicUser = Constant.Firebase.topicRootUser + String(userId)
             print("Unsubscribing from topic '\(topicUser)")
-            FIRMessaging.messaging().unsubscribe(fromTopic: topicUser)
+            Messaging.messaging().unsubscribe(fromTopic: topicUser)
         }
     }
     
@@ -190,7 +190,7 @@ class User : NSObject, NSCoding {
         if let userId = userId {
             let topicUser = Constant.Firebase.topicRootUser + String(userId)
             print("Subscribing to topic '\(topicUser)")
-            FIRMessaging.messaging().subscribe(toTopic: topicUser)
+            Messaging.messaging().subscribe(toTopic: topicUser)
         } else {
             print("User ID not available, can't register for notifications")
         }

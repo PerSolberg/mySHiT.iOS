@@ -175,15 +175,17 @@ struct Constant {
     
     // Firebase Cloud Messaging (FCM)
     struct Firebase {
+        // No longer needed, format changed from "/topics/xxx" to "xxx"
         private static let topicRoot = "/topics"
         
         // These are ready to use as is
-        static let topicGlobal = "\(topicRoot)/GLOBAL"
+        //static let topicGlobal = "\(topicRoot)/GLOBAL"
+        static let topicGlobal = "GLOBAL"
         
         // These should be suffixed with IDs
-        static let topicRootItinerary = "\(topicRoot)/I-"
-        static let topicRootTrip = "\(topicRoot)/T-"
-        static let topicRootUser = "\(topicRoot)/U-"
+        static let topicRootItinerary = "I-"
+        static let topicRootTrip = "T-"
+        static let topicRootUser = "U-"
     }
 
     struct segue {

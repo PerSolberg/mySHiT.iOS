@@ -31,8 +31,8 @@ class NotificationInfo: NSObject, NSCoding {
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        baseDate  = aDecoder.decodeObject(forKey: PropertyKey.baseDateKey) as! Date
-        notificationDate = aDecoder.decodeObject(forKey: PropertyKey.notificationDateKey) as! Date
+        baseDate  = aDecoder.decodeObject(forKey: PropertyKey.baseDateKey) as? Date
+        notificationDate = aDecoder.decodeObject(forKey: PropertyKey.notificationDateKey) as? Date
         leadTime = aDecoder.decodeObject(forKey: PropertyKey.leadTimeKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.leadTimeKey)
     }
     

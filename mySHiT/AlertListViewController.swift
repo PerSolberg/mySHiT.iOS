@@ -32,7 +32,7 @@ class AlertListViewController: UITableViewController {
     }
     
     
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
     }
     
@@ -85,7 +85,7 @@ class AlertListViewController: UITableViewController {
         
         //If we did not get a reuseable cell, then create a new one
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: kCellIdentifier)
+            cell = UITableViewCell(style: UITableViewCell.CellStyle.subtitle, reuseIdentifier: kCellIdentifier)
         }
 
         if let notifications = notifications /*UIApplication.shared.scheduledLocalNotifications*/ {

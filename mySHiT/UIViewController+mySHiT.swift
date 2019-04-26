@@ -11,7 +11,7 @@ import UIKit
 
 extension UIViewController
 {
-    func isSame(_ vc:UIViewController) -> Bool {
+    @objc func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
         } else {

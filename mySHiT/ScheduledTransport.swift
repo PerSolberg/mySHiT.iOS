@@ -12,7 +12,11 @@ import UIKit
 class ScheduledTransport: GenericTransport {
     // MARK: Properties
     override var title: String? {
-        return (companyName ?? "XX") + " " + (routeNo ?? "***") + ": " + (departureLocation ?? "<Departure>") + " - " + (arrivalLocation ?? "<Arrival>")
+        let company = companyName ?? "XX"
+        let route = routeNo ?? "***"
+        let deptLocation = departureLocation ?? "<Departure>"
+        let arrLocation = arrivalLocation ?? "<Arrival>"
+        return company + " " + route + ": " + deptLocation + " - " + arrLocation
     }
     override var startInfo: String? {
         let timeInfo = startTime(dateStyle: .none, timeStyle: .short)

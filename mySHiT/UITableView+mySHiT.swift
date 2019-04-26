@@ -13,16 +13,16 @@ extension UITableView
 {
     func setBackgroundMessage(_ messageText:String?) {
         if let messageText = messageText {
-            let messageView = UILabel()
-            //let messageView = UITextView()
-        
-            messageView.text = messageText
-            messageView.textAlignment = .center
-            messageView.sizeToFit()
-
             //messageLabel.textColor = UIColor.cyanColor()
             //self.backgroundColor = UIColor.clearColor()
             DispatchQueue.main.async(execute: {
+                let messageView = UILabel()
+                //let messageView = UITextView()
+                
+                messageView.text = messageText
+                messageView.textAlignment = .center
+                messageView.sizeToFit()
+                
                 self.backgroundView = messageView
             })
         }

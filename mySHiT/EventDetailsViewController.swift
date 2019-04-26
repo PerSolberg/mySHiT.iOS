@@ -116,7 +116,7 @@ class EventDetailsViewController: UIViewController {
         })
     }
 
-    override func isSame(_ vc:UIViewController) -> Bool {
+    @objc override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? EventDetailsViewController, let te = tripElement, let vcte = vc.tripElement {

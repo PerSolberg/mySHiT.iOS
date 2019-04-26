@@ -19,7 +19,7 @@ class ChatThread:NSObject, NSCoding {
     private var messageVersion:Int?
     private var lastSeenByOthers = NSDictionary()
     private var lastDisplayedId:ChatMessage.LocalId?
-    private var lastDisplayedPosition:UITableViewScrollPosition?
+    private var lastDisplayedPosition:UITableView.ScrollPosition?
     private var lastSeenByUserLocal:Int?
     private var lastSeenByUserServer:Int?
     private var lastSeenVersion:Int?
@@ -27,7 +27,7 @@ class ChatThread:NSObject, NSCoding {
     var messageBeingEntered:String?
     private var savedExactPosition:CGPoint?
     
-    private var savedPosition:(ChatMessage.LocalId, UITableViewScrollPosition)?
+    private var savedPosition:(ChatMessage.LocalId, UITableView.ScrollPosition)?
     private var retryCount:Int = 0
 
     static let LastSeenByNone = "(NONE)"
@@ -104,11 +104,11 @@ class ChatThread:NSObject, NSCoding {
         
         ChatThread.dqAccess.sync {
             if let id = lastDisplayedId {
-                item = self.messages.index(where: { (m) -> Bool in
+                item = self.messages.firstIndex(where: { (m) -> Bool in
                     return (m.localId ?? ChatMessage.missingLocalId) == id
                 })
             } else if let id = lastSeenByUserLocal ?? lastSeenByUserServer {
-                item = self.messages.index(where: { (m) -> Bool in
+                item = self.messages.firstIndex(where: { (m) -> Bool in
                     return (m.id ?? 0) == id
                 })
             }
@@ -118,8 +118,8 @@ class ChatThread:NSObject, NSCoding {
     }
     
     
-    var lastDisplayedItemPosition:UITableViewScrollPosition {
-        var pos:UITableViewScrollPosition = .top
+    var lastDisplayedItemPosition:UITableView.ScrollPosition {
+        var pos:UITableView.ScrollPosition = .top
         
         ChatThread.dqAccess.sync {
             pos = lastDisplayedPosition ?? .top
@@ -205,7 +205,7 @@ class ChatThread:NSObject, NSCoding {
         messages = (aDecoder.decodeObject(forKey: PropertyKey.messagesKey) as? [ChatMessage]) ?? [ChatMessage]()
         messageVersion = aDecoder.decodeObject(forKey: PropertyKey.messageVersionKey) as? Int
         if let rawLastDisplayedPosition = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedPositionKey) as? Int {
-            lastDisplayedPosition = UITableViewScrollPosition(rawValue: rawLastDisplayedPosition)
+            lastDisplayedPosition = UITableView.ScrollPosition(rawValue: rawLastDisplayedPosition)
         }
         lastSeenVersion = aDecoder.decodeObject(forKey: PropertyKey.lastSeenVersionKey) as? Int
 
@@ -257,7 +257,7 @@ class ChatThread:NSObject, NSCoding {
         // First check if message already exists and has been saved in non-blocking thread
         var matchedIdx:Int?
         ChatThread.dqAccess.sync {
-            matchedIdx = self.messages.index(where: { (m) -> Bool in
+            matchedIdx = self.messages.firstIndex(where: { (m) -> Bool in
                 m.localId == msg.localId && m.isStored
             })
         }
@@ -265,10 +265,10 @@ class ChatThread:NSObject, NSCoding {
         if matchedIdx == nil {
             // Message not found, updating array in thread safe manner
             ChatThread.dqAccess.async(flags:.barrier) {
-                let insertBeforeIdx = self.messages.index(where: { (m) -> Bool in
+                let insertBeforeIdx = self.messages.firstIndex(where: { (m) -> Bool in
                     (!m.isStored) || (m.id! >= msgId)
                 })
-                let removeIdx = self.messages.index(of: msg)
+                let removeIdx = self.messages.firstIndex(of: msg)
 
                 if let insertBeforeIdx = insertBeforeIdx, let removeIdx = removeIdx {
                     if insertBeforeIdx == removeIdx {
@@ -305,7 +305,7 @@ class ChatThread:NSObject, NSCoding {
             return !m.isStored
         })
         if !unsavedMessages.isEmpty {
-            print("Saving message \(unsavedMessages[0].localId)")
+            print("Saving message \(String(describing:unsavedMessages[0].localId))")
             unsavedMessages[0].save(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
                 if let _ = error {
                     self.retryCount += 1

@@ -23,7 +23,7 @@ class TripList:NSObject, Sequence, NSCoding {
     required init?( coder aDecoder: NSCoder) {
         super.init()
         // NB: use conditional cast (as?) for any optional properties
-        trips  = aDecoder.decodeObject(forKey: PropertyKey.tripsKey) as! [AnnotatedTrip]
+        trips  = aDecoder.decodeObject(forKey: PropertyKey.tripsKey) as? [AnnotatedTrip]
     }
 
     // Public properties
@@ -149,7 +149,7 @@ class TripList:NSObject, Sequence, NSCoding {
         // Clear current data and repopulate from server data
         var newTripList = [AnnotatedTrip]()
         for svrItem in serverData {
-            let newTrip = Trip(fromDictionary: svrItem as! NSDictionary)
+            let newTrip = Trip(fromDictionary: svrItem as? NSDictionary)
             newTripList.append( AnnotatedTrip(section: .Historic, trip: newTrip!, modified: .Unchanged)! )
         }
 
@@ -195,7 +195,9 @@ class TripList:NSObject, Sequence, NSCoding {
         refreshNotifications()
         
         // Set application badge
-        UIApplication.shared.applicationIconBadgeNumber = changes()
+        DispatchQueue.main.async(execute: {
+            UIApplication.shared.applicationIconBadgeNumber = self.changes()
+        })
     }
     
     
@@ -208,7 +210,7 @@ class TripList:NSObject, Sequence, NSCoding {
 
 
     func saveToArchive(_ path:String) {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(trips, toFile: path)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(trips!, toFile: path)
         if !isSuccessfulSave {
             print("Failed to save trips...")
         } else {

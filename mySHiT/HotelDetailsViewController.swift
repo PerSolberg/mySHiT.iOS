@@ -105,7 +105,7 @@ class HotelDetailsViewController: UIViewController {
     
     
     // MARK: Functions
-    func refreshTripElements() {
+    @objc func refreshTripElements() {
 //        print("Refreshing trip details - probably because data were refreshed")
         //updateSections()
         DispatchQueue.main.async(execute: {
@@ -114,7 +114,7 @@ class HotelDetailsViewController: UIViewController {
         })
     }
     
-    override func isSame(_ vc:UIViewController) -> Bool {
+    @objc override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? HotelDetailsViewController, let te = tripElement, let vcte = vc.tripElement {

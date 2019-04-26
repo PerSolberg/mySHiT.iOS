@@ -45,7 +45,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
         messageTextView.text = NSLocalizedString(Constant.msg.unknownElement, comment: "Some dummy comment")
 
         if let serverElements = tripElement?.tripElement.serverData {
-            topView.addDictionaryAsGrid(serverElements, horisontalHuggingForLabel: 251.0, verticalHuggingForLabel: 251.0, horisontalHuggingForValue: 249.0, verticalHuggingForValue: 249.0, constrainValueFieldWidthToView: nil)
+            topView.addDictionaryAsGrid(serverElements, horisontalHuggingForLabel: UILayoutPriority(rawValue: 251.0), verticalHuggingForLabel: UILayoutPriority(rawValue: 251.0), horisontalHuggingForValue: UILayoutPriority(rawValue: 249.0), verticalHuggingForValue: UILayoutPriority(rawValue: 249.0), constrainValueFieldWidthToView: nil)
             //self.view.colourSubviews()
             serverDataContentSize = topView.contentSize
         }

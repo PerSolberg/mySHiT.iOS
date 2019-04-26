@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var appSettings = Dictionary<AnyHashable, Any>()
     var avPlayer:AVAudioPlayer?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // First save current app settings, so we can avoid refreshing when Firebase settings change
         let defaults = UserDefaults.standard
         appSettings[Constant.Settings.tripLeadTime] = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.registerDefaultsFromSettingsBundle();
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.firInstanceIDTokenRefresh, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.InstanceIDTokenRefresh, object: nil)
 
         //
         // Set up notification categories
@@ -59,20 +59,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UIApplication.shared.registerForRemoteNotifications()
         
         // Initialise Firebase
-        FIRApp.configure();
+        FirebaseApp.configure();
+        //FIRApp.configure();
 
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(options: authOptions, completionHandler: {_, _ in} )
         UNUserNotificationCenter.current().delegate = self
-        FIRMessaging.messaging().remoteMessageDelegate = self as? FIRMessagingDelegate
-        
+        Messaging.messaging().delegate = self as? MessagingDelegate
+
         application.registerForRemoteNotifications()
         
-        if let firebaseToken = FIRInstanceID.instanceID().token() {
-            print("Firebase token = " + firebaseToken)
-        } else {
-            print("Firebase token not assigned yet")
-        }
+        print("Firebase instance ID = " + String(describing: InstanceID.instanceID()) )
+//        if let firebaseInstanceID = InstanceID.instanceID() {
+//            print("Firebase instance ID = " + firebaseInstanceID)
+//        } else {
+//            print("Firebase token not assigned yet")
+//        }
 
         return true
     }
@@ -275,7 +277,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     private func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationRequest) {
         print("Registered with Firebase")
-        FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
+        Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
         User.sharedUser.registerForPushNotifications()
         TripList.sharedList.registerForPushNotifications()
     }
@@ -291,7 +293,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         print("Application in background, disconnected from Firebase")
-        FIRMessaging.messaging().disconnect()
+        //Removing disconnect at part of Swift 5 migration
+        //Messaging.messaging().disconnect()
         TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
     }
 
@@ -351,7 +354,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     
-    func defaultsChanged(_ notification:Notification){
+    @objc func defaultsChanged(_ notification:Notification){
         if let defaults = notification.object as? UserDefaults {
             //let defaults = UserDefaults.standard
             let newTripLeadTime = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
@@ -387,29 +390,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     
-    func tokenRefreshNotification( _ notification: Notification) {
+    @objc func tokenRefreshNotification( _ notification: Notification) {
         connectToFirebase()
     }
     
     
     func connectToFirebase() {
-        guard FIRInstanceID.instanceID().token() != nil else {
-            return
-        }
-        
+        // Removing this as part of Swift 5 migration
+        //guard InstanceID.instanceID().token() != nil else {
+        //    return
+        //}
+
+        /* Trying without all the error handling logic */
+        Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
+        User.sharedUser.registerForPushNotifications()
+
         // Terminate previous connection (if any)
-        FIRMessaging.messaging().disconnect()
+        /*
+        Messaging.messaging().disconnect()
         
-        FIRMessaging.messaging().connect { (error) in
+        Messaging.messaging().connect { (error) in
             if error != nil {
                 print("Unable to connect to Firebase. \(String(describing: error))")
             } else {
                 print("Connected to Firebase")
-                FIRMessaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
+                Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
 
                 User.sharedUser.registerForPushNotifications()
             }
         }
+        */
     }
 
     

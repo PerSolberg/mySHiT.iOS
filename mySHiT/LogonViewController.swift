@@ -48,8 +48,8 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.connectionFailed(_:)), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
 
         // Register for Keyboard Notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWasShown(_:)), name: NSNotification.Name.UIKeyboardDidShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWillBeHidden(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWasShown(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWillBeHidden(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
                     //name:UIKeyboardWillHideNotification object:nil];
 
         controlLogonButton()
@@ -114,11 +114,11 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
 
     // MARK: Notifications
     // Called when the UIKeyboardDidShowNotification is sent.
-    func keyboardWasShown(_ notification:Notification) {
+    @objc func keyboardWasShown(_ notification:Notification) {
         //let scrollView = self.view
         let info = notification.userInfo
-        let kbSize = (info![UIKeyboardFrameBeginUserInfoKey]! as AnyObject).cgRectValue!.size
-        let contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
+        let kbSize = (info![UIResponder.keyboardFrameBeginUserInfoKey]! as AnyObject).cgRectValue!.size
+        let contentInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: kbSize.height, right: 0.0);
         scrollView.contentInset = contentInsets;
         scrollView.scrollIndicatorInsets = contentInsets;
         
@@ -135,27 +135,27 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     }
     
     // Called when the UIKeyboardWillHideNotification is sent
-    func keyboardWillBeHidden(_ notification:Notification) {
+    @objc func keyboardWillBeHidden(_ notification:Notification) {
         let contentInsets = UIEdgeInsets.zero;
         scrollView.contentInset = contentInsets;
         scrollView.scrollIndicatorInsets = contentInsets;
     }
 
-    func logonComplete(_ notification:Notification) {
+    @objc func logonComplete(_ notification:Notification) {
         self.dismiss(animated: true, completion: nil)
     }
     
     
-    func logonFailed(_ notification:Notification) {
+    @objc func logonFailed(_ notification:Notification) {
         print("LogonViewController: logonFailed")
         DispatchQueue.main.async(execute: {
             let alert = UIAlertController(
                 title: NSLocalizedString(Constant.msg.logonFailureTitle, comment: "Some dummy comment"),
                 message: NSLocalizedString(Constant.msg.logonFailureText, comment: "Some dummy comment"),
-                preferredStyle: UIAlertControllerStyle.alert)
+                preferredStyle: UIAlertController.Style.alert)
             
             //Add alert action
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             
             //Present alert
             self.present(alert, animated: true, completion: nil)
@@ -163,16 +163,16 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    func connectionFailed(_ notification:Notification) {
+    @objc func connectionFailed(_ notification:Notification) {
         print("LogonViewController: connectionFailed")
         DispatchQueue.main.async(execute: {
             let alert = UIAlertController(
                 title: NSLocalizedString(Constant.msg.connectErrorTitle, comment: "Some dummy comment"),
                 message: NSLocalizedString(Constant.msg.connectErrorText, comment: "Some dummy comment"),
-                preferredStyle: UIAlertControllerStyle.alert)
+                preferredStyle: UIAlertController.Style.alert)
             
             //Add alert action
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             
             //Present alert
             self.present(alert, animated: true, completion: nil)

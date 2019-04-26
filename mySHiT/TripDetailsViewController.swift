@@ -53,8 +53,8 @@ class TripDetailsViewController: UITableViewController {
 
     // MARK: Navigation
     @IBAction func openSettings(_ sender: AnyObject) {
-        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             //UIApplication.shared.openURL(appSettings)
         }
     }
@@ -151,7 +151,7 @@ class TripDetailsViewController: UITableViewController {
             }
         }
         tripDetailsTable.estimatedRowHeight = 40
-        tripDetailsTable.rowHeight = UITableViewAutomaticDimension
+        tripDetailsTable.rowHeight = UITableView.automaticDimension
         tripDetailsTable.contentInset = UIEdgeInsets.zero
         
         // Set up refresh
@@ -306,15 +306,18 @@ class TripDetailsViewController: UITableViewController {
     
     
     // MARK: Section header callbacks
-    func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
-        let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as Int!)!)
+    @objc func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
+        //let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as! Int))
+        let indexPath : IndexPath = IndexPath(row: 0, section: recognizer.view!.tag)
         if let s = getSectionById(indexPath.section) {
             sections[s.index].visible = !sections[s.index].visible
             
             //reload specific section animated
-            let range = NSMakeRange(indexPath.section, 1)
-            let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
-            self.tripDetailsTable.reloadSections(sectionToReload, with:UITableViewRowAnimation.fade)
+            // SWIFT 3: let range = NSMakeRange(indexPath.section, 1)
+            // SWIFT 3: let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
+            let range = indexPath.section ..< (indexPath.section + 1)
+            let sectionToReload = IndexSet(integersIn: range)
+            self.tripDetailsTable.reloadSections(sectionToReload, with:UITableView.RowAnimation.fade)
         }
     }
     
@@ -323,7 +326,7 @@ class TripDetailsViewController: UITableViewController {
     
     
     // MARK: Functions
-    func reloadTripDetailsFromServer() {
+    @objc func reloadTripDetailsFromServer() {
 //        print("Reloading trip details")
         tripDetailsTable.setBackgroundMessage("Retrieving trip details from SHiT")   /* LOCALISE */
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
@@ -333,7 +336,7 @@ class TripDetailsViewController: UITableViewController {
     }
     
 
-    func handleNetworkError() {
+    @objc func handleNetworkError() {
         refreshControl!.endRefreshing()
 //        print("TripDetailsView: End refresh after network error")
         
@@ -343,8 +346,8 @@ class TripDetailsViewController: UITableViewController {
                 let alert = UIAlertController(
                     title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
                     message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             })
         }
@@ -359,9 +362,13 @@ class TripDetailsViewController: UITableViewController {
     }
     
     
-    func refreshTripElements() {
+    @objc func refreshTripElements() {
         if let refreshControl = refreshControl {
-            refreshControl.endRefreshing()
+            DispatchQueue.main.async(execute: {
+                if refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
+            })
         }
 //        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(String(describing: tripCode))'")
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
@@ -424,3 +431,8 @@ class TripDetailsViewController: UITableViewController {
     }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

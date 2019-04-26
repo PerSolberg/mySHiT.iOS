@@ -93,22 +93,22 @@ class ChatMessage: NSObject, NSCoding {
         
         localId = (savedDeviceType, savedDeviceId, savedLocalId)
         
-        messageText = aDecoder.decodeObject(forKey: PropertyKey.messageTextKey) as! String
+        messageText = aDecoder.decodeObject(forKey: PropertyKey.messageTextKey) as? String
         storedTimestamp = aDecoder.decodeObject(forKey: PropertyKey.storedTimestampKey) as? Date
-        createdTimestamp = aDecoder.decodeObject(forKey: PropertyKey.createdTimestampKey) as! Date
+        createdTimestamp = aDecoder.decodeObject(forKey: PropertyKey.createdTimestampKey) as? Date
     }
 
 
     required init?(fromDictionary elementData: NSDictionary!) {
         //super.init(fromDictionary: elementData)
         id = elementData[Constant.JSON.msgId] as? Int
-        userId = elementData[Constant.JSON.msgUserId] as! Int
-        userName = elementData[Constant.JSON.msgUserName] as! String
-        userInitials = elementData[Constant.JSON.msgUserInitials] as! String
+        userId = elementData[Constant.JSON.msgUserId] as? Int
+        userName = elementData[Constant.JSON.msgUserName] as? String
+        userInitials = elementData[Constant.JSON.msgUserInitials] as? String
         localId = ( elementData[Constant.JSON.msgDeviceType] as! String,
                     elementData[Constant.JSON.msgDeviceId] as! String,
                     elementData[Constant.JSON.msgLocalId] as! String )
-        messageText = elementData[Constant.JSON.msgText] as! String
+        messageText = elementData[Constant.JSON.msgText] as? String
         storedTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgStoredTS] as? String ?? "", timeZoneName: ChatMessage.Timezone)
         createdTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgCreatedTS] as! String, timeZoneName: ChatMessage.Timezone)
 

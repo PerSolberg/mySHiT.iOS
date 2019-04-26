@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import mySHiT
+/* @ testable i m p o r t mySHiT */
 
 class mySHiTTests: XCTestCase {
     

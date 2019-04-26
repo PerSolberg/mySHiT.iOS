@@ -21,7 +21,11 @@ class Flight: ScheduledTransport {
     }
     
     override var title: String? {
-        return (airlineCode ?? "XX") + " " + (routeNo ?? "***") + ": " + (departureLocation ?? "<Departure>") + " - " + (arrivalLocation ?? "<Arrival>")
+        let code = airlineCode ?? "XX"
+        let route = routeNo ?? "***"
+        let deptLocation = departureLocation ?? "<Departure>"
+        let arrLocation = arrivalLocation ?? "<Arrival>"
+        return code + " " + route + ": " + deptLocation + " - " + arrLocation
     }
     override var detailInfo: String? {
         if let references = references {

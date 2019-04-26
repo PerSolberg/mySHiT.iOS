@@ -24,8 +24,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
 
     // MARK: Actions
     @IBAction func openSettings(_ sender: Any) {
-        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             //UIApplication.shared.openURL(appSettings)
         }
     }
@@ -105,10 +105,10 @@ class ChatViewController: UIViewController, UITextViewDelegate {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
             
             //If host is not reachable, display a UIAlertController informing the user
-            let alert = UIAlertController(title: "Alert", message: "You are not connected to the Internet", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Alert", message: "You are not connected to the Internet", preferredStyle: UIAlertController.Style.alert)
             
             //Add alert action
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             
             //Present alert
             self.present(alert, animated: true, completion: nil)
@@ -121,9 +121,9 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         controlSendButton()
         
         initialBottomConstraint = bottomSpacingConstraint.constant
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: Notification.Name.UIKeyboardWillChangeFrame, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -144,8 +144,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    func manageKeyboard (notification: Notification) {
-        let isShowing = (notification.name == .UIKeyboardWillShow)
+    @objc func manageKeyboard (notification: Notification) {
+        let isShowing = (notification.name == UIResponder.keyboardWillShowNotification)
         
         var tabbarHeight: CGFloat = 0
         if let tabBarController = self.tabBarController {
@@ -153,11 +153,11 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         }
         
         if let userInfo = notification.userInfo {
-            let endFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-            let duration:TimeInterval = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
-            let animationCurveRawNSN = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber
-            let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIViewAnimationOptions.curveEaseInOut.rawValue
-            let animationCurve:UIViewAnimationOptions = UIViewAnimationOptions(rawValue: animationCurveRaw)
+            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+            let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+            let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
+            let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
+            let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
             bottomSpacingConstraint?.constant = isShowing ? (endFrame!.size.height - tabbarHeight) : (initialBottomConstraint ?? 0.0)
             UIView.animate(withDuration: duration,
                            delay: TimeInterval(0),
@@ -176,7 +176,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     }
     
     
-    func handleNetworkError() {
+    @objc func handleNetworkError() {
         print("ChatListView: End refresh after network error")
         
         // First check if this view is currently active, if not, skip the alert
@@ -187,8 +187,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
                 let alert = UIAlertController(
                     title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
                     message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             })
         }
@@ -234,3 +234,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

@@ -35,8 +35,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
 
     @IBAction func openSettings(_ sender: AnyObject) {
-        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             //UIApplication.shared.openURL(appSettings)
         }
     }
@@ -87,7 +87,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 
 
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         initCommon()
     }
@@ -128,7 +128,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         saveTrips()
 //        print("Data should be ready - refresh list")
         tripListTable.estimatedRowHeight = 40
-        tripListTable.rowHeight = UITableViewAutomaticDimension
+        tripListTable.rowHeight = UITableView.automaticDimension
         DispatchQueue.main.async(execute: {
             self.tripListTable.reloadData()
         })
@@ -181,9 +181,13 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
     
-    func refreshTripList() {
-        if let refreshControl = refreshControl, refreshControl.isRefreshing {
-            refreshControl.endRefreshing()
+    @objc func refreshTripList() {
+        if let refreshControl = refreshControl {
+            DispatchQueue.main.async(execute: {
+                if refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
+            })
         }
 //        print("TripListView: Refreshing list, probably because data were updated")
         if (TripList.sharedList.count == 0) {
@@ -200,7 +204,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 
     
-    func handleNetworkError() {
+    @objc func handleNetworkError() {
         if let refreshControl = refreshControl {
             refreshControl.endRefreshing()
         }
@@ -214,8 +218,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                 let alert = UIAlertController(
                     title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
                     message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             })
         }
@@ -228,14 +232,14 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
     
-    func reloadTripsFromServer() {
+    @objc func reloadTripsFromServer() {
         tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
         TripList.sharedList.getFromServer()
         //refreshTripList()
     }
 
     
-    func logonComplete(_ notification:Notification) {
+    @objc func logonComplete(_ notification:Notification) {
         print("TripListView: Logon complete")
         reloadTripsFromServer()
     }
@@ -336,15 +340,18 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
 
     // MARK: Section header callbacks
-    func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
-        let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as Int!)!)
+    @objc func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
+        //let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as Int!)!)
+        let indexPath : IndexPath = IndexPath(row: 0, section: (recognizer.view!.tag))
         if let s = getSectionById(indexPath.section) {
             sections[s.index].visible = !sections[s.index].visible
             
             //reload specific section animated
-            let range = NSMakeRange(indexPath.section, 1)
-            let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
-            self.tripListTable.reloadSections(sectionToReload, with:UITableViewRowAnimation.fade)
+            // SWIFT 3: let range = NSMakeRange(indexPath.section, 1)
+            // SWIFT 3: let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
+            let range = indexPath.section ..< (indexPath.section + 1)
+            let sectionToReload = IndexSet(integersIn: range)
+            self.tripListTable.reloadSections(sectionToReload, with:UITableView.RowAnimation.fade)
             saveSections()
         }
     }
@@ -358,7 +365,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     func saveSections() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections, toFile: TripListViewController.ArchiveSectionsURL.path)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections!, toFile: TripListViewController.ArchiveSectionsURL.path)
         if !isSuccessfulSave {
             print("Failed to save sections...")
         } else {
@@ -491,3 +498,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

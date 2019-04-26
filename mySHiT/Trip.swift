@@ -200,7 +200,7 @@ class Trip: NSObject, NSCoding {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
         //print("Initialising Trip from dictionary")
-        id = elementData[Constant.JSON.tripId] as! Int  // "id"
+        id = elementData[Constant.JSON.tripId] as? Int  // "id"
         itineraryId = elementData[Constant.JSON.tripItineraryId] as? Int
         startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
         endDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripEndDate] as! String, timeZoneName: nil)
@@ -212,7 +212,7 @@ class Trip: NSObject, NSCoding {
         if let tripElements = elementData[Constant.JSON.tripElements] as? NSArray {
             elements = [AnnotatedTripElement]()
             for svrElement in tripElements {
-                if let tripElement = TripElement.createFromDictionary(svrElement as! NSDictionary) {
+                if let tripElement = TripElement.createFromDictionary(svrElement as? NSDictionary) {
                     elements!.append( AnnotatedTripElement(tripElement: tripElement)! )
                 }
             }
@@ -341,7 +341,7 @@ class Trip: NSObject, NSCoding {
                     let newInfo = NotificationInfo(baseDate: tripStart, leadTime: tripLeadtime * 60)
 
                     if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
-                        print("Setting notification for trip \(id) at \(String(describing: newInfo?.notificationDate))")
+                        print("Setting notification for trip \(String(describing:id)) at \(String(describing: newInfo?.notificationDate))")
                         userInfo[Constant.notificationUserInfo.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
                         
                         let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!) //alertTime)
@@ -349,7 +349,7 @@ class Trip: NSObject, NSCoding {
                         
                         let ntfContent = UNMutableNotificationContent()
                         ntfContent.body = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
-                        ntfContent.sound = UNNotificationSound.default()
+                        ntfContent.sound = UNNotificationSound.default
                         ntfContent.userInfo = userInfo
                         ntfContent.categoryIdentifier = "SHiT"
                         
@@ -366,7 +366,7 @@ class Trip: NSObject, NSCoding {
 
                         notifications[Constant.Settings.tripLeadTime] = newInfo
                     } else {
-                        print("Not refreshing notification for trip \(id), already triggered")
+                        print("Not refreshing notification for trip \(String(describing:id)), already triggered")
                     }
                 }
             } else {
@@ -393,7 +393,7 @@ class Trip: NSObject, NSCoding {
         assert( userCred.urlsafePassword != nil );
         
         //Set the parameters for the RSTransaction object
-        rsTransGetTripList.path = type(of: self).webServiceTripPath + code!
+        rsTransGetTripList.path = Swift.type(of: self).webServiceTripPath + code!
         rsTransGetTripList.parameters = [ "userName":userCred.name!,
             "password":userCred.urlsafePassword! ]
         
@@ -427,8 +427,10 @@ class Trip: NSObject, NSCoding {
                             self.name            = newTrip.name
                             self.type            = newTrip.type
                             self.elements        = newTrip.elements
-                            
-                            UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
+
+                            DispatchQueue.main.async(execute: {
+                                UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
+                            })
                             self.refreshNotifications()
                         }
 
@@ -457,12 +459,12 @@ class Trip: NSObject, NSCoding {
     func deregisterPushNotifications() {
         let topicTrip = Constant.Firebase.topicRootTrip + String(id)
         //print("Unsubscribing from topic '\(topicTrip)")
-        FIRMessaging.messaging().unsubscribe(fromTopic: topicTrip)
+        Messaging.messaging().unsubscribe(fromTopic: topicTrip)
             
         if let itineraryId = itineraryId {
             let topicItinerary = Constant.Firebase.topicRootItinerary + String(itineraryId)
             //print("Unsubscribing from topic '\(topicItinerary)")
-            FIRMessaging.messaging().unsubscribe(fromTopic: topicItinerary)
+            Messaging.messaging().unsubscribe(fromTopic: topicItinerary)
         }
     }
 
@@ -470,12 +472,12 @@ class Trip: NSObject, NSCoding {
     func registerForPushNotifications() {
         let topicTrip = Constant.Firebase.topicRootTrip + String(id)
         //print("Subscribing to topic '\(topicTrip)")
-        FIRMessaging.messaging().subscribe(toTopic: topicTrip)
+        Messaging.messaging().subscribe(toTopic: topicTrip)
             
         if let itineraryId = itineraryId {
             let topicItinerary = Constant.Firebase.topicRootItinerary + String(itineraryId)
             //print("Subscribing to topic '\(topicItinerary)")
-            FIRMessaging.messaging().subscribe(toTopic: topicItinerary)
+            Messaging.messaging().subscribe(toTopic: topicItinerary)
         }
     }
 

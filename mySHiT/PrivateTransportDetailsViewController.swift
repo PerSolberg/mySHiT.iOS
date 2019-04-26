@@ -106,7 +106,7 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
                         var refText:NSAttributedString?
                         if let refUrl = ref["urlLookup"], let url = URL(string: refUrl) {
                             let hyperlinkText = NSMutableAttributedString(string: refNo)
-                            hyperlinkText.addAttribute(NSLinkAttributeName, value: url, range: NSMakeRange(0, hyperlinkText.length))
+                            hyperlinkText.addAttribute(NSAttributedString.Key.link, value: url, range: NSMakeRange(0, hyperlinkText.length))
                             refText = hyperlinkText
                         } else {
                             refText = NSAttributedString(string:refNo)
