@@ -28,7 +28,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     // MARK: Navigation
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
+        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
         TripList.sharedList.getFromServer()
         return
     }
@@ -45,7 +45,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        // print("Preparing for segue '\(segue.identifier)'")
 
         if let segueId = segue.identifier {
             switch (segueId) {
@@ -95,27 +94,25 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Trip List View loaded")
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.logonComplete(_:)), name: NSNotification.Name(rawValue: Constant.notification.logonSuccessful), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.refreshTripList), name: NSNotification.Name(rawValue: Constant.notification.refreshTripList), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.refreshTripList), name: NSNotification.Name(rawValue: Constant.notification.tripsRefreshed), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(TripListViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
         
-        /*
-        if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
-            _ = RSUtilities.networkConnectionType("www.shitt.no")
-            
-            //If host is not reachable, display a UIAlertController informing the user
-            let alert = UIAlertController(title: "Alert", message: "You are not connected to the Internet", preferredStyle: UIAlertControllerStyle.Alert)
-            
-            //Add alert action
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-            
-            //Present alert
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
-        */
+        // Set up refresh
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = tripListTable.backgroundColor
+        refreshControl!.tintColor = UIColor.blue
+        refreshControl!.addTarget(self, action: #selector(/*TripListViewController.*/reloadTripsFromServer), for: .valueChanged)
+    }
+
+    func showLogonScreen(animated: Bool) {
+        // Get login screen from storyboard and present it
+        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
+        let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
+        view.window!.makeKeyAndVisible()
+        view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         // Load data & check if section list is complete (if not, add missing elements)
         var sectionList = loadTrips()
@@ -126,33 +123,26 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         classifyTrips()
         updateSections()
         saveTrips()
-//        print("Data should be ready - refresh list")
         tripListTable.estimatedRowHeight = 40
         tripListTable.rowHeight = UITableView.automaticDimension
         DispatchQueue.main.async(execute: {
             self.tripListTable.reloadData()
         })
-        
-        // Set up refresh
-        refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = tripListTable.backgroundColor //UIColor.cyanColor()
-        refreshControl!.tintColor = UIColor.blue  //whiteColor()
-        refreshControl!.addTarget(self, action: #selector(TripListViewController.reloadTripsFromServer), for: .valueChanged)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.refreshTripList, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
+    }
+ 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        NotificationCenter.default.removeObserver(self)
     }
 
-    func showLogonScreen(animated: Bool) {
-        // Get login screen from storyboard and present it
-        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
-        let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
-        view.window!.makeKeyAndVisible()
-        view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
-//        print("TripList view appeared")
         if !User.sharedUser.hasCredentials() {
-            // Show login view
-            print("Show logon screen")
             showLogonScreen(animated: false)
         }
 
@@ -170,13 +160,13 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                 }
             }
             UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
-            //tripListTable.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
             
             if let cell = tableView.cellForRow(at: indexPath), let imgView = cell.viewWithTag(4) as? UIImageView {
                 imgView.image = selectedTrip.trip.icon?.overlayBadge(selectedTrip.modified)
             }
 
             tripToRefresh = nil
+            TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
         }
     }
     
@@ -189,9 +179,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                 }
             })
         }
-//        print("TripListView: Refreshing list, probably because data were updated")
         if (TripList.sharedList.count == 0) {
-            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: "Some dummy comment"))
+            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: Constant.dummyLocalisationComment))
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
@@ -205,27 +194,32 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     @objc func handleNetworkError() {
-        if let refreshControl = refreshControl {
-            refreshControl.endRefreshing()
-        }
-//        print("TripListView: End refresh after network error")
+        // Should only be called if this view controller is displayed (notification observers
+        // added in viewWillAppear and removed in viewWillDisappear
+        print("TripListViewController: Handling network error")
 
-        // First check if this view is currently active, if not, skip the alert
-        if self.isViewLoaded && view.window != nil {
-//            print("TripListView: Present error message")
-            // Notify user
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
-                    message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+        // Notify user - and stop refresh in completion handler to ensure screen is properly updated
+        // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
+        // closure didn't always dismiss the refrech control)
+        DispatchQueue.main.async(execute: {
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
+                preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(Constant.alert.actionOK)
+            self.present(alert, animated: true, completion: {
+                DispatchQueue.main.async {
+                    if let refreshControl = self.refreshControl {
+                        if refreshControl.isRefreshing {
+                            refreshControl.endRefreshing()
+                        }
+                    }
+                }
             })
-        }
+        })
 
         if (TripList.sharedList.count == 0) {
-            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: "Some dummy comment"))
+            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: Constant.dummyLocalisationComment))
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
@@ -233,9 +227,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     
     
     @objc func reloadTripsFromServer() {
-        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
+        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
         TripList.sharedList.getFromServer()
-        //refreshTripList()
     }
 
     
@@ -341,14 +334,11 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     // MARK: Section header callbacks
     @objc func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
-        //let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as Int!)!)
         let indexPath : IndexPath = IndexPath(row: 0, section: (recognizer.view!.tag))
         if let s = getSectionById(indexPath.section) {
             sections[s.index].visible = !sections[s.index].visible
             
             //reload specific section animated
-            // SWIFT 3: let range = NSMakeRange(indexPath.section, 1)
-            // SWIFT 3: let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
             let range = indexPath.section ..< (indexPath.section + 1)
             let sectionToReload = IndexSet(integersIn: range)
             self.tripListTable.reloadSections(sectionToReload, with:UITableView.RowAnimation.fade)
@@ -374,10 +364,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
     
-    func loadTrips() -> [TripListSectionInfo]? {
-//        print("Loading trips from iOS keyed archive")
-        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-//        print("Loading sections from iOS keyed archive")
+    func loadTrips() -> [TripListSectionInfo]? {        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
         let sectionList = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo]
         return sectionList
     }
@@ -388,7 +375,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     // MARK: Functions
-
     func classifyTrips() {
         let defaults = UserDefaults.standard
         let upcomingPref:UserPrefUpcomingTrips! = UserPrefUpcomingTrips(rawValue: (defaults.string(forKey: "upcoming_trips") ?? UserPrefUpcomingTrips.NextOrWithin7Days.rawValue))!

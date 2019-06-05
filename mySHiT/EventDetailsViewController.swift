@@ -10,49 +10,73 @@
 
 import UIKit
 
-class EventDetailsViewController: UIViewController {
+class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLinkableViewController {
     
     // MARK: Properties
-    
+    @IBOutlet weak var rootScrollView: UIScrollView!
+    @IBOutlet weak var contentView: UIStackView!
     @IBOutlet weak var venueNameTextField: UITextField!
     @IBOutlet weak var venueAddressTextView: UITextView!
     @IBOutlet weak var startTimeTextField: UITextField!
     @IBOutlet weak var travelTimeTextField: UITextField!
     @IBOutlet weak var referenceTextField: UITextField!
-    @IBOutlet weak var venuePhoneTextField: UITextField!
+    @IBOutlet weak var venuePhoneLabel: UILabel!
+    @IBOutlet weak var venuePhoneText: UITextView!
     @IBOutlet weak var accessInfoTextView: UITextView!
     // Passed from TripDetailsViewController
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
+    
+    // DeepLinkableViewController
+    var wasDeepLinked = false
     
     // Section data
     
     // MARK: Navigation
     
     // Prepare for navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-//        print("Event Details Preparing for segue '\(String(describing: segue.identifier))'")
-    }
-    
     
     // MARK: Constructors
     
-    
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Event Details View loaded")
         super.viewDidLoad()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(HotelDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "RefreshTripElements"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(HotelDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "dataRefreshed"), object: nil)
+        rootScrollView.minimumZoomScale = 1.0
+        rootScrollView.maximumZoomScale = 2.0
         
         // Adjust text views to align them with text fields
         venueAddressTextView.textContainerInset = UIEdgeInsets.zero
         venueAddressTextView.textContainer.lineFragmentPadding = 0.0
         accessInfoTextView.textContainerInset = UIEdgeInsets.zero
         accessInfoTextView.textContainer.lineFragmentPadding = 0.0
+        venuePhoneText.alignBaseline(to: venuePhoneLabel)
+        venuePhoneText.textContainer.lineFragmentPadding = 0.0
+        venuePhoneText.isScrollEnabled = false
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+
+        populateScreen(detectChanges: false)
+    }
+
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    
+    // MARK: Actions
+    
+    
+    // MARK: Functions
+    func populateScreen(detectChanges: Bool) {
         if let eventElement = tripElement?.tripElement as? Event {
             var fullAddress:String = eventElement.venueAddress ?? ""
             switch (eventElement.venuePostCode ?? "", eventElement.venueCity ?? "") {
@@ -65,54 +89,53 @@ class EventDetailsViewController: UIViewController {
             default:
                 fullAddress += "\n" + eventElement.venuePostCode! + " " + eventElement.venueCity!
             }
-            venueNameTextField.text = eventElement.venueName
-            venueAddressTextView.text = fullAddress
-            startTimeTextField.text = eventElement.startTime(dateStyle: .none, timeStyle: .short)
-            travelTimeTextField.text = eventElement.travelTimeInfo
-            
+            venueNameTextField.setText(eventElement.venueName, detectChanges: detectChanges)
+            venueAddressTextView.setText(fullAddress, detectChanges: detectChanges)
+            startTimeTextField.setText(eventElement.startTime(dateStyle: .none, timeStyle: .short), detectChanges: detectChanges)
+            travelTimeTextField.setText(eventElement.travelTimeInfo, detectChanges: detectChanges)
+
             if let refList = eventElement.references {
                 let references = NSMutableString()
                 var separator = ""
                 for ref in refList {
-                    if let refType = ref["type"], let refNo   = ref["refNo"] {
-                        print("Reference: Type = \(refType), Ref # = \(refNo)")
+                    if let _ = ref["type"], let refNo   = ref["refNo"] {
+                        //print("Reference: Type = \(refType), Ref # = \(refNo)")
                         references.append(separator + refNo)
                         separator = ", "
                     }
                 }
-                referenceTextField.text = references as String
+                referenceTextField.setText(references as String, detectChanges: detectChanges)
             }
-            venuePhoneTextField.text = eventElement.venuePhone
-            accessInfoTextView.text = eventElement.accessInfo
+            venuePhoneText.setText(eventElement.venuePhone, detectChanges: detectChanges)
+            accessInfoTextView.setText(eventElement.accessInfo, detectChanges: detectChanges)
         } else {
-            venueNameTextField.text = "Unknown"
-            venueAddressTextView.text = "Don't know where"
-            startTimeTextField.text = "Don't know when"
-            travelTimeTextField.text = "We'll leave again"
-            referenceTextField.text = "Vera Lynn"
-            venuePhoneTextField.text = "+1 (555) 123-4567"
-            accessInfoTextView.text = "Please see your welcome leaflet."
+            DispatchQueue.main.async(execute: {
+                let alert = UIAlertController(
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(Constant.alert.actionOK)
+                self.present(alert, animated: true, completion: { })
+            })
+
+            self.navigationController?.popViewController(animated: true)
         }
     }
+
     
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
-    
-    // MARK: Actions
-    
-    
-    // MARK: Functions
-    func refreshTripElements() {
-//        print("Refreshing trip details - probably because data were refreshed")
-        //updateSections()
+    @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            //self.title = self.trip?.trip.name
-            //self.tripDetailsTable.reloadData()
+            if let eventElement = self.tripElement?.tripElement as? Event {
+                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: eventElement.id) else {
+                    // Couldn't find trip element, trip or element deleted
+                    self.navigationController?.popViewController(animated: true)
+                    return
+                }
+                
+                self.trip = aTrip
+                self.tripElement = aElement
+                self.populateScreen(detectChanges: true)
+            }
         })
     }
 
@@ -124,6 +147,11 @@ class EventDetailsViewController: UIViewController {
         } else {
             return false
         }
+    }
+
+    // MARK: ScrollViewDelegate
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return contentView
     }
 }
 

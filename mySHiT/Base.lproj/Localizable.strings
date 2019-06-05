@@ -12,6 +12,8 @@
 
 // retrievingTrips
 "Retrieving your trips from SHiT" = "Retrieving your trips from SHiT";
+// retrievingTripDetails
+"Retrieving trip details from SHiT" = "Retrieving trip details from SHiT";
 // tripAlertMessage
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT trip '%@' starts in %@ (%@)";
 // transportAlertMessage
@@ -38,6 +40,10 @@
 "You have no SHiT trips yet" = "You have no SHiT trips yet";
 // unknownElement
 "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server.";
+// unableToDisplayElement
+"SHiT, we're sorry but there was an unexpected error displaying this element." = "SHiT, we're sorry but there was an unexpected error displaying this element.";
+// shortcutSendMessageSubtitle
+"Send message to participants" = "Send message to participants";
 
 // Push notifications
 "NTF.INSERT.ADDRESS" = "%@: Address information updated";

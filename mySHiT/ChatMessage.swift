@@ -168,18 +168,18 @@ class ChatMessage: NSObject, NSCoding {
             if let error = error {
                 //If there was an error, log it
                 print("Error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 print("Chat message saved: \(String(describing: responseDictionary))")
                 if let returnedMessage = responseDictionary {
                     self.id = returnedMessage["id"] as? Int
                     self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZoneName: ChatMessage.Timezone)
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
+                    NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                 } else {
                     print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
                 }
@@ -188,43 +188,7 @@ class ChatMessage: NSObject, NSCoding {
         })
     }
 
-    /*
-    func read(tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void ) {
-        guard let id = id else {
-            fatalError("Cannot update read status on message without ID")
-        }
-        let userCred = User.sharedUser.getCredentials()
-
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
-
-        //Set the parameters for the RSTransaction object
-        rsTransReadMsg.path = type(of: self).webServiceChatPath + "/" + String(tripId) + "/" + type(of: self).webServiceReadMessageVerb + "/" + String(id)
-        rsTransReadMsg.parameters = [ "userName":userCred.name!
-            , "password":userCred.urlsafePassword!
-        ]
-        
-        //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                //If there was an error, log it
-                print("Error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                print("Error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
-            } else if let _ /*responseDictionary*/ = responseDictionary {
-                //print("Chat message read: \(String(describing: responseDictionary))")
-            } else {
-                print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
-            }
-            parentResponseHandler(response, responseDictionary, error)
-        })
-    }
-    */
-
+    
     func read(tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void ) {
         guard let id = id else {
             fatalError("Cannot update read status on message without ID")
@@ -253,11 +217,11 @@ class ChatMessage: NSObject, NSCoding {
             if let error = error {
                 //If there was an error, log it
                 print("Error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let _ /*responseDictionary*/ = responseDictionary {
                 //print("Chat message read: \(String(describing: responseDictionary))")
             } else {

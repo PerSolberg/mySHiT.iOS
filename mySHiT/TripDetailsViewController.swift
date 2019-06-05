@@ -32,7 +32,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 
-class TripDetailsViewController: UITableViewController {
+class TripDetailsViewController: UITableViewController, DeepLinkableViewController {
     
     // MARK: Properties
     @IBOutlet var tripDetailsTable: UITableView!
@@ -50,12 +50,13 @@ class TripDetailsViewController: UITableViewController {
     // Section data
     var sections: [TripElementListSectionInfo]! = [TripElementListSectionInfo]()
 
-
+    // DeepLinkableViewController
+    var wasDeepLinked: Bool
+    
     // MARK: Navigation
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-            //UIApplication.shared.openURL(appSettings)
         }
     }
     
@@ -64,7 +65,6 @@ class TripDetailsViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         if let segueId = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
-//            print("Trip Details: Preparing for segue '\(segueId)'")
             let indexPath = tableView.indexPath(for: selectedTripCell)!
             let s = getSectionById(indexPath.section)
             let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
@@ -104,7 +104,6 @@ class TripDetailsViewController: UITableViewController {
                 elementToRefresh = indexPath
             }
         } else if let segueId = segue.identifier {
-//            print("Trip Details: Preparing for segue '\(segueId)' (no trip element)")
             switch (segueId) {
             case Constant.segue.showChatTable:
                 let destinationController = segue.destination as! ChatTableController
@@ -125,31 +124,15 @@ class TripDetailsViewController: UITableViewController {
     
     // MARK: Constructors
     required init?(coder: NSCoder) {
+        wasDeepLinked = false
         super.init(coder: coder)
     }
     
     
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Trip Details View loaded")
         super.viewDidLoad()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "RefreshTripElements"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.refreshTripElements), name: NSNotification.Name(rawValue: "dataRefreshed"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(TripDetailsViewController.handleNetworkError), name: NSNotification.Name(rawValue: "networkError"), object: nil)
-
-        if let trip = TripList.sharedList.trip(byCode: tripCode!) {
-            self.trip = trip
-            self.title = trip.trip.name
-            if trip.trip.elements != nil && trip.trip.elements?.count > 0 {
-                print("Trip details already loaded")
-                updateSections()
-                //refreshTripElements()
-            } else {
-                // Load details from server
-                trip.trip.loadDetails()
-            }
-        }
         tripDetailsTable.estimatedRowHeight = 40
         tripDetailsTable.rowHeight = UITableView.automaticDimension
         tripDetailsTable.contentInset = UIEdgeInsets.zero
@@ -157,14 +140,36 @@ class TripDetailsViewController: UITableViewController {
         // Set up refresh
         refreshControl = UIRefreshControl()
         refreshControl!.backgroundColor = tripDetailsTable.backgroundColor
-        refreshControl!.tintColor = UIColor.blue  //whiteColor()
+        refreshControl!.tintColor = UIColor.blue
         refreshControl!.addTarget(self, action: #selector(TripDetailsViewController.reloadTripDetailsFromServer), for: .valueChanged)
-        
-        // Hide chat button until chat is fully implemented
-//        barButtonChat.isEnabled = false
-//        barButtonChat.tintColor = UIColor.clear
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let trip = TripList.sharedList.trip(byCode: tripCode!) {
+            self.trip = trip
+            self.title = trip.trip.name
+            if trip.trip.elements != nil && trip.trip.elements?.count > 0 {
+                print("Trip details already loaded")
+                updateSections()
+            } else {
+                // Load details from server
+                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTripDetails, comment: Constant.dummyLocalisationComment))
+                trip.trip.loadDetails()
+            }
+        }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         if let indexPath = elementToRefresh {
@@ -177,6 +182,9 @@ class TripDetailsViewController: UITableViewController {
             if let cell = tripDetailsTable.cellForRow(at: indexPath), let imgView = cell.viewWithTag(5) as? UIImageView {
                 imgView.image = tripElement.icon?.overlayBadge(selectedElement.modified)
             }
+            
+            TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+            
             elementToRefresh = nil
             UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
         }
@@ -225,7 +233,6 @@ class TripDetailsViewController: UITableViewController {
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //print("Refreshing cell at \(indexPath.section), \(indexPath.row)")
         let kCellIdentifier: String = "myTripDetailsCell"
         
         //tablecell optional to see if we can reuse cell
@@ -307,14 +314,11 @@ class TripDetailsViewController: UITableViewController {
     
     // MARK: Section header callbacks
     @objc func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
-        //let indexPath : IndexPath = IndexPath(row: 0, section:(recognizer.view?.tag as! Int))
         let indexPath : IndexPath = IndexPath(row: 0, section: recognizer.view!.tag)
         if let s = getSectionById(indexPath.section) {
             sections[s.index].visible = !sections[s.index].visible
             
             //reload specific section animated
-            // SWIFT 3: let range = NSMakeRange(indexPath.section, 1)
-            // SWIFT 3: let sectionToReload = IndexSet(integersIn: range.toRange() ?? 0..<0)
             let range = indexPath.section ..< (indexPath.section + 1)
             let sectionToReload = IndexSet(integersIn: range)
             self.tripDetailsTable.reloadSections(sectionToReload, with:UITableView.RowAnimation.fade)
@@ -327,8 +331,7 @@ class TripDetailsViewController: UITableViewController {
     
     // MARK: Functions
     @objc func reloadTripDetailsFromServer() {
-//        print("Reloading trip details")
-        tripDetailsTable.setBackgroundMessage("Retrieving trip details from SHiT")   /* LOCALISE */
+        tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTripDetails, comment: Constant.dummyLocalisationComment))
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.loadDetails()
@@ -337,24 +340,33 @@ class TripDetailsViewController: UITableViewController {
     
 
     @objc func handleNetworkError() {
-        refreshControl!.endRefreshing()
-//        print("TripDetailsView: End refresh after network error")
+        // Should only be called if this view controller is displayed (notification observers
+        // added in viewWillAppear and removed in viewWillDisappear
+        print("TripDetailsViewController: Handling network error")
         
-        // Notify user
-        if self.isViewLoaded && view.window != nil {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
-                    message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+        // Notify user - and stop refresh in completion handler to ensure screen is properly updated
+        // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
+        // closure didn't always dismiss the refrech control)
+        DispatchQueue.main.async(execute: {
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
+                preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(Constant.alert.actionOK)
+            self.present(alert, animated: true, completion: {
+                DispatchQueue.main.async {
+                    if let refreshControl = self.refreshControl {
+                        if refreshControl.isRefreshing {
+                            refreshControl.endRefreshing()
+                        }
+                    }
+                }
             })
-        }
+        })
         
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: "Some dummy comment"))
+                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: Constant.dummyLocalisationComment))
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }
@@ -370,20 +382,18 @@ class TripDetailsViewController: UITableViewController {
                 }
             })
         }
-//        print("Refreshing trip details - probably because data were refreshed. Current trip is '\(String(describing: tripCode))'")
+
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.refreshNotifications()
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noDetailsAvailable, comment: "Some dummy comment"))
+                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noDetailsAvailable, comment: Constant.dummyLocalisationComment))
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }
         }
         updateSections()
-//        print("Trip detail sections updated, now refreshing view")
         DispatchQueue.main.async(execute: {
-//            print("Refreshing trip details list view")
             self.title = self.trip?.trip.name
             self.tripDetailsTable.reloadData()
         })

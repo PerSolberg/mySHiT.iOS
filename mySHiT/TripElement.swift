@@ -213,7 +213,7 @@ class TripElement: NSObject, NSCoding {
             } else if (self.references != nil || otherTripElement.references != nil) {
                 return false
             }
-            
+
             return true
         } else {
             return false
@@ -243,10 +243,10 @@ class TripElement: NSObject, NSCoding {
             var combined:Bool = false
             
             var actualUserInfo = userInfo ?? [String:NSObject]()
-            actualUserInfo[Constant.notificationUserInfo.leadTimeType] = notificationType as NSObject
-            actualUserInfo[Constant.notificationUserInfo.tripElementId] = id as NSObject
+            actualUserInfo[Constant.ntfUserInfo.leadTimeType] = notificationType as NSObject
+            actualUserInfo[Constant.ntfUserInfo.tripElementId] = id as NSObject
             if let startTimeZone = startTimeZone {
-                actualUserInfo[Constant.notificationUserInfo.timeZone] = startTimeZone as NSObject
+                actualUserInfo[Constant.ntfUserInfo.timeZone] = startTimeZone as NSObject
             }
             
             for (nType, n) in notifications {

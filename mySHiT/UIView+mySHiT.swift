@@ -28,7 +28,6 @@ extension UIView
     
     fileprivate func processSubviews(_ recurse: Bool, processChildrenFirst: Bool, level:Int, action : (_ view: UIView, _ level:Int) -> Void)
     {
-        //print("Processing subviews for " + self.description)
         if !processChildrenFirst {
             action(self, level)
         }
@@ -43,13 +42,20 @@ extension UIView
     
     func processSubviews(_ recurse: Bool, processChildrenFirst: Bool, action : (_ view: UIView, _ level:Int) -> Void)
     {
-        //print("Processing subviews for " + self.description)
         processSubviews(recurse, processChildrenFirst: processChildrenFirst, level: 1, action: action)
     }
 
-    
     func addDictionaryAsGrid(_ dictionary: NSDictionary, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
-        //print("Adding stuff here")
+        addDictionaryAsGrid(dictionary, oldDictionary: nil, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: constrainValueFieldWidthToView, highlightChanges: false)
+    }
+
+    func addDictionaryAsGrid(_ dictionary: NSDictionary, oldDictionary: NSDictionary?, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?, highlightChanges: Bool) {
+
+        // First remove any existing elements
+        for sv in self.subviews {
+            sv.removeFromSuperview()
+        }
+        
         if dictionary.count < 1 {
             print("Dictionary empty, returning")
             return
@@ -77,24 +83,33 @@ extension UIView
         self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0))
         self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .trailing , relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0))
         self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0))
-        //if self.isKindOfClass(UIScrollView) {
-            // If we're adding to a scroll view, we need to constrain the bottom, otherwise not
-            self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0))
-        //}
+        self.addConstraint(NSLayoutConstraint(item: verticalStackView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0))
         
         var firstValueField: UIView?
         for (key, value) in dictionary {
-            //print("Entry: Key = \(key), value = \(value)")
-            //if (value as AnyObject).isKind(of: NSNull) {
+            //print("Entry: Key = \(String(describing: key)), value = \(String(describing: value))")
+            var changed = false
             if (value is NSNull) {
                 // Empty element - ignore
                 continue
+            }
+            if highlightChanges, let oldDictionary = oldDictionary {
+                if ( oldDictionary[key] is NSNull ) {
+                    changed = true
+                } else if ( oldDictionary[key] == nil ) {
+                    changed = true
+                } else {
+                    if let newValue = value as AnyObject?, let oldValue = oldDictionary[key] as AnyObject? {
+                        changed = !newValue.isEqual(oldValue)
+                    }
+                }
+            } else {
+                changed = highlightChanges
             }
 
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
             label.isUserInteractionEnabled = true
-            //label.font = flightNoTextField.font //flightNoLabel.font
             label.contentMode = .left
             label.setContentHuggingPriority(horisontalHuggingForLabel, for: .horizontal)
             label.setContentHuggingPriority(verticalHuggingForLabel, for: .vertical)
@@ -106,6 +121,9 @@ extension UIView
             valueWrapper.isUserInteractionEnabled = true
             valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
             valueWrapper.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
+            if (changed) {
+                valueWrapper.backgroundColor = UIColor.yellow
+            }
 
 //            if (value as AnyObject).isKind(of: NSArray) {
             if (value is NSArray) {
@@ -120,21 +138,20 @@ extension UIView
                 let valueField = UITextView()
                 valueField.translatesAutoresizingMaskIntoConstraints = false
                 valueField.isUserInteractionEnabled = true
-                //value.font = flightNoTextField.font
                 valueField.isUserInteractionEnabled = true
                 valueField.isEditable = false
                 valueField.isSelectable = true
                 valueField.isScrollEnabled = false
-                //valueField.textContainerInset = UIEdgeInsetsZero
                 valueField.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
                 valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
-                //if (value as AnyObject).isKind(of: NSAttributedString) {
+                if (changed) {
+                    valueField.backgroundColor = UIColor.yellow
+                }
+                
                 if (value is NSAttributedString) {
                     valueField.attributedText = value as? NSAttributedString
-                //} else if (value as AnyObject).isKind(of: NSString) {
                 } else if (value is NSString) {
                     valueField.text = value as? String
-                //} else if (value as AnyObject).isKind(of: NSNumber) {
                 } else if (value is NSNumber) {
                     valueField.text = String(describing: value as! NSNumber)
                 } else {
@@ -142,10 +159,7 @@ extension UIView
                 }
                 var baselineShift:CGFloat = 0.0
                 if let valueFont = valueField.font {
-                    //print("label font: line height=\(label.font.lineHeight), leading=\(label.font.leading), x height=\(label.font.xHeight), ascender=\(label.font.ascender)")
-                    //print("value font: line height=\(valueFont.lineHeight), leading=\(valueFont.leading), x height=\(valueFont.xHeight), ascender=\(valueFont.ascender)")
-                    //baselineShift = label.font.lineHeight - valueFont.lineHeight
-                    baselineShift = /*round*/(label.font.ascender - valueFont.ascender)
+                    baselineShift = (label.font.ascender - valueFont.ascender)
                 }
                 valueField.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
                 valueField.textContainer.lineFragmentPadding = 0.0
@@ -184,7 +198,6 @@ extension UIView
         if let selfAsScrollView = self as? UIScrollView {
             print("Adding to scroll view - setting size")
             verticalStackView.layoutIfNeeded()
-            //print("Scroll view content size = \(verticalStackView.bounds.size), frame = \(verticalStackView.frame), indicators H/V = \(selfAsScrollView.showsHorizontalScrollIndicator)/\(selfAsScrollView.showsVerticalScrollIndicator)")
             selfAsScrollView.contentSize = verticalStackView.bounds.size
         }
     }
@@ -222,8 +235,6 @@ extension UIView
         
         var firstValueField: UIView?
         for value in array {
-            //print("Entry: \(value)")
-            //if (value as AnyObject).isKind(of: NSNull) {
             if (value is NSNull) {
                 // Empty element - ignore
                 continue
@@ -235,11 +246,9 @@ extension UIView
             valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
             valueWrapper.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
             
-            //if (value as AnyObject).isKind(of: NSArray) {
             if (value is NSArray) {
                 // Handle arrays
                 valueWrapper.addArrayAsVerticalStack(value as! NSArray, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
-            //} else if (value as AnyObject).isKind(of: NSDictionary) {
             } else if (value is NSDictionary) {
                 // Handle dictionary
                 valueWrapper.addDictionaryAsGrid(value as! NSDictionary, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
@@ -247,7 +256,6 @@ extension UIView
                 // UITextView
                 let valueField = UITextView()
                 valueField.translatesAutoresizingMaskIntoConstraints = false
-                //value.font = flightNoTextField.font
                 valueField.isUserInteractionEnabled = true
                 valueField.isEditable = false
                 valueField.isSelectable = true
@@ -256,10 +264,8 @@ extension UIView
                 valueField.textContainer.lineFragmentPadding = 0.0
                 valueField.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
                 valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
-                //if (value as AnyObject).isKind(of: NSString) {
                 if (value is NSString) {
                     valueField.text = value as? String
-                //} else if (value as AnyObject).isKind(of: NSNumber) {
                 } else if (value is NSNumber) {
                     valueField.text = String(describing: value as! NSNumber)
                 }

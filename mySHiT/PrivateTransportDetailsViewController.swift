@@ -8,15 +8,19 @@
 
 import UIKit
 
-class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegate {
+class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDelegate, UITextViewDelegate, DeepLinkableViewController {
     
+    @IBOutlet weak var rootScrollView: UIScrollView!
+    @IBOutlet weak var contentView: UIStackView!
     @IBOutlet weak var companyLabel: UILabel!
     @IBOutlet weak var companyTextField: UITextField!
     @IBOutlet weak var departureLabel: UILabel!
     @IBOutlet weak var departureTextView: UITextView!
     @IBOutlet weak var arrivalLabel: UILabel!
     @IBOutlet weak var arrivalTextView: UITextView!
-    @IBOutlet weak var phoneTextField: UITextField!
+    @IBOutlet weak var phoneLabel: UILabel!
+    @IBOutlet weak var phoneText: UITextView!
+    //@IBOutlet weak var phoneTextField: UITextField!
     @IBOutlet weak var referencesView: UIView!
     
     // MARK: Properties
@@ -25,111 +29,51 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
     
+    // DeepLinkableViewController
+    var wasDeepLinked = false
+    
     // Section data
     
     // MARK: Navigation
     
-    // Prepare for navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-//        print("Private Transport Details: Preparing for segue '\(String(describing: segue.identifier))'")
-    }
-    
-    
     // MARK: Constructors
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
     
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Private Transport Details View loaded")
         super.viewDidLoad()
-        
-        if let transportElement = tripElement?.tripElement as? GenericTransport {
-            companyTextField.text = transportElement.companyName ?? "<Unknown company>"
-            
-            var locationInfo = transportElement.departureStop ?? ""
-            if let departureTerminal = transportElement.departureTerminalName {
-                locationInfo += (departureTerminal == "" ? "" : "\n" + departureTerminal)
-            }
-            if let departureAddress = transportElement.departureAddress {
-                locationInfo += (departureAddress == "" ? "" : "\n" + departureAddress)
-            }
-            if let departureLocation = transportElement.departureLocation {
-                locationInfo += (departureLocation == "" ? "" : "\n" + departureLocation)
-            }
-            departureTextView.text = locationInfo
-
-            locationInfo = transportElement.arrivalStop ?? transportElement.arrivalLocation ?? ""
-            if let arrivalTerminal = transportElement.arrivalTerminalName {
-                locationInfo += (arrivalTerminal == "" ? "" : "\n" + arrivalTerminal)
-            }
-            if let arrivalAddress = transportElement.arrivalAddress {
-                locationInfo += (arrivalAddress == "" ? "" : "\n" + arrivalAddress)
-            }
-            if let arrivalLocation = transportElement.arrivalLocation {
-                locationInfo += (arrivalLocation == "" ? "" : "\n" + arrivalLocation)
-            }
-            arrivalTextView.text = locationInfo
-            phoneTextField.text = transportElement.companyPhone
-            //referenceTextView.text = "references go here"
-
-            // Adjust baselines on text views to label
-            var baselineShift:CGFloat = 0.0
-            if let valueFont = departureTextView.font {
-                baselineShift = (departureLabel.font.ascender - valueFont.ascender)
-            }
-            departureTextView.isScrollEnabled = false
-            departureTextView.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
-            departureTextView.textContainer.lineFragmentPadding = 0.0
-            
-            baselineShift = 0.0
-            if let valueFont = arrivalTextView.font {
-                baselineShift = (arrivalLabel.font.ascender - valueFont.ascender)
-            }
-            arrivalTextView.isScrollEnabled = false
-            arrivalTextView.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
-            arrivalTextView.textContainer.lineFragmentPadding = 0.0
-            
-            // Add references
-            if let refList = transportElement.references {
-                let horisontalHuggingLabel = companyLabel.contentHuggingPriority(for: .horizontal)
-                let horisontalHuggingValue = companyTextField.contentHuggingPriority(for: .horizontal)
-                let verticalHuggingLabel = companyLabel.contentHuggingPriority(for: .vertical)
-                let verticalHuggingValue = companyTextField.contentHuggingPriority(for: .vertical)
-                print("Hugging: Label(V) = \(verticalHuggingLabel), Label(H) = \(horisontalHuggingLabel), Value(V) = \(verticalHuggingValue), Value(H) = \(horisontalHuggingValue)")
-                let refDict = NSMutableDictionary()
-                for ref in refList {
-                    if let refType = ref["type"], let refNo = ref["refNo"] {
-                        var refText:NSAttributedString?
-                        if let refUrl = ref["urlLookup"], let url = URL(string: refUrl) {
-                            let hyperlinkText = NSMutableAttributedString(string: refNo)
-                            hyperlinkText.addAttribute(NSAttributedString.Key.link, value: url, range: NSMakeRange(0, hyperlinkText.length))
-                            refText = hyperlinkText
-                        } else {
-                            refText = NSAttributedString(string:refNo)
-                        }
-                        //refDict.setValue(refText, forKey: refType)
-                        refDict[refType] = refText
-                    }
-                }
-                referencesView.addDictionaryAsGrid(refDict, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: nil /* companyTextField */)
-            }
-        } else {
-            companyTextField.text = ""
-            //routeNoTextField.text = ""
-            departureTextView.text = ""
-            arrivalTextView.text = ""
-            phoneTextField.text = ""
-            //referenceTextView.text = ""
-        }
+        rootScrollView.minimumZoomScale = 1.0
+        rootScrollView.maximumZoomScale = 2.0
+    
+        // Adjust baselines on text views to label
+        departureTextView.alignBaseline(to: departureLabel)
+        departureTextView.isScrollEnabled = false
+        departureTextView.textContainer.lineFragmentPadding = 0.0
+        arrivalTextView.alignBaseline(to: arrivalLabel)
+        arrivalTextView.isScrollEnabled = false
+        arrivalTextView.textContainer.lineFragmentPadding = 0.0
+        phoneText.alignBaseline(to: phoneLabel)
+        phoneText.isScrollEnabled = false
+        phoneText.textContainer.lineFragmentPadding = 0.0
         
         //self.view.colourSubviews()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        
+        populateScreen(detectChanges: false, oldElement: nil)
+    }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -143,12 +87,77 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
     
     
     // MARK: Functions
-    func refreshTripElements() {
-//        print("Refreshing trip details - probably because data were refreshed")
-        //updateSections()
+    func populateScreen(detectChanges: Bool, oldElement: GenericTransport?) {
+        guard let transportElement = tripElement?.tripElement as? GenericTransport else {
+            DispatchQueue.main.async(execute: {
+                let alert = UIAlertController(
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(Constant.alert.actionOK)
+                self.present(alert, animated: true, completion: { })
+            })
+            
+            self.navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        companyTextField.setText(transportElement.companyName ?? "<Unknown company>", detectChanges: detectChanges)
+
+        let departureInfo = buildLocationInfo(stopName: transportElement.departureStop, location: transportElement.departureLocation, terminalName: transportElement.departureTerminalName, address: transportElement.departureAddress)
+        departureTextView.setText(departureInfo, detectChanges: detectChanges)
+        
+        let arrivalInfo = buildLocationInfo(stopName: transportElement.arrivalStop, location: transportElement.arrivalLocation, terminalName: transportElement.arrivalTerminalName, address: transportElement.arrivalAddress)
+        arrivalTextView.setText(arrivalInfo, detectChanges: detectChanges)
+
+        phoneText.setText(transportElement.companyPhone, detectChanges: detectChanges)
+        
+        // Add references
+        if let refList = transportElement.references {
+            let horisontalHuggingLabel = companyLabel.contentHuggingPriority(for: .horizontal)
+            let horisontalHuggingValue = companyTextField.contentHuggingPriority(for: .horizontal)
+            let verticalHuggingLabel = companyLabel.contentHuggingPriority(for: .vertical)
+            let verticalHuggingValue = companyTextField.contentHuggingPriority(for: .vertical)
+
+            var oldReferences:NSDictionary? = nil
+            let refDict = getAttributedReferences(refList, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+            if let oldTransport = oldElement, let oldRefs = oldTransport.references {
+                oldReferences = getAttributedReferences(oldRefs, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+            }
+            referencesView.addDictionaryAsGrid(refDict, oldDictionary: oldReferences, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: nil, highlightChanges: detectChanges)
+
+        }
+    }
+
+    func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
+        var locationInfo = stopName ?? ""
+
+        if let terminal = terminalName {
+            locationInfo += (terminal == "" ? "" : "\n" + terminal)
+        }
+        if let address = address {
+            locationInfo += (address == "" ? "" : "\n" + address)
+        }
+        if let location = location {
+            locationInfo += (location == "" ? "" : "\n" + location)
+        }
+        return locationInfo
+    }
+
+    @objc func refreshTripElements() {
+        print("Refreshing private transfer details")
         DispatchQueue.main.async(execute: {
-            //self.title = self.trip?.trip.name
-            //self.tripDetailsTable.reloadData()
+            if let transportElement = self.tripElement?.tripElement as? GenericTransport {
+                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {
+                    // Couldn't find trip element, trip or element deleted
+                    self.navigationController?.popViewController(animated: true)
+                    return
+                }
+                
+                self.trip = aTrip
+                self.tripElement = aElement
+                self.populateScreen(detectChanges: true, oldElement: transportElement)
+            }
         })
     }
     
@@ -160,6 +169,11 @@ class PrivateTransportDetailsViewController: UIViewController, UITextViewDelegat
         } else {
             return false
         }
+    }
+    
+    // MARK: ScrollViewDelegate
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return contentView
     }
 }
 

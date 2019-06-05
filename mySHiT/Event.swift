@@ -36,13 +36,6 @@ class Event: TripElement {
         return venueName
     }
     override var startInfo: String? {
-        /*
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = DateFormatter.Style.none
-        dateFormatter.timeStyle = DateFormatter.Style.short
-        
-        return dateFormatter.string(from: eventStartTime!)
-        */
         return startTime(dateStyle: .none, timeStyle: .short)
     }
     override var endInfo: String? {
@@ -51,7 +44,6 @@ class Event: TripElement {
     }
     var travelTimeInfo: String? {
         if let travelTime = travelTime {
-            //let ti = T
             return DateComponentsFormatter().string(from: Double(travelTime) * 60.0)
         }
         return nil
@@ -176,7 +168,7 @@ class Event: TripElement {
         if (tense ?? .past) == .future {
             let defaults = UserDefaults.standard
             var eventLeadtime = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
-            let genericAlertMessage = NSLocalizedString(Constant.msg.eventAlertMessage, comment: "Some dummy comment")
+            let genericAlertMessage = NSLocalizedString(Constant.msg.eventAlertMessage, comment: Constant.dummyLocalisationComment)
             
             if let travelTime = travelTime {
                 eventLeadtime += travelTime;

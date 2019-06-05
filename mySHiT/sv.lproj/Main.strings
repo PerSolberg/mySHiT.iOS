@@ -194,7 +194,7 @@
 "a46-4W-bMM.text" = "Lorem ipsum dolor sit er elit lamet.";
 
 /* Class = "UILabel"; text = "Venue"; ObjectID = "b6A-U0-ZSP"; */
-"b6A-U0-ZSP.text" = "Namn";
+"b6A-U0-ZSP.text" = "Plats";
 
 /* Class = "UILabel"; text = "Label"; ObjectID = "bgu-un-rvc"; (User Init) */
 "bgu-un-rvc.text" = "Label";

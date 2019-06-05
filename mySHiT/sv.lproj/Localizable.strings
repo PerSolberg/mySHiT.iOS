@@ -12,6 +12,8 @@
 
 // retrievingTrips
 "Retrieving your trips from SHiT" = "Hämtar dina resor från SHiT";
+// retrievingTripDetails
+"Retrieving trip details from SHiT" = "Hämtar resedetaljer från SHiT";
 // tripAlertMessage
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT-resa '%@' börjar om %@ (%@)";
 // transportAlertMessage
@@ -36,6 +38,10 @@
 "You have no SHiT trips yet" = "Du har inga SHiT-resor";
 // unknownElement
 "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT! Vi ber om ursäkt, men klienten känner inte igen den här typen reseelement. Av den anledning kan vi tyvärr inte presentera informationen på ett gott sätt, men nedanför hittar ni rådata från SHiT-tjänsten.";
+// unableToDisplayElement
+"SHiT, we're sorry but there was an unexpected error displaying this element." = "SHiT! Vi ber om ursäkt, men det uppstod ett oväntat fel när vi skulle visa detta reseelementet.";
+// shortcutSendMessageSubtitle
+"Send message to participants" = "Skicke meddelande till resenärer";
 
 // Push notifications
 "NTF.INSERT.ADDRESS" = "%@: Adressinformation uppdaterad";

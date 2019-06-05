@@ -38,7 +38,6 @@ class TripListSectionInfo: NSObject, NSCoding {
         // NB: use conditional cast (as?) for any optional properties
         let visible  = aDecoder.decodeObject(forKey: PropertyKey.visibleKey) as! Bool
         let type = TripListSection(rawValue: aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String)!
-        //let firstTrip = aDecoder.decodeInteger(forKey: PropertyKey.firstTripKey)
         let firstTrip = aDecoder.decodeObject(forKey: PropertyKey.firstTripKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.firstTripKey)
 
         // Must call designated initializer.

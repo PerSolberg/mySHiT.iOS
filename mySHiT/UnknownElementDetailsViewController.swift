@@ -8,7 +8,7 @@
 
 import UIKit
 
-class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate {
+class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController {
     
     // MARK: Properties
     @IBOutlet weak var topView: UIScrollView!
@@ -21,6 +21,9 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
     // Internal data
     var serverDataContentSize: CGSize? = nil
     
+    // DeepLinkableViewController
+    var wasDeepLinked = false
+    
     // MARK: Navigation
     
     // Prepare for navigation
@@ -31,10 +34,6 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
     
     
     // MARK: Constructors
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
     
     // MARK: Callbacks
     override func viewDidLoad() {
@@ -42,7 +41,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
-        messageTextView.text = NSLocalizedString(Constant.msg.unknownElement, comment: "Some dummy comment")
+        messageTextView.text = NSLocalizedString(Constant.msg.unknownElement, comment: Constant.dummyLocalisationComment)
 
         if let serverElements = tripElement?.tripElement.serverData {
             topView.addDictionaryAsGrid(serverElements, horisontalHuggingForLabel: UILayoutPriority(rawValue: 251.0), verticalHuggingForLabel: UILayoutPriority(rawValue: 251.0), horisontalHuggingForValue: UILayoutPriority(rawValue: 249.0), verticalHuggingForValue: UILayoutPriority(rawValue: 249.0), constrainValueFieldWidthToView: nil)
@@ -57,6 +56,13 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate 
             topView.contentSize = size
         }
     }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

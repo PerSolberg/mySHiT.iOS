@@ -12,6 +12,8 @@
 
 // retrievingTrips
 "Retrieving your trips from SHiT" = "Henter reisene dine fra SHiT";
+// retrievingTripDetails
+"Retrieving trip details from SHiT" = "Henter reisedetaljer fra SHiT";
 // tripAlertMessage
 "SHiT trip '%@' starts in %@ (%@)" = "SHiT-reise '%@' begynner om %@ (%@)";
 // transportAlertMessage
@@ -39,6 +41,10 @@
 "You have no SHiT trips yet" = "Du har ingen SHiT-reiser";
 // unknownElement
 "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server." = "SHiT! Vi beklager men klienten kjenner ikke igjen denne typen element. Vi kan derfor ikke presentere informasjonen på en god måte, men her er rådata fra SHiT-tjeneren.";
+// unableToDisplayElement
+"SHiT, we're sorry but there was an unexpected error displaying this element." = "SHiT! Vi beklager, men det oppsto en uventet feil i visningen av dette elementet.";
+// shortcutSendMessageSubtitle
+"Send message to participants" = "Send melding til deltagerne";
 
 
 // Push notifications

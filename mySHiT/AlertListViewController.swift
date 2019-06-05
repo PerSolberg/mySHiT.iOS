@@ -37,23 +37,12 @@ class AlertListViewController: UITableViewController {
     }
     
     
-    // MARK: Callbacks
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // MARK: Callbacks    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         // Load data & check if section list is complete (if not, add missing elements)
         getNotifications()
-        //DispatchQueue.main.async(execute: {
-        //    self.alertListTable.reloadData()
-        //})
-    }
-    
-    
-    func refreshAlertList() {
-        getNotifications()
-        //DispatchQueue.main.async(execute: {
-        //    self.alertListTable.reloadData()
-        //})
     }
     
     

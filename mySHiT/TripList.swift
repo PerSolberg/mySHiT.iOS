@@ -112,6 +112,7 @@ class TripList:NSObject, Sequence, NSCoding {
         }
         
         //Set the parameters for the RSTransaction object
+        //TO DO: Remove string literals
         rsTransGetTripList.parameters = [ "userName":userCred.name!,
             "password":userCred.urlsafePassword!,
             "sectioned":"0",
@@ -123,18 +124,16 @@ class TripList:NSObject, Sequence, NSCoding {
             if let error = error {
                 //If there was an error, log it
                 print("Error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 let serverData = responseDictionary?[Constant.JSON.queryResults] as! NSArray
                 self.copyServerData(serverData)
-                //print("TripList: Server data received, notifying view controllers")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripsRefreshed), object: self)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripElementsRefreshed), object: self)
+                NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
             }
             if let parentCompletionHandler = parentCompletionHandler {
                 parentCompletionHandler()
@@ -189,9 +188,7 @@ class TripList:NSObject, Sequence, NSCoding {
         
         // Clear and refresh notifications to ensure there are no notifications from
         // "deleted" trips or trip elements.
-        //UIApplication.shared.cancelAllLocalNotifications()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        
         refreshNotifications()
         
         // Set application badge
@@ -254,7 +251,6 @@ class TripList:NSObject, Sequence, NSCoding {
 
         // Empty list and cancel all notifications
         trips = [AnnotatedTrip]()
-        //UIApplication.shared.cancelAllLocalNotifications()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
     

@@ -199,7 +199,7 @@ class Trip: NSObject, NSCoding {
     
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
-        //print("Initialising Trip from dictionary")
+
         id = elementData[Constant.JSON.tripId] as? Int  // "id"
         itineraryId = elementData[Constant.JSON.tripItineraryId] as? Int
         startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
@@ -208,7 +208,7 @@ class Trip: NSObject, NSCoding {
         code = elementData[Constant.JSON.tripCode] as? String
         name = elementData[Constant.JSON.tripName] as? String
         type = elementData[Constant.JSON.tripType] as? String
-        //elements = elementData["elements"] as? NSArray
+
         if let tripElements = elementData[Constant.JSON.tripElements] as? NSArray {
             elements = [AnnotatedTripElement]()
             for svrElement in tripElements {
@@ -289,7 +289,6 @@ class Trip: NSObject, NSCoding {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
-            //if let timeZoneName = departureTimeZone {
             if let timeZoneName = startTimeZone {
                 let timezone = TimeZone(identifier: timeZoneName)
                 if timezone != nil {
@@ -325,14 +324,14 @@ class Trip: NSObject, NSCoding {
                 let tripLeadtime = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
                 let startTimeText = startTime(dateStyle: .short, timeStyle: .short)
                 let dcf = DateComponentsFormatter()
-                let genericAlertMessage = NSLocalizedString(Constant.msg.tripAlertMessage, comment: "Some dummy comment")
+                let genericAlertMessage = NSLocalizedString(Constant.msg.tripAlertMessage, comment: Constant.dummyLocalisationComment)
                 
                 dcf.unitsStyle = .short
                 dcf.zeroFormattingBehavior = .dropAll
                 
-                var userInfo: [String:NSObject] = [Constant.notificationUserInfo.tripId: id as NSObject]
+                var userInfo: [String:NSObject] = [Constant.ntfUserInfo.tripId: id as NSObject]
                 if let startTimeZone = startTimeZone {
-                    userInfo[Constant.notificationUserInfo.timeZone] = startTimeZone as NSObject?
+                    userInfo[Constant.ntfUserInfo.timeZone] = startTimeZone as NSObject?
                 }
                 
                 if tripLeadtime > 0 {
@@ -342,7 +341,7 @@ class Trip: NSObject, NSCoding {
 
                     if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
                         print("Setting notification for trip \(String(describing:id)) at \(String(describing: newInfo?.notificationDate))")
-                        userInfo[Constant.notificationUserInfo.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
+                        userInfo[Constant.ntfUserInfo.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
                         
                         let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!) //alertTime)
                         let leadTimeText = dcf.string(from: actualLeadTime)
@@ -402,11 +401,11 @@ class Trip: NSObject, NSCoding {
             if let error = error {
                 //If there was an error, log it
                 print("Error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 //print("Trip details retrieved from server: \(String(describing:responseDictionary))")
@@ -437,13 +436,7 @@ class Trip: NSObject, NSCoding {
                         //let tripName = serverData["name"] as! String
                         //let srvElementList = serverData["elements"] as? NSArray ?? NSArray()
                         //self.copyServerData(srvElementList)
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.tripElementsRefreshed), object: self)
-                        /*
-                        dispatch_async(dispatch_get_main_queue(), {
-                            self.title = tripName
-                            self.tripDetailsTable.reloadData()
-                        })
-                        */
+                        NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
                     }
                 } else {
                     print("ERROR: Didn't find expected elements in dictionary: \(String(describing: responseDictionary))")
@@ -458,12 +451,10 @@ class Trip: NSObject, NSCoding {
 
     func deregisterPushNotifications() {
         let topicTrip = Constant.Firebase.topicRootTrip + String(id)
-        //print("Unsubscribing from topic '\(topicTrip)")
         Messaging.messaging().unsubscribe(fromTopic: topicTrip)
             
         if let itineraryId = itineraryId {
             let topicItinerary = Constant.Firebase.topicRootItinerary + String(itineraryId)
-            //print("Unsubscribing from topic '\(topicItinerary)")
             Messaging.messaging().unsubscribe(fromTopic: topicItinerary)
         }
     }
@@ -471,12 +462,10 @@ class Trip: NSObject, NSCoding {
     
     func registerForPushNotifications() {
         let topicTrip = Constant.Firebase.topicRootTrip + String(id)
-        //print("Subscribing to topic '\(topicTrip)")
         Messaging.messaging().subscribe(toTopic: topicTrip)
             
         if let itineraryId = itineraryId {
             let topicItinerary = Constant.Firebase.topicRootItinerary + String(itineraryId)
-            //print("Subscribing to topic '\(topicItinerary)")
             Messaging.messaging().subscribe(toTopic: topicItinerary)
         }
     }
@@ -496,6 +485,8 @@ class Trip: NSObject, NSCoding {
                     newElement.tripElement.copyState(from: matchingOldElements[0].tripElement)
                 }
             }
+        } else if let oldELements = from.elements {
+            self.elements = oldELements
         }
         notifications = from.notifications
     }

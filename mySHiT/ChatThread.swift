@@ -365,7 +365,7 @@ class ChatThread:NSObject, NSCoding {
                     if lastSeenByUser > (self.lastSeenByUserServer ?? 0) {
                         self.lastSeenByUserServer = lastSeenByUser
                         self.lastSeenByOthers = lastSeenByOthers
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
+                        NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                     }
                 }
             }
@@ -399,11 +399,11 @@ class ChatThread:NSObject, NSCoding {
             if let error = error {
                 //If there was an error, log it
                 print("Error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 print("Chat messages retrieved from server")
 
@@ -440,7 +440,7 @@ class ChatThread:NSObject, NSCoding {
                         print("INFO: Didn't find any messages in dictionary: \(String(describing: responseDictionary))")
                     }
                     ChatThread.dqAccess.async {
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
+                        NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                     }
                 } else {
                     print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
@@ -485,7 +485,7 @@ class ChatThread:NSObject, NSCoding {
 //            print("Updated last seen by me: \(String(describing: self.lastSeenByUserServer)), other users: \(String(describing: self.lastSeenByOthers))")
         }
         ChatThread.dqAccess.async {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
+            NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
         }
     }
     

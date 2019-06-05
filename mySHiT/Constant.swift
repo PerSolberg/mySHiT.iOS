@@ -7,9 +7,18 @@
 //
 
 //import Foundation
+import UIKit
+
 struct Constant {
     static let test = "id"
     static let deviceType = "iOS"
+    
+    static let dummyLocalisationComment = "Dummy comment"
+    static let emptyString = ""
+    
+    struct alert {
+        static let actionOK = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+    }
     
     // REST service
     struct REST {
@@ -109,6 +118,7 @@ struct Constant {
     // User interface messages
     struct msg {
         static let retrievingTrips = "Retrieving your trips from SHiT"
+        static let retrievingTripDetails = "Retrieving trip details from SHiT"
         static let tripAlertMessage = "SHiT trip '%@' starts in %@ (%@)"
         static let transportAlertMessage = "%@ departs in %@, at %@"
         static let eventAlertMessage = "%@ starts in %@, at %@"
@@ -123,6 +133,7 @@ struct Constant {
         static let noTrips = "You have no SHiT trips yet"
         static let noMessages = "CHAT.BCKGND.NOMSG"
         static let unknownElement = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server."
+        static let unableToDisplayElement = "SHiT, we're sorry but there was an unexpected error displaying this element."
         static let chatMsgSeenByOne = "CHAT.SEEN_BY.ONE"
         static let chatMsgSeenByTwoOrMore = "CHAT.SEEN_BY.TWO_OR_MORE"
         static let chatMsgSeenByEveryone = "CHAT.SEEN_BY.ALL"
@@ -130,34 +141,39 @@ struct Constant {
         static let chatNtfIgnoreAction = "CHAT.NTF.IGNORE"
         static let chatNtfReplyAction = "CHAT.NTF.REPLY"
         static let chatNtfReplySend = "CHAT.NTF.REPLY.SEND"
+        static let shortcutSendMessageSubtitle = NSLocalizedString("Send message to participants", comment: Constant.dummyLocalisationComment)
     }
     
     // Notifications
     struct notification {
-        static let networkError = "networkError"
-        static let tripElementsRefreshed = "dataRefreshed"
-        static let tripsRefreshed = "dataRefreshed"
-        static let logonSuccessful = "logonSuccessful"
-        static let logonFailed = "logonFailed"
-        static let refreshTripList = "RefreshTripList"
-        static let refreshTripElements = "RefreshTripElements"
-        static let chatRefreshed = "chatRefreshed"
+        static let networkError = NSNotification.Name(rawValue: "networkError")
+        static let dataRefreshed = NSNotification.Name(rawValue: "dataRefreshed")
+        //static let tripElementsRefreshed = "dataRefreshed"
+        //static let tripsRefreshed = "dataRefreshed"
+        static let logonSuccessful = NSNotification.Name(rawValue: "logonSuccessful")
+        static let logonFailed = NSNotification.Name(rawValue: "logonFailed")
+        static let refreshTripList = NSNotification.Name(rawValue: "RefreshTripList")
+        static let refreshTripElements = NSNotification.Name(rawValue: "RefreshTripElements")
+        static let chatRefreshed = NSNotification.Name(rawValue: "chatRefreshed")
     }
 
-    struct notificationCategory {
+    struct ntfCategory {
         static let newChatMessage = "NTF.INSERT.CHATMESSAGE"
     }
 
-    struct notificationAction {
+    struct ntfAction {
         static let replyToChatMessage = "REPLY.CHAT.MSG"
         static let ignoreChatMessage = "IGNORE.CHAT.MSG"
     }
     
-    struct notificationUserInfo {
-        static let tripId = "TripID"
+    struct ntfUserInfo {
+        static let tripId = "tripId"
         static let tripElementId = "TripElementID"
         static let timeZone = "TimeZone"
-        static let leadTimeType = "leadTimeType"
+        static let leadTimeType = "leadTimeType"        
+        static let changeType = "changeType"
+        static let changeOp = "changeOperation"
+        static let fromUserId = "fromUserId"
     }
     
     struct changeType {
@@ -173,6 +189,16 @@ struct Constant {
         static let delete = "DELETE"
     }
     
+    // Shortcuts
+    struct shortcut {
+        static let chat = "Chat"
+    }
+
+    // Icons
+    struct icon {
+        static let chat = "Chat"
+    }
+
     // Firebase Cloud Messaging (FCM)
     struct Firebase {
         // No longer needed, format changed from "/topics/xxx" to "xxx"

@@ -24,6 +24,7 @@ class User : NSObject, NSCoding {
     fileprivate var srvInitials:String?
     fileprivate var srvShortName:String?
     
+    // TO DO: Remove literals
     fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
     fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "user", parameters: ["userName":"dummy@default.com","password":"******"])
     
@@ -133,14 +134,14 @@ class User : NSObject, NSCoding {
             if let error = error    {
                 if error._domain == "HTTP" && error._code == 401 {
                     print("Authentication failed")
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.logonFailed), object: self)
+                    NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
                 }
                 print("Network error : \(error.localizedDescription)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.networkError), object: self)
+                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
                 print("Server error : \(errMsg)")
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.logonFailed), object: self)
+                NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
             } else {
                 //User.sharedUser.userName = userName
                 self.srvUserName = userName
@@ -155,7 +156,7 @@ class User : NSObject, NSCoding {
                 self.registerForPushNotifications()
                 self.saveUser()
 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.logonSuccessful), object: self)
+                NotificationCenter.default.post(name: Constant.notification.logonSuccessful, object: self)
             }
         })
     }
@@ -208,7 +209,6 @@ class User : NSObject, NSCoding {
     
     func saveUser() {
         print("Saving user to iOS keyed archive")
-        //User.sharedUser.saveToArchive(User.ArchiveUserURL.path)
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)
         if !isSuccessfulSave {
             print("Failed to save user...")
@@ -219,7 +219,6 @@ class User : NSObject, NSCoding {
     
     func loadUser() {
         print("Loading user from iOS keyed archive")
-        //TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
         if try! FileManager.default.fileExists(atPath: User.ArchiveUserURL.path) && FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! Int > 0 {
             let fileSize = try! FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! NSNumber
             print("User archive size = " + fileSize.stringValue)
@@ -230,9 +229,6 @@ class User : NSObject, NSCoding {
                 self.srvCommonName = newUser.commonName
             }
         }
-        
-        //User.sharedUser = newUser ?? User()
-        //return sectionList
     }
 
 }

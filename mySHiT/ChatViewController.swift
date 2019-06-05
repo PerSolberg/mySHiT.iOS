@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class ChatViewController: UIViewController, UITextViewDelegate {
+class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController {
     // MARK: Constants
     
     // MARK: Properties
@@ -22,11 +22,13 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     var initialBottomConstraint:CGFloat?
     var chatTableController:ChatTableController?
 
+    // DeepLinkableViewController
+    var wasDeepLinked = false
+
     // MARK: Actions
     @IBAction func openSettings(_ sender: Any) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-            //UIApplication.shared.openURL(appSettings)
         }
     }
 
@@ -39,18 +41,8 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     // MARK: Navigation
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-//        print("ChatView: Unwinding to main")
-        //chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
-        //TripList.sharedList.getFromServer()
         return
     }
-    
-    
-//    @IBAction func openSettings(_ sender: AnyObject) {
-//        if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-//            UIApplication.shared.openURL(appSettings)
-//        }
-//    }
     
     
     // Prepare for navigation
@@ -59,11 +51,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         // print("Preparing for segue '\(segue.identifier)'")
         
         if let segueId = segue.identifier {
-//            print("Chat View: Preparing for segue '\(segueId)'")
             switch (segueId) {
-            //case Constant.segue.logout:
-            //    logout()
-                
             case Constant.segue.embedChatTable:
                 chatTableController = segue.destination as? ChatTableController
                 if let chatTableController = chatTableController {
@@ -96,24 +84,20 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Chat View loaded")
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.handleNetworkError), name: NSNotification.Name(rawValue: Constant.notification.networkError), object: nil)
-
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
             _ = RSUtilities.networkConnectionType("www.shitt.no")
             
             //If host is not reachable, display a UIAlertController informing the user
-            let alert = UIAlertController(title: "Alert", message: "You are not connected to the Internet", preferredStyle: UIAlertController.Style.alert)
-            
-            //Add alert action
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-            
-            //Present alert
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
+                preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(Constant.alert.actionOK)
             self.present(alert, animated: true, completion: nil)
         }
-        
+         
         messageTextView.delegate = self
         if let trip = trip {
              messageTextView.text = trip.trip.chatThread.messageBeingEntered
@@ -121,19 +105,27 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         controlSendButton()
         
         initialBottomConstraint = bottomSpacingConstraint.constant
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.manageKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
-//        print("ChatView appeared")
         if !User.sharedUser.hasCredentials() {
             showLogonScreen(animated: false)
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
         if let trip = trip {
             trip.trip.chatThread.messageBeingEntered = messageTextView.text
         }
@@ -177,18 +169,17 @@ class ChatViewController: UIViewController, UITextViewDelegate {
     
     
     @objc func handleNetworkError() {
-        print("ChatListView: End refresh after network error")
+        print("ChatViewController: Handle network error")
         
-        // First check if this view is currently active, if not, skip the alert
-        if self.isViewLoaded && view.window != nil {
-            print("ChatListView: Present error message")
-            // Notify user
+        if let chatTableController = chatTableController {
+            chatTableController.handleNetworkError()
+        } else {
             DispatchQueue.main.async(execute: {
                 let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
-                    message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                    message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
                     preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+                alert.addAction(Constant.alert.actionOK)
                 self.present(alert, animated: true, completion: nil)
             })
         }
@@ -210,7 +201,7 @@ class ChatViewController: UIViewController, UITextViewDelegate {
         let msg = ChatMessage(message: messageTextView.text)
         
         trip.trip.chatThread.append(msg)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: Constant.notification.chatRefreshed), object: self)
+        NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
         messageTextView.text = ""
         controlSendButton()
         messageTextView.resignFirstResponder()

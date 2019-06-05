@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FlightDetailsViewController: UIViewController, UITextViewDelegate {
+class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrollViewDelegate, DeepLinkableViewController {
     
     // MARK: Properties
     @IBOutlet weak var mainStackView: UIStackView!
@@ -26,92 +26,48 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
     
+    // DeepLinkableViewController
+    var wasDeepLinked = false
+    
     // Section data
     
     // MARK: Navigation
     
-    // Prepare for navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-//        print("Flight Details: Preparing for segue '\(String(describing: segue.identifier))'")
-    }
-    
-
-    // MARK: Constructors
-    required init?(coder: NSCoder) {
-    super.init(coder: coder)
-    }
-    
+    // MARK: Constructors    
     
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Flight Details View loaded")
         super.viewDidLoad()
-        
-        departureLocationTextView.isScrollEnabled = false
-        arrivalLocationTextView.isScrollEnabled = false
-        
-        if let flightElement = tripElement?.tripElement as? Flight {
-            flightNoTextField.text = (flightElement.airlineCode ?? "XX") + " " + (flightElement.routeNo ?? "***")
-            airlineTextField.text = flightElement.companyName
-            departureTimeTextField.text = flightElement.startTime(dateStyle: .medium, timeStyle: .short)
-            var locationInfo = flightElement.departureStop ?? flightElement.departureLocation ?? ""
-            if let departureTerminal = flightElement.departureTerminalName {
-                locationInfo += (departureTerminal == "" ? "" : "\n" + departureTerminal)
-            }
-            if let departureAddress = flightElement.departureAddress {
-                locationInfo += (departureAddress == "" ? "" : "\n" + departureAddress)
-            }
-            departureLocationTextView.text = locationInfo
-            departureLocationTextView.textContainerInset = UIEdgeInsets.zero
-            departureLocationTextView.textContainer.lineFragmentPadding = 0.0
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 2.0
 
-            arrivalTimeTextField.text = flightElement.endTime(dateStyle: .medium, timeStyle: .short)
-            locationInfo = flightElement.arrivalStop ?? flightElement.arrivalLocation ?? ""
-            if let arrivalTerminal = flightElement.arrivalTerminalName {
-                locationInfo += (arrivalTerminal == "" ? "" : "\n" + arrivalTerminal)
-            }
-            if let arrivalAddress = flightElement.arrivalAddress {
-                locationInfo += (arrivalAddress == "" ? "" : "\n" + arrivalAddress)
-            }
-            arrivalLocationTextView.text = locationInfo
-            arrivalLocationTextView.textContainerInset = UIEdgeInsets.zero
-            arrivalLocationTextView.textContainer.lineFragmentPadding = 0.0
-            
-            if let refList = flightElement.references {
-                let horisontalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .horizontal)
-                let horisontalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .horizontal)
-                let verticalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .vertical)
-                let verticalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .vertical)
-                print("Hugging: Label(V) = \(verticalHuggingLabel), Label(H) = \(horisontalHuggingLabel), Value(V) = \(verticalHuggingValue), Value(H) = \(horisontalHuggingValue)")
-                let refDict = NSMutableDictionary()
-                for ref in refList {
-                    if let refType = ref["type"], let refNo = ref["refNo"] {
-                        var refText:NSAttributedString?
-                        if let refUrl = ref["urlLookup"], let url = URL(string: refUrl) {
-                            let hyperlinkText = NSMutableAttributedString(string: refNo)
-                            hyperlinkText.addAttribute(NSAttributedString.Key.link, value: url, range: NSMakeRange(0, hyperlinkText.length))
-                            refText = hyperlinkText
-                        } else {
-                            refText = NSAttributedString(string:refNo)
-                        }
-                        //refDict.setValue(refText, forKey: refType)
-                        refDict[refType] = refText
-                    }
-                }
-                referencesView.addDictionaryAsGrid(refDict, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: flightNoTextField)
-            }
-        } else {
-            flightNoTextField.text = "XX 0000"
-            departureTimeTextField.text = "##. xxx. #### ##:##"
-            departureLocationTextView.text = "<Missing info>"
-            arrivalTimeTextField.text = "##. xxx. #### ##:##"
-            arrivalLocationTextView.text = "<Missing info>"
-        }
+        departureLocationTextView.isScrollEnabled = false
+        departureLocationTextView.textContainerInset = UIEdgeInsets.zero
+        departureLocationTextView.textContainer.lineFragmentPadding = 0.0
+        arrivalLocationTextView.isScrollEnabled = false
+        arrivalLocationTextView.textContainerInset = UIEdgeInsets.zero
+        arrivalLocationTextView.textContainer.lineFragmentPadding = 0.0
 
         //self.view.colourSubviews()
     }
     
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        
+        populateScreen(detectChanges: false, oldElement: nil)
+    }
+
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -131,12 +87,71 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
     
     
     // MARK: Functions
-    func refreshTripElements() {
-//        print("Refreshing trip details - probably because data were refreshed")
-        //updateSections()
+    func populateScreen(detectChanges: Bool, oldElement:Flight?) {
+        guard let flightElement = tripElement?.tripElement as? Flight else {
+            DispatchQueue.main.async(execute: {
+                let alert = UIAlertController(
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(Constant.alert.actionOK)
+                self.present(alert, animated: true, completion: { })
+            })
+            
+            self.navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        flightNoTextField.setText(flightElement.flightNo, detectChanges: detectChanges)
+        airlineTextField.setText(flightElement.companyName, detectChanges: detectChanges)
+        departureTimeTextField.setText(flightElement.startTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
+        let departureInfo = buildLocationInfo(stopName: flightElement.departureStop, location: flightElement.departureLocation, terminalName: flightElement.departureTerminalName, address: flightElement.departureAddress)
+        departureLocationTextView.setText(departureInfo, detectChanges: detectChanges)
+        
+        arrivalTimeTextField.setText(flightElement.endTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
+        let arrivalInfo = buildLocationInfo(stopName: flightElement.arrivalStop, location: flightElement.arrivalLocation, terminalName: flightElement.arrivalTerminalName, address: flightElement.arrivalAddress)
+        arrivalLocationTextView.setText(arrivalInfo, detectChanges: detectChanges)
+        
+        if let refList = flightElement.references {
+            let horisontalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .horizontal)
+            let horisontalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .horizontal)
+            let verticalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .vertical)
+            let verticalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .vertical)
+
+            var oldReferences:NSDictionary? = nil
+            let refDict = getAttributedReferences(refList, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+            if let oldFlight = oldElement, let oldRefs = oldFlight.references {
+                oldReferences = getAttributedReferences(oldRefs, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+            }
+            referencesView.addDictionaryAsGrid(refDict, oldDictionary: oldReferences, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: flightNoTextField, highlightChanges: detectChanges)
+        }
+    }
+    
+    func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
+        var locationInfo = stopName ?? location ?? ""
+        if let terminal = terminalName {
+            locationInfo += (terminal == "" ? "" : "\n" + terminal)
+        }
+        if let address = address {
+            locationInfo += (address == "" ? "" : "\n" + address)
+        }
+        return locationInfo
+    }
+
+    @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            //self.title = self.trip?.trip.name
-            //self.tripDetailsTable.reloadData()
+            if let flightElement = self.tripElement?.tripElement as? Flight {
+                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: flightElement.id) else {
+                    // Couldn't find trip element, trip or element deleted
+                    self.navigationController?.popViewController(animated: true)
+                    return
+                }
+                
+                //let oldElement = flightElement
+                self.trip = aTrip
+                self.tripElement = aElement
+                self.populateScreen(detectChanges: true, oldElement: flightElement)
+            }
         })
     }
     
@@ -148,5 +163,11 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate {
         } else {
             return false
         }
-    }}
+    }
+    
+    // MARK: ScrollViewDelegate
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return mainStackView
+    }
+}
 

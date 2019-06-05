@@ -27,7 +27,7 @@ class ChatTableController: UITableViewController {
     // MARK: Navigation
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-        chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: "Some dummy comment"))
+        chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
         TripList.sharedList.getFromServer()
         return
     }
@@ -65,22 +65,6 @@ class ChatTableController: UITableViewController {
         //print("Current language = \((Locale.current as NSLocale).object(forKey: NSLocale.Key.languageCode)!)")
         super.viewDidLoad()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatTableController.refreshChat), name: NSNotification.Name(rawValue: Constant.notification.chatRefreshed), object: nil)
-        /*
-         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
-         _ = RSUtilities.networkConnectionType("www.shitt.no")
-         
-         //If host is not reachable, display a UIAlertController informing the user
-         let alert = UIAlertController(title: "Alert", message: "You are not connected to the Internet", preferredStyle: UIAlertControllerStyle.Alert)
-         
-         //Add alert action
-         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-         
-         //Present alert
-         self.presentViewController(alert, animated: true, completion: nil)
-         }
-         */
-
         chatListTable.delegate = self
         
         chatListTable.estimatedRowHeight = 44
@@ -102,8 +86,11 @@ class ChatTableController: UITableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshChat), name: Constant.notification.chatRefreshed, object: nil)
+
         if let trip = trip {
-            //print("Chat Table: Refreshing messages from server")
             if let savedPosition = trip.trip.chatThread.exactPosition {
                 print("ChatTable: Restoring exact position: \(String(describing: savedPosition))")
                 self.chatListTable.contentOffset = savedPosition
@@ -117,7 +104,6 @@ class ChatTableController: UITableViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-//        print("ChatTable appeared")
         if !User.sharedUser.hasCredentials() {
             // Show login view
             print("Show logon screen")
@@ -126,23 +112,26 @@ class ChatTableController: UITableViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-//        print("View will disappear, save status")
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
         trip!.trip.chatThread.exactPosition = chatListTable.contentOffset
         saveTrips()
     }
 
-
+    
     @objc func refreshChat() {
         if let refreshControl = refreshControl {
-            refreshControl.endRefreshing()
+            DispatchQueue.main.async(execute: {
+                refreshControl.endRefreshing()
+            })
         }
-//        print("ChatTable: Refreshing list, probably because data were updated")
         guard let trip = trip else {
             print("ERROR: trip not correctly set up")
             return
         }
         if trip.trip.chatThread.count == 0 {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noMessages, comment: "Some dummy comment"))
+            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noMessages, comment: Constant.dummyLocalisationComment))
         } else {
             chatListTable.setBackgroundMessage(nil)
         }
@@ -168,27 +157,32 @@ class ChatTableController: UITableViewController {
     }
 
     func handleNetworkError() {
-        if let refreshControl = refreshControl {
-            refreshControl.endRefreshing()
-        }
-//        print("ChatTableView: End refresh after network error")
-        
-        // First check if this view is currently active, if not, skip the alert
-        if self.isViewLoaded && view.window != nil {
-            print("ChatTableView: Present error message")
-            // Notify user
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: "Some dummy comment"),
-                    message: NSLocalizedString(Constant.msg.connectError, comment: "Some dummy comment"),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+        // Should only be called if this view controller is displayed (notification observers
+        // added in viewWillAppear and removed in viewWillDisappear
+        print("ChatTableController: Handling network error")
+
+        // Notify user - and stop refresh in completion handler to ensure screen is properly updated
+        // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
+        // closure didn't always dismiss the refrech control)
+        DispatchQueue.main.async(execute: {
+            let alert = UIAlertController(
+                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
+                preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(Constant.alert.actionOK)
+            self.present(alert, animated: true, completion: {
+                DispatchQueue.main.async {
+                    if let refreshControl = self.refreshControl {
+                        if refreshControl.isRefreshing {
+                            refreshControl.endRefreshing()
+                        }
+                    }
+                }
             })
-        }
+        })
         
         if (TripList.sharedList.count == 0) {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: "Some dummy comment"))
+            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: Constant.dummyLocalisationComment))
         } else {
             chatListTable.setBackgroundMessage(nil)
         }
@@ -196,13 +190,12 @@ class ChatTableController: UITableViewController {
     
     
     @objc func reloadChatThreadFromServer() {
-        chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingChatThread, comment: "Some dummy comment"))
+        chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingChatThread, comment: Constant.dummyLocalisationComment))
         guard let trip = trip else {
             fatalError("Trip not configured correctly for chat thread")
         }
         
         trip.trip.chatThread.refresh(mode:.full)
-        //refreshTripList()
     }
     
     

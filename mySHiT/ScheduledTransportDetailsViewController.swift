@@ -8,9 +8,11 @@
 
 import UIKit
 
-class ScheduledTransportDetailsViewController: UIViewController, UITextViewDelegate {
+class ScheduledTransportDetailsViewController: UIViewController, UITextViewDelegate, UIScrollViewDelegate, DeepLinkableViewController {
     
     // MARK: Properties
+    @IBOutlet weak var rootScrollView: UIScrollView!
+    @IBOutlet weak var contentView: UIStackView!
     @IBOutlet weak var companyTextField: UITextField!
     @IBOutlet weak var routeNoTextField: UITextField!
     @IBOutlet weak var departureTimeTextField: UITextField!
@@ -23,76 +25,47 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
     
+    // DeepLinkableViewController
+    var wasDeepLinked = false
+    
     // Section data
     
     // MARK: Navigation
     
-    // Prepare for navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-//        print("Scheduled Transport Details: Preparing for segue '\(String(describing: segue.identifier))'")
-    }
-    
-    
     // MARK: Constructors
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
     
     // MARK: Callbacks
     override func viewDidLoad() {
-//        print("Scheduled Transport Details View loaded")
         super.viewDidLoad()
-        
-        if let transportElement = tripElement?.tripElement as? GenericTransport {
-            print(transportElement.routeNo as Any)
-            companyTextField.text = transportElement.companyName
-            routeNoTextField.text = transportElement.routeNo
+        rootScrollView.minimumZoomScale = 1.0
+        rootScrollView.maximumZoomScale = 2.0
+       
+        departureInfoTextView.textContainerInset = UIEdgeInsets.zero
+        departureInfoTextView.textContainer.lineFragmentPadding = 0.0
+        arrivalInfoTextView.textContainerInset = UIEdgeInsets.zero
+        arrivalInfoTextView.textContainer.lineFragmentPadding = 0.0
 
-            departureTimeTextField.text = transportElement.startTime(dateStyle: .medium, timeStyle: .short)
-
-            var locationInfo = transportElement.departureStop ?? transportElement.departureLocation ?? ""
-            if let departureTerminal = transportElement.departureTerminalName {
-                locationInfo += (departureTerminal == "" ? "" : "\n" + departureTerminal)
-            }
-            if let departureAddress = transportElement.departureAddress {
-                locationInfo += (departureAddress == "" ? "" : "\n" + departureAddress)
-            }
-            if let _ = transportElement.departureStop {
-                locationInfo += "\n" + (transportElement.departureLocation ?? "")
-            }
-            departureInfoTextView.text = locationInfo //transportElement.departureLocation
-            departureInfoTextView.textContainerInset = UIEdgeInsets.zero
-            departureInfoTextView.textContainer.lineFragmentPadding = 0.0
-            
-            arrivalTimeTextField.text = transportElement.endTime(dateStyle: .medium, timeStyle: .short)
-            locationInfo = transportElement.arrivalStop ?? transportElement.arrivalLocation ?? ""
-            if let arrivalTerminal = transportElement.arrivalTerminalName {
-                locationInfo += (arrivalTerminal == "" ? "" : "\n" + arrivalTerminal)
-            }
-            if let arrivalAddress = transportElement.arrivalAddress {
-                locationInfo += (arrivalAddress == "" ? "" : "\n" + arrivalAddress)
-            }
-            if let _ = transportElement.arrivalStop {
-                locationInfo += "\n" + (transportElement.arrivalLocation ?? "")
-            }
-            arrivalInfoTextView.text = locationInfo //transportElement.arrivalLocation
-            arrivalInfoTextView.textContainerInset = UIEdgeInsets.zero
-            arrivalInfoTextView.textContainer.lineFragmentPadding = 0.0
-            //referenceTextView.text = "references go here"
-        } else {
-            companyTextField.text = ""
-            routeNoTextField.text = ""
-            departureInfoTextView.text = ""
-            arrivalInfoTextView.text = ""
-            //referenceTextView.text = ""
-        }
-        
         //self.view.colourSubviews()
     }
     
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        
+        self.populateScreen(detectChanges: false, oldElement: nil)
+    }
+
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -102,18 +75,78 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     // MARK: UITextViewDelegate
     
     
+    // MARK: ScrollViewDelegate
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return contentView
+    }
+
+
     // MARK: Actions
     
     
     // MARK: Functions
-    func refreshTripElements() {
-//        print("Refreshing trip details - probably because data were refreshed")
-        //updateSections()
+    func populateScreen(detectChanges: Bool, oldElement: ScheduledTransport?) {
+        guard let transportElement = tripElement?.tripElement as? ScheduledTransport else {
+            DispatchQueue.main.async(execute: {
+                let alert = UIAlertController(
+                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
+                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
+                    preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(Constant.alert.actionOK)
+                self.present(alert, animated: true, completion: { })
+            })
+            
+            self.navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        print(transportElement.routeNo as Any)
+        companyTextField.text = transportElement.companyName
+        routeNoTextField.text = transportElement.routeNo
+        
+        departureTimeTextField.text = transportElement.startTime(dateStyle: .medium, timeStyle: .short)
+        let departureInfo = buildLocationInfo(stopName: transportElement.departureStop, location: transportElement.departureLocation, terminalName: transportElement.departureTerminalName, address: transportElement.departureAddress)
+        departureInfoTextView.setText(departureInfo, detectChanges: detectChanges)
+        
+        arrivalTimeTextField.text = transportElement.endTime(dateStyle: .medium, timeStyle: .short)
+        let arrivalInfo = buildLocationInfo(stopName: transportElement.arrivalStop, location: transportElement.arrivalLocation, terminalName: transportElement.arrivalTerminalName, address: transportElement.arrivalAddress)
+        arrivalInfoTextView.setText(arrivalInfo, detectChanges: detectChanges)
+        //referenceTextView.text = "references go here"
+    }
+
+    
+    func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
+        var locationInfo = stopName ?? location ?? ""
+        if let terminal = terminalName, terminal != "" {
+            locationInfo += ("\n" + terminal)
+        }
+        if let address = address, address != "" {
+            locationInfo += ("\n" + address)
+        }
+        if let _ = stopName, let location = location {
+            locationInfo += ("\n" + location)
+        }
+
+        return locationInfo
+    }
+
+
+    @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            //self.title = self.trip?.trip.name
-            //self.tripDetailsTable.reloadData()
+            if let transportElement = self.tripElement?.tripElement as? ScheduledTransport {
+                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {
+                    // Couldn't find trip element, trip or element deleted
+                    self.navigationController?.popViewController(animated: true)
+                    return
+                }
+                
+                self.trip = aTrip
+                self.tripElement = aElement
+                self.populateScreen(detectChanges: true, oldElement: transportElement)
+            }
         })
     }
+
     
     override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {

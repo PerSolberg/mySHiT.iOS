@@ -15,11 +15,14 @@
 		85179B4D1BDDB09F0097F571 /* UIView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */; };
 		8519D67C1E97B6410077FB52 /* UIChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8519D67B1E97B6410077FB52 /* UIChatMessage.swift */; };
 		8519D67E1E9FBB810077FB52 /* ChatThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8519D67D1E9FBB810077FB52 /* ChatThread.swift */; };
+		8520FB3F2292BC9E002E7CF2 /* UITextView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */; };
+		8520FB412293105C002E7CF2 /* Phone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8520FB402293105C002E7CF2 /* Phone.swift */; };
 		85229DD01BFE041A000893E5 /* PrivateTransportDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85229DCF1BFE041A000893E5 /* PrivateTransportDetailsViewController.swift */; };
 		853ADF511C32996D0092832C /* UITableView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853ADF501C32996D0092832C /* UITableView+mySHiT.swift */; };
 		855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F33581BDEE853002CB89B /* AlertListViewController.swift */; };
 		855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F335A1BDF6C2F002CB89B /* TripList.swift */; };
 		8566AD681E8BD21C00855848 /* SHiTChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8566AD671E8BD21C00855848 /* SHiTChatCell.swift */; };
+		856B947622A025EB008A7E99 /* UITextField+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856B947522A025EB008A7E99 /* UITextField+mySHiT.swift */; };
 		856D66521BD66A3900C62D79 /* TripElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66511BD66A3900C62D79 /* TripElement.swift */; };
 		856D66541BD671A300C62D79 /* Flight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66531BD671A300C62D79 /* Flight.swift */; };
 		856D66561BD673C100C62D79 /* GenericTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66551BD673C100C62D79 /* GenericTransport.swift */; };
@@ -50,6 +53,7 @@
 		85EA06FA200E2CCA00C61D48 /* NotificationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */; };
 		85EA06FC2019307D00C61D48 /* AlertLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06FB2019307D00C61D48 /* AlertLink.swift */; };
 		85EA06FE20193D3F00C61D48 /* UIViewController+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */; };
+		85EBF78722A4590A00D4389B /* DeepLinkableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EBF78622A4590A00D4389B /* DeepLinkableViewController.swift */; };
 		85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F490ED1E892BD4004D9A5D /* ChatTableController.swift */; };
 		85F6A5241BEECA2C00141938 /* GUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85F6A5231BEECA2C00141938 /* GUI.storyboard */; };
 		85F7696E1E8540B80085151F /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F7696D1E8540B80085151F /* ChatMessage.swift */; };
@@ -120,12 +124,15 @@
 		85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+mySHiT.swift"; sourceTree = "<group>"; };
 		8519D67B1E97B6410077FB52 /* UIChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIChatMessage.swift; sourceTree = "<group>"; };
 		8519D67D1E9FBB810077FB52 /* ChatThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatThread.swift; sourceTree = "<group>"; };
+		8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+mySHiT.swift"; sourceTree = "<group>"; };
+		8520FB402293105C002E7CF2 /* Phone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phone.swift; sourceTree = "<group>"; };
 		85229DCF1BFE041A000893E5 /* PrivateTransportDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateTransportDetailsViewController.swift; sourceTree = "<group>"; };
 		852ED3821E1FD7CA005F5146 /* mySHiT.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mySHiT.entitlements; sourceTree = "<group>"; };
 		853ADF501C32996D0092832C /* UITableView+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+mySHiT.swift"; sourceTree = "<group>"; };
 		855F33581BDEE853002CB89B /* AlertListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertListViewController.swift; sourceTree = "<group>"; };
 		855F335A1BDF6C2F002CB89B /* TripList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripList.swift; sourceTree = "<group>"; };
 		8566AD671E8BD21C00855848 /* SHiTChatCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SHiTChatCell.swift; sourceTree = "<group>"; };
+		856B947522A025EB008A7E99 /* UITextField+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+mySHiT.swift"; sourceTree = "<group>"; };
 		856D66511BD66A3900C62D79 /* TripElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripElement.swift; sourceTree = "<group>"; };
 		856D66531BD671A300C62D79 /* Flight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Flight.swift; sourceTree = "<group>"; };
 		856D66551BD673C100C62D79 /* GenericTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericTransport.swift; sourceTree = "<group>"; };
@@ -161,6 +168,7 @@
 		85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationLink.swift; sourceTree = "<group>"; };
 		85EA06FB2019307D00C61D48 /* AlertLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertLink.swift; sourceTree = "<group>"; };
 		85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+mySHiT.swift"; sourceTree = "<group>"; };
+		85EBF78622A4590A00D4389B /* DeepLinkableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkableViewController.swift; sourceTree = "<group>"; };
 		85F490ED1E892BD4004D9A5D /* ChatTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableController.swift; sourceTree = "<group>"; };
 		85F6A5231BEECA2C00141938 /* GUI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = GUI.storyboard; sourceTree = "<group>"; };
 		85F7696D1E8540B80085151F /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
@@ -261,6 +269,7 @@
 				85EA06F5200CDFC800C61D48 /* DeepLinkManager.swift */,
 				85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */,
 				85EA06FB2019307D00C61D48 /* AlertLink.swift */,
+				8520FB402293105C002E7CF2 /* Phone.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -268,10 +277,12 @@
 		85C52A1B1BD4469600F625B5 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				856B947522A025EB008A7E99 /* UITextField+mySHiT.swift */,
 				85C52A1C1BD446C100F625B5 /* NSDate+mySHiT.swift */,
 				85FE1CC91C31C4C100BA19FA /* UIImage+mySHiT.swift */,
 				85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */,
 				853ADF501C32996D0092832C /* UITableView+mySHiT.swift */,
+				8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */,
 				85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */,
 				8519D67B1E97B6410077FB52 /* UIChatMessage.swift */,
 			);
@@ -296,6 +307,7 @@
 				85CAD2E01EBF94620061607C /* Trip Element View Controllers */,
 				85ABD35B1BD58EA100B26F07 /* TripDetailsViewController.swift */,
 				85FEFC401BC7FCF800D8E38E /* TripListViewController.swift */,
+				85EBF78622A4590A00D4389B /* DeepLinkableViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -641,8 +653,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */,
+				8520FB3F2292BC9E002E7CF2 /* UITextView+mySHiT.swift in Sources */,
 				85EA06F8200E290200C61D48 /* DeepLink.swift in Sources */,
 				853ADF511C32996D0092832C /* UITableView+mySHiT.swift in Sources */,
+				8520FB412293105C002E7CF2 /* Phone.swift in Sources */,
 				85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */,
 				85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */,
 				85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */,
@@ -678,6 +692,7 @@
 				85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */,
 				85ABD35E1BD5987500B26F07 /* AnnotatedTripElement.swift in Sources */,
 				85EA06FA200E2CCA00C61D48 /* NotificationLink.swift in Sources */,
+				856B947622A025EB008A7E99 /* UITextField+mySHiT.swift in Sources */,
 				856D665E1BD7933E00C62D79 /* Tenses.swift in Sources */,
 				8507431B1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift in Sources */,
 				85D73AEE1C29398E00998461 /* ChangeState.swift in Sources */,
@@ -689,6 +704,7 @@
 				85229DD01BFE041A000893E5 /* PrivateTransportDetailsViewController.swift in Sources */,
 				85FE1CCA1C31C4C100BA19FA /* UIImage+mySHiT.swift in Sources */,
 				85916FA11E8595C000FF9B19 /* ChatViewController.swift in Sources */,
+				85EBF78722A4590A00D4389B /* DeepLinkableViewController.swift in Sources */,
 				856D66581BD6845D00C62D79 /* ServerDate.swift in Sources */,
 				85C52A1A1BD419E300F625B5 /* TripListSection.swift in Sources */,
 				85ABD3601BD59A5E00B26F07 /* TripElementListSection.swift in Sources */,
@@ -878,7 +894,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = mySHiT/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -898,7 +914,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = mySHiT/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";

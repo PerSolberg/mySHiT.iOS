@@ -42,11 +42,17 @@ class NotificationLink : DeepLink {
                     print("Message for current chat - No need to do anything, already handled by AppDelegate")
                     //trip.chatThread.refresh(mode: .incremental)
                 } else {
+                    // If current view controller was deep linked, pop it from the navigation stack
+                    if let dlVC = navVC.visibleViewController as? DeepLinkableViewController, dlVC.wasDeepLinked {
+                        navVC.popViewController(animated: true)
+                    }
+
                     // Push correct view controller onto navigation stack
                     print("Pushing chat view controller onto stack")
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let viewController = storyboard.instantiateViewController(withIdentifier: "ChatViewController")
                     if let chatViewController = viewController as? ChatViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
+                        chatViewController.wasDeepLinked = true
                         chatViewController.trip = annotatedTrip
                         navVC.pushViewController(chatViewController, animated: true)
                     } else {
@@ -62,27 +68,33 @@ class NotificationLink : DeepLink {
                 
             case (_, Constant.changeOperation.insert):
                 fallthrough
+                
             case (_, Constant.changeOperation.update):
                 guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
                     print("Unable to get root view controller or it is not a navigation controller")
                     return
                 }
+
                 if let tripVC = navVC.visibleViewController as? TripDetailsViewController, let trip = tripVC.trip?.trip, trip.id == tripId {
                     print("Message for current trip - No need to do anything, already handled by AppDelegate")
                 } else {
+                    // If current view controller was deep linked, pop it from the navigation stack
+                    if let dlVC = navVC.visibleViewController as? DeepLinkableViewController, dlVC.wasDeepLinked {
+                        navVC.popViewController(animated: true)
+                    }
+
                     // Push correct view controller onto navigation stack
                     print("Pushing chat view controller onto stack")
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let viewController = storyboard.instantiateViewController(withIdentifier: "TripDetailsViewController")
                     if let tripViewController = viewController as? TripDetailsViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
+                        tripViewController.wasDeepLinked = true
                         tripViewController.trip = annotatedTrip
                         tripViewController.tripCode = annotatedTrip.trip.code
                         navVC.pushViewController(tripViewController, animated: true)
                     } else {
-                        print("Unable to get chat view controller or trip")
-                    }
-                    //navVC.pushViewController(UIApplication.shared.storyboard!.instantiateViewControllerWithIdentifier("ChatViewController") as UIViewController, animated: true)
-                    
+                        print("Unable to get trip details view controller or trip")
+                    }                    
                 }
                 
             default:

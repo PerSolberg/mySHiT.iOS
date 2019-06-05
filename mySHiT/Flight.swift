@@ -44,6 +44,11 @@ class Flight: ScheduledTransport {
         }
         return nil
     }
+    var flightNo: String? {
+        let code = airlineCode ?? "XX"
+        let route = routeNo ?? "***"
+        return code + " " + route
+    }
 
     // MARK: NSCoding
     override func encode(with aCoder: NSCoder) {
@@ -74,7 +79,6 @@ class Flight: ScheduledTransport {
             return false
         } else if let otherFlight = object as? Flight {
             if self.airlineCode           != otherFlight.airlineCode          { return false }
-            
             return super.isEqual(object)
         } else {
             return false
