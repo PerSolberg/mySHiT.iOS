@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController {
     // MARK: Constants
@@ -49,7 +50,6 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // print("Preparing for segue '\(segue.identifier)'")
-        
         if let segueId = segue.identifier {
             switch (segueId) {
             case Constant.segue.embedChatTable:
@@ -62,11 +62,10 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
                 
             default:
                 // No particular preparation needed.
-                print("No special preparation necessary")
                 break
             }
         } else {
-            print("Chat View: Preparing for unidentified segue")
+            os_log("Chat View: Preparing for unidentified segue", type: .error)
         }
     }
     
@@ -169,8 +168,6 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     
     
     @objc func handleNetworkError() {
-        print("ChatViewController: Handle network error")
-        
         if let chatTableController = chatTableController {
             chatTableController.handleNetworkError()
         } else {
@@ -194,7 +191,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     // MARK: Actions
     @IBAction func sendMessage(_ sender: Any) {
         guard let trip = trip else {
-            print("ERROR: Trip not correctly set up for chat")
+            os_log("ERROR: Trip not correctly set up for chat", type: .error)
             return
         }
         

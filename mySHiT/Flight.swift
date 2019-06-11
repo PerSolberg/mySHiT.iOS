@@ -34,11 +34,6 @@ class Flight: ScheduledTransport {
                 if ref[TripElement.RefTag_Type] != Flight.RefType_ETicketNo {
                     refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_Type]! + ": " + ref[TripElement.RefTag_RefNo]!
                 }
-                /*
-                if ref["type"] != "ETKT" {
-                    refList = refList + (refList == "" ? "" : ", ") + ref["type"]! + ": " + ref["refNo"]!
-                }
-                */
             }
             return refList
         }
@@ -60,7 +55,6 @@ class Flight: ScheduledTransport {
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        // NB: use conditional cast (as?) for any optional properties
         airlineCode = aDecoder.decodeObject(forKey: PropertyKey.airlineCodeKey) as? String
         setNotification()
     }

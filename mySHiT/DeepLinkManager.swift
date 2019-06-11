@@ -10,8 +10,6 @@ import Foundation
 import UserNotifications
 
 class DeepLinkManager {
-    //typealias Index = Int
-    
     // Private properties
     private static let sharedMgr = DeepLinkManager()
     private var deepLink : DeepLink?

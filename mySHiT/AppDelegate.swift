@@ -99,35 +99,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         if let trip = lastTrip, let tripName = trip.trip.name {
+            let userInfo:UserInfo = [ .changeType: Constant.changeType.chatMessage,
+                                      .changeOperation: Constant.changeOperation.insert,
+                                      .tripId: String(trip.trip.id) ]
             let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
                 localizedTitle: tripName,
                 localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
                 icon: chatIcon,
-                userInfo: [ Constant.ntfUserInfo.changeType: Constant.changeType.chatMessage as NSSecureCoding,
-                            Constant.ntfUserInfo.changeOp: Constant.changeOperation.insert as NSSecureCoding,
-                            Constant.ntfUserInfo.tripId: String(trip.trip.id) as NSSecureCoding ]
+                userInfo: userInfo.securePropertyList()
             )
             shortcuts.append(shortcut)
         }
         if let trip = currentTrip, let tripName = trip.trip.name {
+            let userInfo:UserInfo = [ .changeType: Constant.changeType.chatMessage, .changeOperation: Constant.changeOperation.insert, .tripId: String(trip.trip.id) ]
             let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
                 localizedTitle: tripName,
                 localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
                 icon: chatIcon,
-                userInfo: [ Constant.ntfUserInfo.changeType: Constant.changeType.chatMessage as NSSecureCoding,
-                            Constant.ntfUserInfo.changeOp: Constant.changeOperation.insert as NSSecureCoding,
-                            Constant.ntfUserInfo.tripId: String(trip.trip.id) as NSSecureCoding ]
+                userInfo: userInfo.securePropertyList()
             )
             shortcuts.append(shortcut)
         }
         if let trip = nextTrip, let tripName = trip.trip.name {
+            let userInfo:UserInfo = [ .changeType: Constant.changeType.chatMessage,
+                                      .changeOperation: Constant.changeOperation.insert,
+                                      .tripId: String(trip.trip.id) ]
             let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
                 localizedTitle: tripName,
                 localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
                 icon: chatIcon,
-                userInfo: [ Constant.ntfUserInfo.changeType: Constant.changeType.chatMessage as NSSecureCoding,
-                            Constant.ntfUserInfo.changeOp: Constant.changeOperation.insert as NSSecureCoding,
-                            Constant.ntfUserInfo.tripId: String(trip.trip.id) as NSSecureCoding ]
+                userInfo: userInfo.securePropertyList()
             )
             shortcuts.append(shortcut)
         }
@@ -139,7 +140,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         switch (shortcutItem.type) {
         case Constant.shortcut.chat:
-            let ntfLink = NotificationLink(userInfo: shortcutItem.userInfo ?? [:])
+            let userInfo = UserInfo(shortcutItem.userInfo)
+            let ntfLink = NotificationLink(userInfo: userInfo)
             DeepLinkManager.current().set(linkHandler: ntfLink)
             DeepLinkManager.current().checkAndHandle()
 
@@ -171,29 +173,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         //  - inactive if application is being opened from notification
         //  - background if application is in the background
         // let appState = application.applicationState
-        guard let _ = userInfo[Constant.ntfUserInfo.changeType] as? String, let _ = userInfo[Constant.ntfUserInfo.changeOp] as? String else {
-            fatalError("Invalid remote notification, no changeType or changeOperation element")
-        }
-
+//        guard let _ = userInfo[Constant.ntfUserInfo.changeType] as? String, let _ = userInfo[Constant.ntfUserInfo.changeOp] as? String else {
+//            fatalError("Invalid remote notification, no changeType or changeOperation element")
+//        }
+        let userInfo = UserInfo(userInfo)
+        // Don't need, checking in handleRemoteNotification
+//        guard let _ = userInfo[.changeType] as? String, let _ = userInfo[.changeOperation] as? String else {
+//            fatalError("Invalid remote notification, no changeType or changeOperation element")
+//        }
         handleRemoteNotification(userInfo: userInfo) {_ in
             completionHandler(UIBackgroundFetchResult.newData);
         }
     }
     
-    func handleRemoteNotification(userInfo: [AnyHashable : Any], parentCompletionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        guard let changeType = userInfo[Constant.ntfUserInfo.changeType] as? String, let changeOperation = userInfo[Constant.ntfUserInfo.changeOp] as? String else {
+    func handleRemoteNotification(userInfo: UserInfo, parentCompletionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        guard let changeType = userInfo[.changeType] as? String, let changeOperation = userInfo[.changeOperation] as? String else {
             fatalError("Invalid remote notification, no changeType or changeOperation element")
         }
 
         switch (changeType, changeOperation) {
         case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
-            guard let apsInfo = userInfo["aps"] as? NSDictionary, let ntfFromUserId = userInfo[Constant.ntfUserInfo.fromUserId] as? String, let fromUserId = Int(ntfFromUserId), let ntfTripId = userInfo[Constant.ntfUserInfo.tripId] as? String, let tripId = Int(ntfTripId) else {
+            guard let apsInfo = userInfo[.aps] as? NSDictionary, let ntfFromUserId = userInfo[.fromUserId] as? String, let fromUserId = Int(ntfFromUserId), let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId) else {
                 fatalError("Invalid remote notification, chat message without aps data, trip ID or sending user ID.")
             }
             guard let currentUserId = User.sharedUser.userId else {
                 fatalError("Unable to get logged on user ID.")
             }
-            if let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, let ntfTripId = userInfo[Constant.ntfUserInfo.tripId] as? String, let tripId = Int(ntfTripId), trip.id == tripId {
+            if let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId), trip.id == tripId {
                 trip.chatThread.refresh(mode: .incremental)
             }
             var handlerOptions:UNNotificationPresentationOptions = [.alert, .sound]
@@ -231,7 +237,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
     {
         if let _ = notification.request.trigger as? UNPushNotificationTrigger {
-            let userInfo = notification.request.content.userInfo
+            //let userInfo = notification.request.content.userInfo
+            let userInfo = UserInfo(notification.request.content.userInfo)
             handleRemoteNotification(userInfo: userInfo) {handlerOptions in
                 completionHandler(handlerOptions)
             }
@@ -247,7 +254,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let category = response.notification.request.content.categoryIdentifier
         let action = response.actionIdentifier
-        let userInfo = response.notification.request.content.userInfo
+        let userInfo = UserInfo(response.notification.request.content.userInfo)
         
         switch (category, action) {
         case (_, UNNotificationDismissActionIdentifier):
@@ -255,7 +262,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             break
             
         case (_, UNNotificationDefaultActionIdentifier):
-            if let _ = response.notification.request.trigger as? UNPushNotificationTrigger, let changeType = userInfo[Constant.ntfUserInfo.changeType] as? String, let changeOperation = userInfo[Constant.ntfUserInfo.changeOp] as? String {
+            if let _ = response.notification.request.trigger as? UNPushNotificationTrigger, let changeType = userInfo[.changeType] as? String, let changeOperation = userInfo[.changeOperation] as? String {
                 switch (changeType, changeOperation) {
                 case (Constant.changeType.chatMessage, Constant.changeOperation.update):
                     // This shouldn't happen because these notifications aren't presented to the user
@@ -290,7 +297,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             guard let textResponse = response as? UNTextInputNotificationResponse else {
                 fatalError("Response to chat message is not UNTextInputNotificationResponse")
             }
-            guard let ntfTripId = userInfo[Constant.ntfUserInfo.tripId] as? String, let tripId = Int(ntfTripId), let trip = TripList.sharedList.trip(byId: tripId) else {
+            guard let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId), let trip = TripList.sharedList.trip(byId: tripId) else {
                 fatalError("Invalid remote notification, no aps element, alert info, message key, message arguments or trip ID.")
             }
             ChatMessage.read(fromUserInfo: userInfo, responseHandler: {_,_,_ in })
@@ -309,8 +316,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     
-    func handleReadChatMessage(userInfo: [AnyHashable : Any], parentCompletionHandler: @escaping () -> Void) {
-        guard let ntfTripId = userInfo[Constant.ntfUserInfo.tripId] as? String, let tripId = Int(ntfTripId), let strLastSeenInfo = userInfo["lastSeenInfo"] as? String else {
+    func handleReadChatMessage(userInfo: UserInfo /*[AnyHashable : Any]*/, parentCompletionHandler: @escaping () -> Void) {
+        guard let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId), let strLastSeenInfo = userInfo[.lastSeenInfo] as? String else {
             os_log("Invalid remote notification, no/invalid trip ID or no last seen info: %s", type: .error, String(describing: userInfo))
             parentCompletionHandler()
             return

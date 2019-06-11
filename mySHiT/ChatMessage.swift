@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 class ChatMessage: NSObject, NSCoding {
     typealias LocalId = (deviceType: String, deviceId: String, localId: String)
@@ -80,7 +81,6 @@ class ChatMessage: NSObject, NSCoding {
     
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         userId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
 
@@ -100,7 +100,6 @@ class ChatMessage: NSObject, NSCoding {
 
 
     required init?(fromDictionary elementData: NSDictionary!) {
-        //super.init(fromDictionary: elementData)
         id = elementData[Constant.JSON.msgId] as? Int
         userId = elementData[Constant.JSON.msgUserId] as? Int
         userName = elementData[Constant.JSON.msgUserName] as? String
@@ -114,27 +113,6 @@ class ChatMessage: NSObject, NSCoding {
 
     }
     
-    /*
-    required init?(fromUserInfo userInfo: [AnyHashable:Any]) {
-        //super.init(fromDictionary: elementData)
-        guard let changeType = userInfo["changeType"] as? String, let changeOp = userInfo["changeOperation"] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
-            fatalError("Invalid usage, can only be used to initialise message from notification")
-        }
-        guard let ntfMsgId = userInfo["id"] as? String, let msgId = Int(ntfMsgId), let ntfFromUserId = userInfo["fromUserId"] as? String, let fromUserId = Int(ntfFromUserId), let message = userInfo["message"] as? String else {
-            fatalError("Invalid chat message notification, no message ID, trip ID, sending user ID or message.")
-        }
-        
-        id = msgId
-        userId = fromUserId
-        userName = ""
-        userInitials = ""
-        localId = (Constant.deviceType, UIDevice.current.identifierForVendor!.uuidString, NSUUID().uuidString)
-        messageText = message
-        storedTimestamp = nil
-        createdTimestamp = Date()
-        
-    }
-    */
     
     init(message: String!) {
         id = nil
@@ -166,22 +144,20 @@ class ChatMessage: NSObject, NSCoding {
         //Send request
         rsRequest.dictionaryFromRSTransaction(rsTransSendMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
-                //If there was an error, log it
-                print("Error : \(error.localizedDescription)")
+                os_log("Error : %s", type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                print("Error : \(errMsg)")
+                os_log("Error : %s", type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
-                print("Chat message saved: \(String(describing: responseDictionary))")
                 if let returnedMessage = responseDictionary {
                     self.id = returnedMessage["id"] as? Int
                     self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZoneName: ChatMessage.Timezone)
                     NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                 } else {
-                    print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
+                    os_log("ERROR: Incorrect response: %s", type: .error, String(describing: responseDictionary))
                 }
             }
             parentResponseHandler(response, responseDictionary, error)
@@ -215,28 +191,27 @@ class ChatMessage: NSObject, NSCoding {
         //Send request
         rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
-                //If there was an error, log it
-                print("Error : \(error.localizedDescription)")
+                os_log("Error : %s", type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                print("Error : \(errMsg)")
+                os_log("Error : %s", type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let _ /*responseDictionary*/ = responseDictionary {
                 //print("Chat message read: \(String(describing: responseDictionary))")
             } else {
-                print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
+                os_log("ERROR: Incorrect response: %s", type: .error, String(describing: responseDictionary))
             }
             parentResponseHandler(response, responseDictionary, error)
         })
     }
     
-    static func read(fromUserInfo userInfo: [AnyHashable:Any], responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
+    static func read(fromUserInfo userInfo: UserInfo/*[AnyHashable:Any]*/, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
         //super.init(fromDictionary: elementData)
-        guard let changeType = userInfo["changeType"] as? String, let changeOp = userInfo["changeOperation"] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
+        guard let changeType = userInfo[.changeType] as? String, let changeOp = userInfo[.changeOperation] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
             fatalError("Invalid usage, can only be used to initialise message from notification")
         }
-        guard let ntfMsgId = userInfo["id"] as? String, let msgId = Int(ntfMsgId), let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId) else {
+        guard let ntfMsgId = userInfo[.id] as? String, let msgId = Int(ntfMsgId), let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId) else {
             fatalError("Invalid chat message notification, no message ID or trip ID.")
         }
         read(msgId: msgId, tripId: tripId, responseHandler: parentResponseHandler)

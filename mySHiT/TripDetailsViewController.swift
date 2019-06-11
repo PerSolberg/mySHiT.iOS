@@ -9,27 +9,27 @@
 import UIKit
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
+//fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+//  switch (lhs, rhs) {
+//  case let (l?, r?):
+//    return l < r
+//  case (nil, _?):
+//    return true
+//  default:
+//    return false
+//  }
+//}
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
+//fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+//  switch (lhs, rhs) {
+//  case let (l?, r?):
+//    return l > r
+//  default:
+//    return rhs < lhs
+//  }
+//}
 
 
 class TripDetailsViewController: UITableViewController, DeepLinkableViewController {
@@ -150,12 +150,13 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             self.title = trip.trip.name
-            if trip.trip.elements != nil && trip.trip.elements?.count > 0 {
-                print("Trip details already loaded")
+            if let elements = trip.trip.elements, elements.count > 0 {
                 updateSections()
             } else {
                 // Load details from server
-                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTripDetails, comment: Constant.dummyLocalisationComment))
+//tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTripDetails, comment: Constant.dummyLocalisationComment))
+                tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
+
                 trip.trip.loadDetails()
             }
         }
@@ -342,7 +343,6 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     @objc func handleNetworkError() {
         // Should only be called if this view controller is displayed (notification observers
         // added in viewWillAppear and removed in viewWillDisappear
-        print("TripDetailsViewController: Handling network error")
         
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async

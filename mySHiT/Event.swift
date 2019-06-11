@@ -22,9 +22,6 @@ class Event: TripElement {
     var accessInfo: String?
     var timezone: String?
 
-    
-    //private String startTimeText;  // Hold original value for saving in archive
-
 
     override var startTime:Date? {
         return eventStartTime
@@ -40,7 +37,6 @@ class Event: TripElement {
     }
     override var endInfo: String? {
         return nil
-        //return dateFormatter.stringFromDate(checkOutTime!)
     }
     var travelTimeInfo: String? {
         if let travelTime = travelTime {
@@ -89,7 +85,6 @@ class Event: TripElement {
         
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
         eventStartTime = aDecoder.decodeObject(forKey: PropertyKey.eventStartTimeKey) as? Date
         travelTime = aDecoder.decodeObject(forKey: PropertyKey.travelTimeKey) as? Int? ?? aDecoder.decodeInteger(forKey: PropertyKey.travelTimeKey)

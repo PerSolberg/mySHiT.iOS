@@ -118,7 +118,8 @@ struct Constant {
     // User interface messages
     struct msg {
         static let retrievingTrips = "Retrieving your trips from SHiT"
-        static let retrievingTripDetails = "Retrieving trip details from SHiT"
+//        static let retrievingTripDetails = "Retrieving trip details from SHiT"
+        static let retrievingTripDetails = NSLocalizedString("Retrieving trip details from SHiT", comment: Constant.dummyLocalisationComment)
         static let tripAlertMessage = "SHiT trip '%@' starts in %@ (%@)"
         static let transportAlertMessage = "%@ departs in %@, at %@"
         static let eventAlertMessage = "%@ starts in %@, at %@"
@@ -166,15 +167,15 @@ struct Constant {
         static let ignoreChatMessage = "IGNORE.CHAT.MSG"
     }
     
-    struct ntfUserInfo {
-        static let tripId = "tripId"
-        static let tripElementId = "TripElementID"
-        static let timeZone = "TimeZone"
-        static let leadTimeType = "leadTimeType"        
-        static let changeType = "changeType"
-        static let changeOp = "changeOperation"
-        static let fromUserId = "fromUserId"
-    }
+//    struct ntfUserInfo {
+//        static let tripId = "tripId"
+//        static let tripElementId = "tripElementID"
+//        static let timeZone = "timeZone"
+//        static let leadTimeType = "leadTimeType"        
+//        static let changeType = "changeType"
+//        static let changeOp = "changeOperation"
+//        static let fromUserId = "fromUserId"
+//    }
     
     struct changeType {
         static let chatMessage = "CHATMESSAGE"

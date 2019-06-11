@@ -28,8 +28,6 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     // DeepLinkableViewController
     var wasDeepLinked = false
     
-    // Section data
-    
     // MARK: Navigation
     
     // MARK: Constructors

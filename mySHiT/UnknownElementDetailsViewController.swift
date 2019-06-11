@@ -26,18 +26,11 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
     
     // MARK: Navigation
     
-    // Prepare for navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-//        print("Unknown Element Details: Preparing for segue '\(String(describing: segue.identifier))'")
-    }
-    
     
     // MARK: Constructors
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        print("Unknown Element Details View loaded")
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
@@ -78,8 +71,6 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
     
     // MARK: Functions
     func refreshTripElements() {
-//        print("Refreshing trip details - probably because data were refreshed")
-        //updateSections()
         DispatchQueue.main.async(execute: {
             //self.title = self.trip?.trip.name
             //self.tripDetailsTable.reloadData()

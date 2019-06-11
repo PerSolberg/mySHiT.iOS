@@ -32,8 +32,6 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
     // DeepLinkableViewController
     var wasDeepLinked = false
     
-    // Section data
-    
     // MARK: Navigation
     
     // MARK: Constructors
@@ -145,7 +143,6 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
     }
 
     @objc func refreshTripElements() {
-        print("Refreshing private transfer details")
         DispatchQueue.main.async(execute: {
             if let transportElement = self.tripElement?.tripElement as? GenericTransport {
                 guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {

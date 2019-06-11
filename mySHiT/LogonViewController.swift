@@ -19,13 +19,13 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: Callbacks
     @IBOutlet weak var scrollView: UIScrollView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Fix localisation for UITextView
         self.view.processSubviews(true, processChildrenFirst: true, action: { (view:UIView, level:Int) in
             if view.isKind(of: UITextView.self) && view.restorationIdentifier != nil {
-                print("Found UITextView \(view.restorationIdentifier!)")
                 let textView = view as! UITextView
                 let textViewName = String(format: "%@.text", textView.restorationIdentifier!)
                 let appBundle = Bundle.main
@@ -42,17 +42,15 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         userNameTextField.text = User.sharedUser.userName
         passwordTextField.text = User.sharedUser.password
 
-        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.logonFailed(_:)), name: Constant.notification.logonFailed, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.connectionFailed(_:)), name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(logonFailed(_:)), name: Constant.notification.logonFailed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(connectionFailed(_:)), name: Constant.notification.networkError, object: nil)
 
         // Register for Keyboard Notifications
         NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWasShown(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWillBeHidden(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-                    //name:UIKeyboardWillHideNotification object:nil];
 
         controlLogonButton()
-        //api.delegate = self;
     }
     
     override func didReceiveMemoryWarning() {
@@ -122,7 +120,6 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     
     
     @objc func logonFailed(_ notification:Notification) {
-        print("LogonViewController: logonFailed")
         DispatchQueue.main.async(execute: {
             let alert = UIAlertController(
                 title: NSLocalizedString(Constant.msg.logonFailureTitle, comment: Constant.dummyLocalisationComment),
@@ -139,7 +136,6 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     
     
     @objc func connectionFailed(_ notification:Notification) {
-        print("LogonViewController: connectionFailed")
         DispatchQueue.main.async(execute: {
             let alert = UIAlertController(
                 title: NSLocalizedString(Constant.msg.connectErrorTitle, comment: Constant.dummyLocalisationComment),

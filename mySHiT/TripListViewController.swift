@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os
 //import Security
 
 class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
@@ -37,7 +38,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-            //UIApplication.shared.openURL(appSettings)
         }
     }
     
@@ -104,7 +104,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 
     func showLogonScreen(animated: Bool) {
-        // Get login screen from storyboard and present it
         let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
         let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
         view.window!.makeKeyAndVisible()
@@ -196,7 +195,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     @objc func handleNetworkError() {
         // Should only be called if this view controller is displayed (notification observers
         // added in viewWillAppear and removed in viewWillDisappear
-        print("TripListViewController: Handling network error")
 
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
@@ -233,7 +231,6 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     @objc func logonComplete(_ notification:Notification) {
-        print("TripListView: Logon complete")
         reloadTripsFromServer()
     }
 
@@ -274,7 +271,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             let showText = NSLocalizedString(s.section.type.rawValue, comment: "test")
             return showText
         } else {
-            print("Section header not available")
+            os_log("Section header not available")
             return nil
         }
     }

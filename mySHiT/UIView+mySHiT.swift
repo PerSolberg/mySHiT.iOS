@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 extension UIView
 {
@@ -57,7 +58,7 @@ extension UIView
         }
         
         if dictionary.count < 1 {
-            print("Dictionary empty, returning")
+            //print("Dictionary empty, returning")
             return
         }
 
@@ -155,7 +156,7 @@ extension UIView
                 } else if (value is NSNumber) {
                     valueField.text = String(describing: value as! NSNumber)
                 } else {
-                    print("Unsupported data type for entry")
+                    os_log("Unsupported data type for entry", type: .error)
                 }
                 var baselineShift:CGFloat = 0.0
                 if let valueFont = valueField.font {
@@ -196,7 +197,6 @@ extension UIView
         }
         
         if let selfAsScrollView = self as? UIScrollView {
-            print("Adding to scroll view - setting size")
             verticalStackView.layoutIfNeeded()
             selfAsScrollView.contentSize = verticalStackView.bounds.size
         }
@@ -204,9 +204,9 @@ extension UIView
 
 
     func addArrayAsVerticalStack(_ array: NSArray, horisontalHuggingForLabel:UILayoutPriority, verticalHuggingForLabel:UILayoutPriority, horisontalHuggingForValue:UILayoutPriority, verticalHuggingForValue:UILayoutPriority, constrainValueFieldWidthToView: UIView?) {
-        print("Adding array here")
+
         if array.count < 1 {
-            print("Array empty, returning")
+            // Array empty, returning
             return
         }
         
@@ -334,7 +334,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.minX - radius2 - triangleHeight, y: rect.minY + triangleHeight))
                 path.addLine(to: CGPoint(x: rect.minX - radius2, y: rect.minY))
             default:
-                print("Inconsistent edge and position")
+                os_log("Inconsistent edge and position", type: .error)
             }
         }
         
@@ -355,7 +355,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.maxX - triangleHeight, y: rect.minY - radius2 - triangleHeight))
                 path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY - radius2))
             default:
-                print("Inconsistent edge and position")
+                os_log("Inconsistent edge and position", type: .error)
             }
         }
         
@@ -376,7 +376,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.maxX + radius2 + triangleHeight, y: rect.maxY - triangleHeight))
                 path.addLine(to: CGPoint(x: rect.maxX + radius2, y: rect.maxY))
             default:
-                print("Inconsistent edge and position")
+                os_log("Inconsistent edge and position", type: .error)
             }
         }
 
@@ -397,7 +397,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.minX + triangleHeight, y: rect.maxY + radius2 + triangleHeight))
                 path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY + radius2))
             default:
-                print("Inconsistent edge and position")
+                os_log("Inconsistent edge and position", type: .error)
             }
         }
         

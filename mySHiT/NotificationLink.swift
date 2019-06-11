@@ -9,24 +9,23 @@
 import Foundation
 import UIKit
 import UserNotifications
+import os
 
 class NotificationLink : DeepLink {
-    //var response: UNNotificationResponse
-    var userInfo: [AnyHashable : Any]
+    var userInfo: UserInfo
 
-    init(userInfo: [AnyHashable : Any]) {
-        //self.response = response
+    init(userInfo: UserInfo) {
         self.userInfo = userInfo
     }
     
     func handle() {
-            guard let changeType = userInfo["changeType"] as? String else {
+            guard let changeType = userInfo[.changeType] as? String else {
                 fatalError("Invalid remote notification, no changeType element")
             }
-            guard let changeOperation = userInfo["changeOperation"] as? String else {
+            guard let changeOperation = userInfo[.changeOperation] as? String else {
                 fatalError("Invalid remote notification, no changeOperation element")
             }
-            guard let ntfTripId = userInfo["tripId"] as? String, let tripId = Int(ntfTripId) else {
+            guard let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId) else {
                 fatalError("TripId missing or invalid")
             }
             
@@ -35,12 +34,11 @@ class NotificationLink : DeepLink {
             switch (changeType, changeOperation) {
             case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
                 guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
-                    print("Unable to get root view controller or it is not a navigation controller")
+                    os_log("Unable to get root view controller or it is not a navigation controller", type: .error)
                     return
                 }
                 if let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
-                    print("Message for current chat - No need to do anything, already handled by AppDelegate")
-                    //trip.chatThread.refresh(mode: .incremental)
+                    os_log("Message for current chat - No need to do anything, already handled by AppDelegate", type: .debug)
                 } else {
                     // If current view controller was deep linked, pop it from the navigation stack
                     if let dlVC = navVC.visibleViewController as? DeepLinkableViewController, dlVC.wasDeepLinked {
@@ -48,7 +46,6 @@ class NotificationLink : DeepLink {
                     }
 
                     // Push correct view controller onto navigation stack
-                    print("Pushing chat view controller onto stack")
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let viewController = storyboard.instantiateViewController(withIdentifier: "ChatViewController")
                     if let chatViewController = viewController as? ChatViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
@@ -56,27 +53,27 @@ class NotificationLink : DeepLink {
                         chatViewController.trip = annotatedTrip
                         navVC.pushViewController(chatViewController, animated: true)
                     } else {
-                        print("Unable to get chat view controller or trip")
+                        os_log("Unable to get chat view controller or trip", type: .error)
                     }
                 }
                 
             case (Constant.changeType.chatMessage, Constant.changeOperation.update):
-                print("Ignoring chat update (read notification)")
+                os_log("Ignoring chat update (read notification)", type: .debug)
                 
             case (Constant.changeType.chatMessage, _):
-                fatalError("Unknown change type/operation: (changeType, changeOperation)")
+                fatalError("Unknown change type/operation: (\(changeType), \(changeOperation))")
                 
             case (_, Constant.changeOperation.insert):
                 fallthrough
                 
             case (_, Constant.changeOperation.update):
                 guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
-                    print("Unable to get root view controller or it is not a navigation controller")
+                    os_log("Unable to get root view controller or it is not a navigation controller", type: .error)
                     return
                 }
 
                 if let tripVC = navVC.visibleViewController as? TripDetailsViewController, let trip = tripVC.trip?.trip, trip.id == tripId {
-                    print("Message for current trip - No need to do anything, already handled by AppDelegate")
+                    os_log("Update for current trip - No need to do anything, already handled by AppDelegate", type: .debug)
                 } else {
                     // If current view controller was deep linked, pop it from the navigation stack
                     if let dlVC = navVC.visibleViewController as? DeepLinkableViewController, dlVC.wasDeepLinked {
@@ -84,7 +81,6 @@ class NotificationLink : DeepLink {
                     }
 
                     // Push correct view controller onto navigation stack
-                    print("Pushing chat view controller onto stack")
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let viewController = storyboard.instantiateViewController(withIdentifier: "TripDetailsViewController")
                     if let tripViewController = viewController as? TripDetailsViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {

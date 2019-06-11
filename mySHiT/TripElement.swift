@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import UserNotifications
+import os
 
 class TripElement: NSObject, NSCoding {
     static let RefTag_Type      = "type"
@@ -22,6 +23,8 @@ class TripElement: NSObject, NSCoding {
     var id: Int!
     var references: [ [String:String] ]?
     var serverData: NSDictionary?
+    
+//    var changedAttributes = Set<String>()
     
     // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
     var notifications = [ String: NotificationInfo ]()
@@ -234,7 +237,7 @@ class TripElement: NSObject, NSCoding {
         // Subclasses that support notifications must override this method (and use method below to set notifications)
     }
     
-    func setNotification(notificationType: String, leadTime: Int, alertMessage: String, userInfo: [String:NSObject]?) {
+    func setNotification(notificationType: String, leadTime: Int, alertMessage: String, userInfo: UserInfo?) {
         // Logic starts here
         let oldInfo = notifications[notificationType]
         let newInfo = NotificationInfo(baseDate: startTime, leadTime: leadTime)
@@ -242,11 +245,11 @@ class TripElement: NSObject, NSCoding {
         if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
             var combined:Bool = false
             
-            var actualUserInfo = userInfo ?? [String:NSObject]()
-            actualUserInfo[Constant.ntfUserInfo.leadTimeType] = notificationType as NSObject
-            actualUserInfo[Constant.ntfUserInfo.tripElementId] = id as NSObject
+            var actualUserInfo = userInfo ?? UserInfo()
+            actualUserInfo[.leadTimeType] = notificationType as NSObject
+            actualUserInfo[.tripElementId] = id as NSObject
             if let startTimeZone = startTimeZone {
-                actualUserInfo[Constant.ntfUserInfo.timeZone] = startTimeZone as NSObject
+                actualUserInfo[.timeZone] = startTimeZone as NSObject
             }
             
             for (nType, n) in notifications {
@@ -272,11 +275,9 @@ class TripElement: NSObject, NSCoding {
                 let ntfContent = UNMutableNotificationContent()
                 ntfContent.body = String.localizedStringWithFormat(alertMessage, title!, leadTimeText!, startTimeText) as String
                 ntfContent.sound = UNNotificationSound.default
-                ntfContent.userInfo = actualUserInfo
+                ntfContent.userInfo = actualUserInfo.propertyList()
                 ntfContent.categoryIdentifier = "SHiT"
                 
-                //let calendar = Calendar(identifier: .gregorian)
-                //let components = calendar.dateComponents(in: .current, from: date)
                 let ntfDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: (newInfo?.notificationDate)!)
                 
                 let ntfTrigger = UNCalendarNotificationTrigger(dateMatching: ntfDateComponents, repeats: false)
@@ -284,7 +285,7 @@ class TripElement: NSObject, NSCoding {
                 
                 UNUserNotificationCenter.current().add(notification10) {(error) in
                     if let error = error {
-                        print("Unable to schedule notification: \(error)")
+                        os_log("Unable to schedule notification: %s", type: .error, error as CVarArg)
                     }
                 }
                 

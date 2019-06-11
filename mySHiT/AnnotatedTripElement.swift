@@ -24,7 +24,6 @@ class AnnotatedTripElement: NSObject, NSCoding {
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
         let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
         var modified:ChangeState = .Unchanged
         if (_modified != nil) {
@@ -32,12 +31,10 @@ class AnnotatedTripElement: NSObject, NSCoding {
         }
         let tripElement = aDecoder.decodeObject(forKey: PropertyKey.tripElementKey) as! TripElement
         
-        // Must call designated initializer.
         self.init(tripElement: tripElement, modified: modified)
     }
     
     init?(tripElement: TripElement) {
-        // Initialize stored properties.
         self.modified = .Unchanged
         self.tripElement = tripElement
         
@@ -45,7 +42,6 @@ class AnnotatedTripElement: NSObject, NSCoding {
     }
 
     init?(tripElement: TripElement, modified: ChangeState) {
-        // Initialize stored properties.
         self.modified = modified
         self.tripElement = tripElement
         

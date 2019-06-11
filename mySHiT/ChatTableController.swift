@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 class ChatTableController: UITableViewController {
     // MARK: Constants
@@ -36,7 +37,6 @@ class ChatTableController: UITableViewController {
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-            //UIApplication.shared.openURL(appSettings)
         }
     }
     
@@ -61,8 +61,6 @@ class ChatTableController: UITableViewController {
     
     // MARK: Callbacks
     override func viewDidLoad() {
-        //print("Chat Table loaded")
-        //print("Current language = \((Locale.current as NSLocale).object(forKey: NSLocale.Key.languageCode)!)")
         super.viewDidLoad()
 
         chatListTable.delegate = self
@@ -72,9 +70,9 @@ class ChatTableController: UITableViewController {
         
         // Set up refresh
         refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = chatListTable.backgroundColor //UIColor.cyanColor()
-        refreshControl!.tintColor = UIColor.blue  //whiteColor()
-        refreshControl!.addTarget(self, action: #selector(ChatTableController.reloadChatThreadFromServer), for: .valueChanged)
+        refreshControl!.backgroundColor = chatListTable.backgroundColor
+        refreshControl!.tintColor = UIColor.blue
+        refreshControl!.addTarget(self, action: #selector(reloadChatThreadFromServer), for: .valueChanged)
     }
     
     func showLogonScreen(animated: Bool) {
@@ -92,21 +90,19 @@ class ChatTableController: UITableViewController {
 
         if let trip = trip {
             if let savedPosition = trip.trip.chatThread.exactPosition {
-                print("ChatTable: Restoring exact position: \(String(describing: savedPosition))")
+                //print("ChatTable: Restoring exact position: \(String(describing: savedPosition))")
                 self.chatListTable.contentOffset = savedPosition
             } else {
                 trip.trip.chatThread.savePosition()
             }
             trip.trip.refreshMessages()
         } else {
-            print("ERROR: Trip not set correctly")
+            os_log("ERROR: Trip not set correctly", type: .error)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         if !User.sharedUser.hasCredentials() {
-            // Show login view
-            print("Show logon screen")
             showLogonScreen(animated: false)
         }
     }
@@ -127,7 +123,7 @@ class ChatTableController: UITableViewController {
             })
         }
         guard let trip = trip else {
-            print("ERROR: trip not correctly set up")
+            os_log("ERROR: trip not correctly set up", type: .error)
             return
         }
         if trip.trip.chatThread.count == 0 {
@@ -137,10 +133,9 @@ class ChatTableController: UITableViewController {
         }
         DispatchQueue.main.async(execute: {
             guard let trip = self.trip else {
-                print("ERROR: Trip not set up correctly, cannot reload")
+                os_log("ERROR: Trip not set up correctly, cannot reload", type: .error)
                 return
             }
-            //trip.trip.chatThread.savePosition()
             self.chatListTable.reloadData()
             if trip.trip.chatThread.restorePosition() {
                 self.restorePosition()
@@ -159,7 +154,6 @@ class ChatTableController: UITableViewController {
     func handleNetworkError() {
         // Should only be called if this view controller is displayed (notification observers
         // added in viewWillAppear and removed in viewWillDisappear
-        print("ChatTableController: Handling network error")
 
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
@@ -200,7 +194,6 @@ class ChatTableController: UITableViewController {
     
     
     func logonComplete(_ notification:Notification) {
-        print("ChatTableView: Logon complete")
         reloadChatThreadFromServer()
     }
     
@@ -219,7 +212,7 @@ class ChatTableController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let trip = trip else {
-            print("ERROR: trip not correctly set up")
+            os_log("ERROR: trip not correctly set up", type: .error)
             return 0
         }
 

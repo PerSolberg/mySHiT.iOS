@@ -13,27 +13,27 @@ import UserNotifications
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
+//fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+//  switch (lhs, rhs) {
+//  case let (l?, r?):
+//    return l < r
+//  case (nil, _?):
+//    return true
+//  default:
+//    return false
+//  }
+//}
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
+//fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+//  switch (lhs, rhs) {
+//  case let (l?, r?):
+//    return l > r
+//  default:
+//    return rhs < lhs
+//  }
+//}
 
 
 class Trip: NSObject, NSCoding {
@@ -46,7 +46,6 @@ class Trip: NSObject, NSCoding {
     var name: String?
     var type: String?
     var elements: [AnnotatedTripElement]?
-//    var messages: [ChatMessage]?
     var chatThread:ChatThread!
 
     // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
@@ -56,8 +55,8 @@ class Trip: NSObject, NSCoding {
         return startDate
     }
     var startTimeZone: String? {
-        if elements != nil && elements?.count > 0 {
-            return elements![0].tripElement.startTimeZone
+        if let elements = elements, elements.count > 0 {
+            return elements[0].tripElement.startTimeZone
         }
         return nil
     }
@@ -138,7 +137,6 @@ class Trip: NSObject, NSCoding {
         static let nameKey = "name"
         static let typeKey = "type"
         static let elementsKey = "elements"
-//        static let messagesKey = "messages"
         static let chatThreadKey = "chatThread"
         static let notificationsKey = "notifications"
     }
@@ -177,7 +175,6 @@ class Trip: NSObject, NSCoding {
     // MARK: Initialisers
     required init?(coder aDecoder: NSCoder) {
         super.init()
-//        print("Decoding Trip")
         // NB: use conditional cast (as?) for any optional properties
         //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
@@ -200,7 +197,7 @@ class Trip: NSObject, NSCoding {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init()
 
-        id = elementData[Constant.JSON.tripId] as? Int  // "id"
+        id = elementData[Constant.JSON.tripId] as? Int
         itineraryId = elementData[Constant.JSON.tripItineraryId] as? Int
         startDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripStartDate] as! String, timeZoneName: nil)
         endDate = ServerDate.convertServerDate(elementData[Constant.JSON.tripEndDate] as! String, timeZoneName: nil)
@@ -329,9 +326,9 @@ class Trip: NSObject, NSCoding {
                 dcf.unitsStyle = .short
                 dcf.zeroFormattingBehavior = .dropAll
                 
-                var userInfo: [String:NSObject] = [Constant.ntfUserInfo.tripId: id as NSObject]
+                var userInfo: UserInfo/*[String:NSObject]*/ = [.tripId: id as NSObject]
                 if let startTimeZone = startTimeZone {
-                    userInfo[Constant.ntfUserInfo.timeZone] = startTimeZone as NSObject?
+                    userInfo[.timeZone] = startTimeZone as NSObject?
                 }
                 
                 if tripLeadtime > 0 {
@@ -341,7 +338,7 @@ class Trip: NSObject, NSCoding {
 
                     if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
                         print("Setting notification for trip \(String(describing:id)) at \(String(describing: newInfo?.notificationDate))")
-                        userInfo[Constant.ntfUserInfo.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
+                        userInfo[.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
                         
                         let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!) //alertTime)
                         let leadTimeText = dcf.string(from: actualLeadTime)

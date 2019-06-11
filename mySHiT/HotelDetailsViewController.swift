@@ -11,7 +11,6 @@ import UIKit
 class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLinkableViewController {
     
     // MARK: Properties
-    
     @IBOutlet weak var rootScrollView: UIScrollView!
     @IBOutlet weak var contentView: UIStackView!
     @IBOutlet weak var hotelNameTextField: UITextField!
@@ -22,14 +21,13 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     @IBOutlet weak var phoneLabel: UILabel!
     @IBOutlet weak var phoneTextView: UITextView!
     @IBOutlet weak var transferInfoTextView: UITextView!
+    
     // Passed from TripDetailsViewController
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
     
     // DeepLinkableViewController
     var wasDeepLinked = false
-    
-    // Section data
     
     // MARK: Navigation
     
@@ -48,7 +46,6 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         transferInfoTextView.textContainer.lineFragmentPadding = 0.0
         phoneTextView.alignBaseline(to: phoneLabel)
         phoneTextView.textContainer.lineFragmentPadding = 0.0
-    
     }
     
     
@@ -129,7 +126,6 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
 
     
     @objc func refreshTripElements() {
-        print("Refreshing hotel details")
         DispatchQueue.main.async(execute: {
             if let eventElement = self.tripElement?.tripElement as? Hotel {
                 guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: eventElement.id) else {

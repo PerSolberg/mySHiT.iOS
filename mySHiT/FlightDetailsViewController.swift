@@ -29,7 +29,6 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     // DeepLinkableViewController
     var wasDeepLinked = false
     
-    // Section data
     
     // MARK: Navigation
     

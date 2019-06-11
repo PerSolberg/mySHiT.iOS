@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 class ChatThread:NSObject, NSCoding {
     enum RefreshMode:String {
@@ -38,7 +39,6 @@ class ChatThread:NSObject, NSCoding {
     
     static let retryDelays = [ 1: 5.0, 10: 30.0, 20: 300.0, 30: 1800.0 ]
 
-    //static let webServiceTripPath = "trip/code/"
     static let webServiceChatPath = "thread"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
     var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
@@ -187,8 +187,6 @@ class ChatThread:NSObject, NSCoding {
 
     // MARK: NSCoding
     required init?(coder aDecoder: NSCoder) {
-//        print("Decoding ChatThread")
-        // NB: use conditional cast (as?) for any optional properties
         tripId = aDecoder.decodeObject(forKey: PropertyKey.tripIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.tripIdKey)
 
         let savedDeviceType = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_deviceTypeKey) as? String
@@ -208,8 +206,6 @@ class ChatThread:NSObject, NSCoding {
             lastDisplayedPosition = UITableView.ScrollPosition(rawValue: rawLastDisplayedPosition)
         }
         lastSeenVersion = aDecoder.decodeObject(forKey: PropertyKey.lastSeenVersionKey) as? Int
-
-//        print("Decoded last displayed ID: \(String(describing: lastDisplayedId))")
     }
 
     func encode(with aCoder: NSCoder) {
@@ -225,8 +221,6 @@ class ChatThread:NSObject, NSCoding {
         aCoder.encode(lastDisplayedPosition?.rawValue, forKey: PropertyKey.lastDisplayedPositionKey)
         aCoder.encode(lastSeenVersion, forKey: PropertyKey.lastSeenVersionKey)
         aCoder.encode(messages, forKey: PropertyKey.messagesKey)
-        
-//        print("Encoded thread \(tripId), last displayed ID: \(String(describing: lastDisplayedId))")
     }
 
 
@@ -305,18 +299,17 @@ class ChatThread:NSObject, NSCoding {
             return !m.isStored
         })
         if !unsavedMessages.isEmpty {
-            print("Saving message \(String(describing:unsavedMessages[0].localId))")
             unsavedMessages[0].save(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
                 if let _ = error {
                     self.retryCount += 1
-                    print("Error when saving message, retrying in \(self.retryDelay) seconds")
+                    os_log("Error when saving message, retrying in %d seconds", type: .error, self.retryDelay)
                     ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
                 } else if let _ = responseDictionary?[Constant.JSON.queryError] {
                     self.retryCount += 1
-                    print("Server error when saving message, retrying in \(self.retryDelay) seconds")
+                    os_log("Server error when saving message, retrying in %d seconds", type: .error, self.retryDelay)
                     ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
                 } else {
-                    print("Message saved successfully, saving next message")
+                    os_log("Message saved successfully, saving next message", type: .debug)
                     self.retryCount = 0
                     self.save()
                 }
@@ -350,11 +343,10 @@ class ChatThread:NSObject, NSCoding {
             // Already marked as seen on the server, no need to update
             return
         }
-        print("Reading message \(msgId)")
         message.read(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let _ = error {
                 self.retryCount += 1
-                print("Error when reading message, retrying in \(self.retryDelay) seconds")
+                os_log("Error when reading message, retrying in %d seconds", type: .error, self.retryDelay)
                 ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performRead(message: message) })
             } else if let _ = responseDictionary?[Constant.JSON.queryError] {
                 self.retryCount += 1
@@ -398,15 +390,13 @@ class ChatThread:NSObject, NSCoding {
         rsRequest.dictionaryFromRSTransaction(rsTransGetChat, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
                 //If there was an error, log it
-                print("Error : \(error.localizedDescription)")
+                os_log("Error : %s", type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                print("Error : \(errMsg)")
+                os_log("Error : %s", type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
-                print("Chat messages retrieved from server")
-
                 if let responseDictionary = responseDictionary, let messageArray = responseDictionary[Constant.JSON.messageList] as? NSArray, let lastSeenDict =  responseDictionary[Constant.JSON.messageLastSeenByOthers] as? NSDictionary, let messageVersion = responseDictionary[Constant.JSON.messageVersion] as? Int {
                     self.lastSeenByUserServer = (responseDictionary[Constant.JSON.messageLastSeenByMe] as? Int)
                     self.lastSeenByOthers = lastSeenDict
@@ -419,7 +409,6 @@ class ChatThread:NSObject, NSCoding {
                                     }
                                 }
                             }
-                            print("ChatThread refreshed incrementally, notifying screen")
                         } else {
                             ChatThread.dqAccess.async(flags:.barrier) {
                                 var newMessages = [ChatMessage]()
@@ -433,17 +422,16 @@ class ChatThread:NSObject, NSCoding {
                                 })
                                 newMessages.append(contentsOf: unsavedMessages)
                                 self.messages = newMessages
-                                print("ChatThread refreshed fully, notifying screen")
                             }
                         }
                     } else {
-                        print("INFO: Didn't find any messages in dictionary: \(String(describing: responseDictionary))")
+                        os_log("INFO: Didn't find any messages in dictionary: %s", String(describing: responseDictionary))
                     }
                     ChatThread.dqAccess.async {
                         NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                     }
                 } else {
-                    print("ERROR: Incorrect response: \(String(describing: responseDictionary))")
+                    os_log("ERROR: Incorrect response: %s", type: .error, String(describing: responseDictionary))
                 }
             }
         })
@@ -490,7 +478,6 @@ class ChatThread:NSObject, NSCoding {
     }
     
     func savePosition() {
-        print("ChatThread: Saving position")
         if let lastItem = lastDisplayedItem {
             savedPosition = (messages[lastItem].localId, lastDisplayedItemPosition)
         }
@@ -498,7 +485,6 @@ class ChatThread:NSObject, NSCoding {
     
     func restorePosition() -> Bool {
         if let savedPosition = savedPosition {
-            print("ChatThread: Restoring position")
             lastDisplayedId = savedPosition.0
             lastDisplayedPosition = savedPosition.1
             self.savedPosition = nil

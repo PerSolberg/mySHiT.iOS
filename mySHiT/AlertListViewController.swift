@@ -19,11 +19,6 @@ class AlertListViewController: UITableViewController {
     var notifications:[UNNotificationRequest]? = nil
     
     // MARK: Navigation
-    // Prepare for navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // print("Preparing for segue '\(segue.identifier)'")
-    }
     
     
     // MARK: Constructors
@@ -83,8 +78,9 @@ class AlertListViewController: UITableViewController {
                 cell!.detailTextLabel!.text = ""
             } else {
                 let notification = notifications[indexPath.row]
+                let userInfo = UserInfo(notification.content.userInfo)
 
-                let timeZoneName = notification.content.userInfo["TimeZone"] as? String ?? "UTC"
+                let timeZoneName = userInfo[.timeZone /*"TimeZone"*/] as? String ?? "UTC"
                 dateFormatter.timeZone = TimeZone(identifier: timeZoneName )
                 if let ntfTrigger = notification.trigger as? UNCalendarNotificationTrigger, let ntfTime = ntfTrigger.nextTriggerDate() {
                     var notificationTime: String = dateFormatter.string(from: ntfTime)

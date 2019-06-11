@@ -23,6 +23,7 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     @IBOutlet weak var venuePhoneLabel: UILabel!
     @IBOutlet weak var venuePhoneText: UITextView!
     @IBOutlet weak var accessInfoTextView: UITextView!
+
     // Passed from TripDetailsViewController
     var tripElement:AnnotatedTripElement?
     var trip:AnnotatedTrip?
@@ -33,8 +34,6 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     // Section data
     
     // MARK: Navigation
-    
-    // Prepare for navigation
     
     // MARK: Constructors
     

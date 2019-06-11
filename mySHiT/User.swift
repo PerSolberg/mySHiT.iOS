@@ -8,6 +8,7 @@
 
 import Foundation
 import FirebaseMessaging
+import os
 
 class User : NSObject, NSCoding {
     static let sharedUser = User()
@@ -50,14 +51,10 @@ class User : NSObject, NSCoding {
     var userName:String? {
         get {
             return srvUserName
-            //let defaults = UserDefaults.standard
-            //return defaults.string(forKey: "user_name")
         }
         set(newName) {
             srvUserName = newName
             saveUser()
-            //let defaults = UserDefaults.standard
-            //defaults.set(newName, forKey: "user_name")
         }
     }
     var password:String? {
@@ -70,13 +67,11 @@ class User : NSObject, NSCoding {
         }
         set(newPassword) {
             if let userName = userName, let newPassword = newPassword {
-                print("Setting password for \(userName)")
                 Keychain.setString(newPassword, forAccount: userName, synchronizable: true, background: true)
             } else if let userName = userName {
-                print("Deleting password for \(userName)")
                 Keychain.deleteAccount(userName)
             } else {
-                print("Invalid user name or password")
+                os_log("Invalid user name or password", type: .error)
             }
         }
     }
@@ -127,23 +122,21 @@ class User : NSObject, NSCoding {
     
 
     func logon(userName: String, password: String) {
-        //rsTransGetUser.parameters = ["userName":userName!,"password":urlsafePassword!]
         let urlsafePassword = password.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         rsTransGetUser.parameters = ["userName":userName,"password":urlsafePassword]
         rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error    {
                 if error._domain == "HTTP" && error._code == 401 {
-                    print("Authentication failed")
+                    os_log("Authentication failed", type: .error)
                     NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
                 }
-                print("Network error : \(error.localizedDescription)")
+                os_log("Network error : %s", type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                print("Server error : \(errMsg)")
+                os_log("Server error : ", type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
             } else {
-                //User.sharedUser.userName = userName
                 self.srvUserName = userName
                 User.sharedUser.password = password
                 self.srvCommonName = responseDictionary?[Constant.JSON.userCommonName] as? String
@@ -152,7 +145,7 @@ class User : NSObject, NSCoding {
                 self.srvInitials = responseDictionary?[Constant.JSON.userInitials] as? String
                 self.srvShortName = responseDictionary?[Constant.JSON.userShortName] as? String
                 
-                print("User logged on. User ID = \(String(describing: self.srvUserId)), Common name = \(String(describing:self.srvCommonName))")
+                //print("User logged on. User ID = \(String(describing: self.srvUserId)), Common name = \(String(describing:self.srvCommonName))")
                 self.registerForPushNotifications()
                 self.saveUser()
 
@@ -181,7 +174,6 @@ class User : NSObject, NSCoding {
     func deregisterPushNotifications() {
         if let userId = userId {
             let topicUser = Constant.Firebase.topicRootUser + String(userId)
-            print("Unsubscribing from topic '\(topicUser)")
             Messaging.messaging().unsubscribe(fromTopic: topicUser)
         }
     }
@@ -190,10 +182,9 @@ class User : NSObject, NSCoding {
     func registerForPushNotifications() {
         if let userId = userId {
             let topicUser = Constant.Firebase.topicRootUser + String(userId)
-            print("Subscribing to topic '\(topicUser)")
             Messaging.messaging().subscribe(toTopic: topicUser)
         } else {
-            print("User ID not available, can't register for notifications")
+            os_log("User ID not available, can't register for notifications")
         }
     }
 
@@ -208,20 +199,15 @@ class User : NSObject, NSCoding {
     
     
     func saveUser() {
-        print("Saving user to iOS keyed archive")
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)
         if !isSuccessfulSave {
-            print("Failed to save user...")
-        } else {
-            print("User saved to iOS keyed archive")
+            os_log("Failed to save user...", type: .error)
         }
     }
     
     func loadUser() {
-        print("Loading user from iOS keyed archive")
         if try! FileManager.default.fileExists(atPath: User.ArchiveUserURL.path) && FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! Int > 0 {
-            let fileSize = try! FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! NSNumber
-            print("User archive size = " + fileSize.stringValue)
+            //let fileSize = try! FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! NSNumber
             if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: User.ArchiveUserURL.path) as? User {
                 self.srvUserId     = newUser.srvUserId
                 self.srvUserName   = newUser.srvUserName

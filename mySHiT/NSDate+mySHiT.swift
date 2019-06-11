@@ -11,33 +11,30 @@ extension Date
 {
     func isGreaterThanDate(_ dateToCompare : Date) -> Bool
     {
-        //Declare Variables
-        var isGreater = false
-        
-        //Compare Values
-        if self.compare(dateToCompare) == ComparisonResult.orderedDescending
-        {
-            isGreater = true
-        }
-        
-        //Return Result
-        return isGreater
+        return self.compare(dateToCompare) == ComparisonResult.orderedDescending
+//        var isGreater = false
+//
+//        if self.compare(dateToCompare) == ComparisonResult.orderedDescending
+//        {
+//            isGreater = true
+//        }
+//
+//        return isGreater
     }
     
     
     func isLessThanDate(_ dateToCompare : Date) -> Bool
     {
-        //Declare Variables
-        var isLess = false
-        
-        //Compare Values
-        if self.compare(dateToCompare) == ComparisonResult.orderedAscending
-        {
-            isLess = true
-        }
-        
-        //Return Result
-        return isLess
+        return self.compare(dateToCompare) == ComparisonResult.orderedAscending
+
+//        var isLess = false
+//
+//        if self.compare(dateToCompare) == ComparisonResult.orderedAscending
+//        {
+//            isLess = true
+//        }
+//
+//        return isLess
     }
 
     func addDays(_ daysToAdd : Int) -> Date
@@ -45,7 +42,6 @@ extension Date
         let secondsInDays : TimeInterval = Double(daysToAdd) * 60 * 60 * 24
         let dateWithDaysAdded : Date = self.addingTimeInterval(secondsInDays)
         
-        //Return Result
         return dateWithDaysAdded
     }
 
@@ -54,7 +50,6 @@ extension Date
         let secondsInHours : TimeInterval = Double(hoursToAdd) * 60 * 60
         let dateWithHoursAdded : Date = self.addingTimeInterval(secondsInHours)
         
-        //Return Result
         return dateWithHoursAdded
     }
 
@@ -63,7 +58,6 @@ extension Date
         let secondsInMinutes : TimeInterval = Double(minutesToAdd) * 60
         let dateWithMinutesAdded : Date = self.addingTimeInterval(secondsInMinutes)
         
-        //Return Result
         return dateWithMinutesAdded
     }
 
@@ -72,7 +66,6 @@ extension Date
         let seconds : TimeInterval = Double(secondsToAdd)
         let dateWithSecondsAdded : Date = self.addingTimeInterval(seconds)
         
-        //Return Result
         return dateWithSecondsAdded
     }
 }
