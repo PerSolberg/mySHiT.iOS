@@ -16,6 +16,8 @@ struct Constant {
     static let dummyLocalisationComment = "Dummy comment"
     static let emptyString = ""
     
+    static let timezoneUTC = TimeZone(identifier: "UTC")
+    
     struct alert {
         static let actionOK = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
     }

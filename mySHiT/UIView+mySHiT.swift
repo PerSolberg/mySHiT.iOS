@@ -156,7 +156,7 @@ extension UIView
                 } else if (value is NSNumber) {
                     valueField.text = String(describing: value as! NSNumber)
                 } else {
-                    os_log("Unsupported data type for entry", type: .error)
+                    os_log("Unsupported data type for entry", log: OSLog.general, type: .error)
                 }
                 var baselineShift:CGFloat = 0.0
                 if let valueFont = valueField.font {
@@ -334,7 +334,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.minX - radius2 - triangleHeight, y: rect.minY + triangleHeight))
                 path.addLine(to: CGPoint(x: rect.minX - radius2, y: rect.minY))
             default:
-                os_log("Inconsistent edge and position", type: .error)
+                os_log("Inconsistent edge and position", log: OSLog.general, type: .error)
             }
         }
         
@@ -355,7 +355,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.maxX - triangleHeight, y: rect.minY - radius2 - triangleHeight))
                 path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY - radius2))
             default:
-                os_log("Inconsistent edge and position", type: .error)
+                os_log("Inconsistent edge and position", log: OSLog.general, type: .error)
             }
         }
         
@@ -376,7 +376,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.maxX + radius2 + triangleHeight, y: rect.maxY - triangleHeight))
                 path.addLine(to: CGPoint(x: rect.maxX + radius2, y: rect.maxY))
             default:
-                os_log("Inconsistent edge and position", type: .error)
+                os_log("Inconsistent edge and position", log: OSLog.general, type: .error)
             }
         }
 
@@ -397,7 +397,7 @@ extension UIView
                 path.addLine(to: CGPoint(x: rect.minX + triangleHeight, y: rect.maxY + radius2 + triangleHeight))
                 path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY + radius2))
             default:
-                os_log("Inconsistent edge and position", type: .error)
+                os_log("Inconsistent edge and position", log: OSLog.general, type: .error)
             }
         }
         

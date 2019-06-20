@@ -67,16 +67,16 @@ class Flight: ScheduledTransport {
     }
     
     
-    // MARK: Methods
-    override func isEqual(_ object: Any?) -> Bool {
-        if object_getClassName(self) != object_getClassName(object) {
-            return false
-        } else if let otherFlight = object as? Flight {
-            if self.airlineCode           != otherFlight.airlineCode          { return false }
-            return super.isEqual(object)
+    // MARK: Methods 
+    override func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
+        var changes = try super.compareProperties(otherTripElement)
+        
+        if let otherFlight = otherTripElement as? Flight {
+            changes.appendOpt(checkProperty(PropertyKey.airlineCodeKey, new: self.airlineCode, old: otherFlight.airlineCode))
         } else {
-            return false
+            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
         }
+        return changes
     }
     
     

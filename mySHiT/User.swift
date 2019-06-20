@@ -71,7 +71,7 @@ class User : NSObject, NSCoding {
             } else if let userName = userName {
                 Keychain.deleteAccount(userName)
             } else {
-                os_log("Invalid user name or password", type: .error)
+                os_log("Invalid user name or password", log: OSLog.general, type: .error)
             }
         }
     }
@@ -127,14 +127,14 @@ class User : NSObject, NSCoding {
         rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error    {
                 if error._domain == "HTTP" && error._code == 401 {
-                    os_log("Authentication failed", type: .error)
+                    os_log("Authentication failed", log: OSLog.network, type: .error)
                     NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
                 }
-                os_log("Network error : %s", type: .error, error.localizedDescription)
+                os_log("Network error : %s", log: OSLog.network, type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                os_log("Server error : ", type: .error, errMsg)
+                os_log("Server error : ", log: OSLog.network, type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
             } else {
                 self.srvUserName = userName
@@ -184,7 +184,7 @@ class User : NSObject, NSCoding {
             let topicUser = Constant.Firebase.topicRootUser + String(userId)
             Messaging.messaging().subscribe(toTopic: topicUser)
         } else {
-            os_log("User ID not available, can't register for notifications")
+            os_log("User ID not available, can't register for notifications", log: OSLog.notification, type: .error)
         }
     }
 
@@ -201,7 +201,7 @@ class User : NSObject, NSCoding {
     func saveUser() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)
         if !isSuccessfulSave {
-            os_log("Failed to save user...", type: .error)
+            os_log("Failed to save user...", log: OSLog.general, type: .error)
         }
     }
     

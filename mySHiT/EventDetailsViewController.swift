@@ -67,7 +67,9 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self)
+        if isMovingToParent {
+            NotificationCenter.default.removeObserver(self)
+        }
     }
     
     

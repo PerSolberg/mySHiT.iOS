@@ -12,6 +12,8 @@ import UserNotifications
 import os
 
 class TripElement: NSObject, NSCoding {
+    typealias ChangedAttribute = (attr:String, old:String, new:String)
+    
     static let RefTag_Type      = "type"
     static let RefTag_RefNo     = "refNo"
     static let RefTag_LookupURL = "urlLookup"
@@ -24,8 +26,8 @@ class TripElement: NSObject, NSCoding {
     var references: [ [String:String] ]?
     var serverData: NSDictionary?
     
-//    var changedAttributes = Set<String>()
-    
+    var changedAttributes:[(attr:String, old:String, new:String)] = []
+
     // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
     var notifications = [ String: NotificationInfo ]()
     
@@ -105,7 +107,6 @@ class TripElement: NSObject, NSCoding {
     }
 
     struct PropertyKey {
-        //static let visibleKey = "visible"
         static let typeKey = "type"
         static let subTypeKey = "subtype"
         static let idKey = "id"
@@ -164,15 +165,11 @@ class TripElement: NSObject, NSCoding {
         references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
         serverData = aDecoder.decodeObject(forKey: PropertyKey.serverDataKey) as? NSDictionary
         notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
-
-        // Must call designated initializer.
-        //self.init(type: type, subType: subType)
     }
     
     
     init?(id: Int?, type: String?, subType: String?, references: [ [String:String] ]?) {
         // Initialize stored properties.
-        //self.visible = visible
         super.init()
         if id == nil || type == nil || subType == nil {
             return nil
@@ -195,31 +192,100 @@ class TripElement: NSObject, NSCoding {
     
     
     // MARK: Methods
-    override func isEqual(_ object: Any?) -> Bool {
+    override final func isEqual(_ object: Any?) -> Bool {
         if object_getClassName(self) != object_getClassName(object) {
             return false
         } else if let otherTripElement = object as? TripElement {
-            if self.type         != otherTripElement.type            { return false }
-            if self.subType      != otherTripElement.subType         { return false }
-            if self.id           != otherTripElement.id              { return false }
-            
-            if let myRefs = self.references, let otherRefs = otherTripElement.references {
-                if myRefs.count != otherRefs.count { return false }
-                check_refs: for myRef in myRefs {
-                    for otherRef in otherRefs {
-                        if (otherRef == myRef) {
-                            continue check_refs
-                        }
-                    }
-                    return false
+            do {
+                let changes = try compareProperties(otherTripElement)
+                
+                if changes.count != 0 {
+//                    print("Changes: \(String(describing: changes))")
+                    os_log("Changes: %s", log: OSLog.delta, type: .debug, String(describing: changes))
                 }
-            } else if (self.references != nil || otherTripElement.references != nil) {
+                return changes.count == 0
+            }
+            catch ModelError.compareTypeMismatch(let selfType, let otherType) {
+                os_log("Compare type mismatch: %s vs %s", log: OSLog.delta, type: .error, selfType, otherType)
                 return false
             }
-
-            return true
+            catch {
+                fatalError("Unexpected error: \(error)")
+            }
         } else {
             return false
+        }
+    }
+    
+
+    func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
+        var changes = [ChangedAttribute]()
+        changes.appendOpt(checkProperty(PropertyKey.typeKey, new: self.type, old: otherTripElement.type))
+        changes.appendOpt(checkProperty(PropertyKey.subTypeKey, new: self.subType, old: otherTripElement.subType))
+        changes.appendOpt(checkProperty(PropertyKey.idKey, new: self.id, old: otherTripElement.id))
+
+        if let myRefs = self.references, let otherRefs = otherTripElement.references {
+            if myRefs.count != otherRefs.count { changes.append(("references.count", String(myRefs.count), String(otherRefs.count))) }
+            check_refs: for myRef in myRefs {
+                for otherRef in otherRefs {
+                    if (otherRef == myRef) {
+                        continue check_refs
+                    }
+                }
+                let refType = myRef["type"] ?? "<None>"
+                let refNo = myRef["refNo"] ?? "<None>"
+                changes.append(("references.\(refType)", new: refNo, old: ""))
+            }
+        } else if (self.references != nil || otherTripElement.references != nil) {
+            changes.append(("references", self.references == nil ? "none" : String(self.references!.count), otherTripElement.references == nil ? "none" : String(otherTripElement.references!.count)))
+        }
+
+        return changes
+    }
+
+
+    func checkProperty(_ name: String, new: String?, old: String?) -> ChangedAttribute? {
+        if let old = old, let new = new, old == new {
+            return nil
+        } else if old == nil && new == nil {
+            return nil
+        } else {
+            return (name, old ?? "", new ?? "")
+        }
+    }
+    
+    func checkProperty(_ name: String, new: Int?, old: Int?) -> ChangedAttribute? {
+        if let old = old, let new = new, old == new {
+            return nil
+        } else if old == nil && new == nil {
+            return nil
+        } else {
+            return (name, old == nil ? "nil" : String(old!), new == nil ? "nil" : String(new!) )
+        }
+    }
+
+    func checkProperty(_ name: String, new: Date?, old: Date?) -> ChangedAttribute? {
+        if let old = old, let new = new, old == new {
+            return nil
+        } else if old == nil && new == nil {
+            return nil
+        } else {
+            let isoFormatter = ISO8601DateFormatter()
+            isoFormatter.formatOptions = [.withSpaceBetweenDateAndTime, .withFullDate, .withFullTime, .withTimeZone]
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.dateStyle = .full  //dateStyle
+//            dateFormatter.timeStyle = .full //timeStyle
+//            dateFormatter.timeZone = Constant.timezoneUTC
+            
+            var oldDate = "nil", newDate = "nil"
+            if let old = old {
+                oldDate = isoFormatter.string(from: old)
+            }
+            if let new = new {
+                newDate = isoFormatter.string(from: new)
+            }
+            
+            return (name, oldDate, newDate )
         }
     }
     
@@ -285,17 +351,17 @@ class TripElement: NSObject, NSCoding {
                 
                 UNUserNotificationCenter.current().add(notification10) {(error) in
                     if let error = error {
-                        os_log("Unable to schedule notification: %s", type: .error, error as CVarArg)
+                        os_log("Unable to schedule notification: %{public}s", log: OSLog.notification, type: .error, error as CVarArg)
                     }
                 }
                 
             } else {
-                print("Not setting \(String(describing:notificationType)) notification for trip element \(String(describing:id)), combined with other notification")
+                os_log("Not setting '%{public}s' notification for trip element %d, combined with other notification", log: OSLog.notification, type: .info, notificationType, id)
             }
             
             notifications[notificationType] = newInfo
         } else {
-            print("Not refreshing \(String(describing:notificationType)) notification for trip element \(String(describing:id)), already triggered")
+            os_log("Not refreshing '%{public}s' notification for trip element %d, already triggered", log: OSLog.notification, type: .info, notificationType, id)
         }
         
     }

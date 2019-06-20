@@ -144,11 +144,11 @@ class ChatMessage: NSObject, NSCoding {
         //Send request
         rsRequest.dictionaryFromRSTransaction(rsTransSendMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
-                os_log("Error : %s", type: .error, error.localizedDescription)
+                os_log("Error : %s", log: OSLog.webService, type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                os_log("Error : %s", type: .error, errMsg)
+                os_log("Error : %s", log: OSLog.webService, type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no
@@ -157,7 +157,7 @@ class ChatMessage: NSObject, NSCoding {
                     self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZoneName: ChatMessage.Timezone)
                     NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                 } else {
-                    os_log("ERROR: Incorrect response: %s", type: .error, String(describing: responseDictionary))
+                    os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
             }
             parentResponseHandler(response, responseDictionary, error)
@@ -191,16 +191,16 @@ class ChatMessage: NSObject, NSCoding {
         //Send request
         rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
-                os_log("Error : %s", type: .error, error.localizedDescription)
+                os_log("Error : %s", log: OSLog.webService, type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                os_log("Error : %s", type: .error, errMsg)
+                os_log("Error : %s", log: OSLog.webService, type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let _ /*responseDictionary*/ = responseDictionary {
                 //print("Chat message read: \(String(describing: responseDictionary))")
             } else {
-                os_log("ERROR: Incorrect response: %s", type: .error, String(describing: responseDictionary))
+                os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
             }
             parentResponseHandler(response, responseDictionary, error)
         })

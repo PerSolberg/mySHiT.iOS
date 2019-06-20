@@ -6,7 +6,7 @@
 "5Iw-uL-UdO.text" = "Avgang";
 
 /* Class = "UILabel"; text = "Transfer Info"; ObjectID = "7xR-iJ-vOd"; */
-"7xR-iJ-vOd.text" = "Transfer Info"; /* TODO */
+"7xR-iJ-vOd.text" = "Ankomstinformasjon";
 
 /* Class = "UILabel"; text = "References"; ObjectID = "8WV-Mr-ZMC"; */
 "8WV-Mr-ZMC.text" = "Referanser";

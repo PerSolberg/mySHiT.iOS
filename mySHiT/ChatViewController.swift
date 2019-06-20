@@ -65,7 +65,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
                 break
             }
         } else {
-            os_log("Chat View: Preparing for unidentified segue", type: .error)
+            os_log("Chat View: Preparing for unidentified segue", log: OSLog.general, type: .error)
         }
     }
     
@@ -191,7 +191,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     // MARK: Actions
     @IBAction func sendMessage(_ sender: Any) {
         guard let trip = trip else {
-            os_log("ERROR: Trip not correctly set up for chat", type: .error)
+            os_log("ERROR: Trip not correctly set up for chat", log: OSLog.general, type: .error)
             return
         }
         

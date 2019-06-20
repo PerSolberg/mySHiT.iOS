@@ -32,6 +32,8 @@
 		856D665E1BD7933E00C62D79 /* Tenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D665D1BD7933E00C62D79 /* Tenses.swift */; };
 		856D66601BD7CE3C00C62D79 /* Development tips in Resources */ = {isa = PBXBuildFile; fileRef = 856D665F1BD7CE3C00C62D79 /* Development tips */; };
 		856D66621BD824E300C62D79 /* SecurityWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66611BD824E300C62D79 /* SecurityWrapper.swift */; };
+		8576E7C122B673CA0005B9CB /* Array+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8576E7C022B673CA0005B9CB /* Array+mySHiT.swift */; };
+		8576E7C322B67CD50005B9CB /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8576E7C222B67CD50005B9CB /* ModelError.swift */; };
 		85916FA11E8595C000FF9B19 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85916FA01E8595C000FF9B19 /* ChatViewController.swift */; };
 		859D44171BD4EC7E0068E5B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859D44161BD4EC7E0068E5B3 /* User.swift */; };
 		859F903B1E3620EF0006AEC4 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F903A1E3620EF0006AEC4 /* Event.swift */; };
@@ -55,6 +57,7 @@
 		85EA06FE20193D3F00C61D48 /* UIViewController+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */; };
 		85EBF78722A4590A00D4389B /* DeepLinkableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EBF78622A4590A00D4389B /* DeepLinkableViewController.swift */; };
 		85EBF78922A7CE5900D4389B /* UserInfoDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EBF78822A7CE5900D4389B /* UserInfoDictionary.swift */; };
+		85EF19E622B99FE7002FA60B /* OSLog+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EF19E522B99FE7002FA60B /* OSLog+mySHiT.swift */; };
 		85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F490ED1E892BD4004D9A5D /* ChatTableController.swift */; };
 		85F6A5241BEECA2C00141938 /* GUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85F6A5231BEECA2C00141938 /* GUI.storyboard */; };
 		85F7696E1E8540B80085151F /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F7696D1E8540B80085151F /* ChatMessage.swift */; };
@@ -143,6 +146,8 @@
 		856D665D1BD7933E00C62D79 /* Tenses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tenses.swift; sourceTree = "<group>"; };
 		856D665F1BD7CE3C00C62D79 /* Development tips */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Development tips"; sourceTree = "<group>"; };
 		856D66611BD824E300C62D79 /* SecurityWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecurityWrapper.swift; sourceTree = "<group>"; };
+		8576E7C022B673CA0005B9CB /* Array+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+mySHiT.swift"; sourceTree = "<group>"; };
+		8576E7C222B67CD50005B9CB /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
 		85916FA01E8595C000FF9B19 /* ChatViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		859D44161BD4EC7E0068E5B3 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		859F903A1E3620EF0006AEC4 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -171,6 +176,7 @@
 		85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+mySHiT.swift"; sourceTree = "<group>"; };
 		85EBF78622A4590A00D4389B /* DeepLinkableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkableViewController.swift; sourceTree = "<group>"; };
 		85EBF78822A7CE5900D4389B /* UserInfoDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoDictionary.swift; sourceTree = "<group>"; };
+		85EF19E522B99FE7002FA60B /* OSLog+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OSLog+mySHiT.swift"; sourceTree = "<group>"; };
 		85F490ED1E892BD4004D9A5D /* ChatTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableController.swift; sourceTree = "<group>"; };
 		85F6A5231BEECA2C00141938 /* GUI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = GUI.storyboard; sourceTree = "<group>"; };
 		85F7696D1E8540B80085151F /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
@@ -264,6 +270,7 @@
 				856D665D1BD7933E00C62D79 /* Tenses.swift */,
 				856D665B1BD7025400C62D79 /* Trip.swift */,
 				856D66511BD66A3900C62D79 /* TripElement.swift */,
+				8576E7C222B67CD50005B9CB /* ModelError.swift */,
 				85ABD35F1BD59A5E00B26F07 /* TripElementListSection.swift */,
 				855F335A1BDF6C2F002CB89B /* TripList.swift */,
 				85C52A191BD419E300F625B5 /* TripListSection.swift */,
@@ -284,10 +291,12 @@
 				85FE1CC91C31C4C100BA19FA /* UIImage+mySHiT.swift */,
 				85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */,
 				85EBF78822A7CE5900D4389B /* UserInfoDictionary.swift */,
+				8576E7C022B673CA0005B9CB /* Array+mySHiT.swift */,
 				853ADF501C32996D0092832C /* UITableView+mySHiT.swift */,
 				8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */,
 				85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */,
 				8519D67B1E97B6410077FB52 /* UIChatMessage.swift */,
+				85EF19E522B99FE7002FA60B /* OSLog+mySHiT.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -669,6 +678,7 @@
 				859F903B1E3620EF0006AEC4 /* Event.swift in Sources */,
 				856D665C1BD7025400C62D79 /* Trip.swift in Sources */,
 				85C52A201BD44E1A00F625B5 /* UpcomingTrips.swift in Sources */,
+				85EF19E622B99FE7002FA60B /* OSLog+mySHiT.swift in Sources */,
 				85ABD35C1BD58EA100B26F07 /* TripDetailsViewController.swift in Sources */,
 				85FEFC411BC7FCF800D8E38E /* TripListViewController.swift in Sources */,
 				856D66561BD673C100C62D79 /* GenericTransport.swift in Sources */,
@@ -686,12 +696,14 @@
 				855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */,
 				85F7696E1E8540B80085151F /* ChatMessage.swift in Sources */,
 				85179B4D1BDDB09F0097F571 /* UIView+mySHiT.swift in Sources */,
+				8576E7C122B673CA0005B9CB /* Array+mySHiT.swift in Sources */,
 				856D665A1BD6F73100C62D79 /* Hotel.swift in Sources */,
 				856D66521BD66A3900C62D79 /* TripElement.swift in Sources */,
 				85FEFC801BCA7F4000D8E38E /* UIImageView+RSNetworking.swift in Sources */,
 				85FEFC7C1BCA7F4000D8E38E /* RSTransactionRequest.swift in Sources */,
 				8519D67C1E97B6410077FB52 /* UIChatMessage.swift in Sources */,
 				855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */,
+				8576E7C322B67CD50005B9CB /* ModelError.swift in Sources */,
 				85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */,
 				85ABD35E1BD5987500B26F07 /* AnnotatedTripElement.swift in Sources */,
 				85EA06FA200E2CCA00C61D48 /* NotificationLink.swift in Sources */,

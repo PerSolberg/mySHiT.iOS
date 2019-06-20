@@ -60,7 +60,9 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self)
+        if isMovingToParent {
+            NotificationCenter.default.removeObserver(self)
+        }
     }
 
 

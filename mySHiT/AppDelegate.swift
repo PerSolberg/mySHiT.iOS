@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var appSettings = Dictionary<AnyHashable, Any>()
     var avPlayer:AVAudioPlayer?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {        
         // First save current app settings, so we can avoid refreshing when Firebase settings change
         let defaults = UserDefaults.standard
         appSettings[Constant.Settings.tripLeadTime] = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
@@ -146,7 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             DeepLinkManager.current().checkAndHandle()
 
         default:
-            os_log("Don't know how to handle shortcut type '%s'", type: .error, shortcutItem.type)
+            os_log("Don't know how to handle shortcut type '%s'", log: OSLog.general, type: .error, shortcutItem.type)
         }
 
         completionHandler(true)
@@ -161,26 +161,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
         // The token is not currently available.
-        os_log("Remote notification support is unavailable due to error: %s", type: .error, error.localizedDescription)
+        os_log("Remote notification support is unavailable due to error: %s", log: OSLog.notification, type: .error, error.localizedDescription)
     }
 
     
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        // appState is:
-        //  - active if application is active,
-        //  - inactive if application is being opened from notification
-        //  - background if application is in the background
-        // let appState = application.applicationState
-//        guard let _ = userInfo[Constant.ntfUserInfo.changeType] as? String, let _ = userInfo[Constant.ntfUserInfo.changeOp] as? String else {
-//            fatalError("Invalid remote notification, no changeType or changeOperation element")
-//        }
         let userInfo = UserInfo(userInfo)
-        // Don't need, checking in handleRemoteNotification
-//        guard let _ = userInfo[.changeType] as? String, let _ = userInfo[.changeOperation] as? String else {
-//            fatalError("Invalid remote notification, no changeType or changeOperation element")
-//        }
         handleRemoteNotification(userInfo: userInfo) {_ in
             completionHandler(UIBackgroundFetchResult.newData);
         }
@@ -308,7 +296,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             ChatMessage.read(fromUserInfo: userInfo, responseHandler: {_,_,_ in })
             
         default:
-            os_log("Invalid action for new chat message: %s", type: .error, response.actionIdentifier)
+            os_log("Invalid action for new chat message: %s", log: OSLog.webService, type: .error, response.actionIdentifier)
             
         }
         
@@ -318,7 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func handleReadChatMessage(userInfo: UserInfo /*[AnyHashable : Any]*/, parentCompletionHandler: @escaping () -> Void) {
         guard let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId), let strLastSeenInfo = userInfo[.lastSeenInfo] as? String else {
-            os_log("Invalid remote notification, no/invalid trip ID or no last seen info: %s", type: .error, String(describing: userInfo))
+            os_log("Invalid remote notification, no/invalid trip ID or no last seen info: %{public}s", log: OSLog.notification, type: .error, String(describing: userInfo))
             parentCompletionHandler()
             return
         }
@@ -326,12 +314,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         do {
             jsonLastSeenInfo = try JSONSerialization.jsonObject(with: strLastSeenInfo.data(using: .utf8)!, options: JSONSerialization.ReadingOptions.allowFragments)
         } catch {
-            os_log("Invalid remote notification, invalid JSON: %s", type: .error, strLastSeenInfo)
+            os_log("Invalid remote notification, invalid JSON: %{public}s", log: OSLog.notification, type: .error, strLastSeenInfo)
             parentCompletionHandler()
             return
         }
         guard let lastSeenInfo = jsonLastSeenInfo as? NSDictionary, let lastSeenByUsers = lastSeenInfo[ Constant.JSON.messageLastSeenByOthers] as? NSDictionary, let lastSeenVersion = lastSeenInfo[Constant.JSON.lastSeenVersion] as? Int else {
-            os_log("Invalid remote notification, invalid last seen info: %s", type: .error, String(describing: jsonLastSeenInfo))
+            os_log("Invalid remote notification, invalid last seen info: %{public}s", log: OSLog.notification, type: .error, String(describing: jsonLastSeenInfo))
             parentCompletionHandler()
             return
         }
@@ -347,7 +335,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     private func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationRequest) {
-        os_log("Registered with Firebase", type: .debug)
+        os_log("Registered with Firebase", log: OSLog.notification, type: .debug)
         Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
         User.sharedUser.registerForPushNotifications()
         TripList.sharedList.registerForPushNotifications()
@@ -389,17 +377,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func registerDefaultsFromSettingsBundle() {
         guard let settingsBundle = Bundle.main.url(forResource: "Settings", withExtension:"bundle") else {
-            os_log("Could not find Settings.bundle", type: .error)
+            os_log("Could not find Settings.bundle", log: OSLog.general, type: .error)
             return;
         }
         
         guard let settings = NSDictionary(contentsOf: settingsBundle.appendingPathComponent("Root.plist")) else {
-            os_log("Could not find Root.plist in settings bundle", type: .error)
+            os_log("Could not find Root.plist in settings bundle", log: OSLog.general, type: .error)
             return
         }
         
         guard let preferences = settings.object(forKey: "PreferenceSpecifiers") as? [[String: AnyObject]] else {
-            os_log("Root.plist has invalid format", type: .error)
+            os_log("Root.plist has invalid format", log: OSLog.general, type: .error)
             return
         }
         
@@ -438,7 +426,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 appSettings[Constant.Settings.eventLeadTime] = newEventLeadTime
             }
         } else {
-            os_log("Defaults changed, but user defaults not available", type: .info)
+            os_log("Defaults changed, but user defaults not available", log: OSLog.general, type: .info)
         }
     }
     
@@ -459,7 +447,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         guard let path = Bundle.main.path(forResource: name, ofType:type) else {
-            os_log("Sound file '%s' not found.", type: .error, name)
+            os_log("Sound file '%s' not found.", log: OSLog.general, type: .error, name)
             return
         }
         let url = URL(fileURLWithPath: path)
@@ -467,7 +455,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             avPlayer = try AVAudioPlayer(contentsOf: url)
             avPlayer?.play()
         } catch {
-            os_log("Playing sound file '%s' failed", type: .error, name)
+            os_log("Playing sound file '%s' failed", log: OSLog.general, type: .error, name)
         }
     }
 

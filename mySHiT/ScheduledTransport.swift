@@ -46,6 +46,7 @@ class ScheduledTransport: GenericTransport {
     // MARK: Initialisers
     
     // MARK: Methods
+    
     override func setNotification() {
         // First delete any existing notifications for this trip element (either one or two)
         cancelNotifications()

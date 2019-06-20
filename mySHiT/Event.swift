@@ -117,24 +117,23 @@ class Event: TripElement {
     
     
     // MARK: Methods
-    override func isEqual(_ object: Any?) -> Bool {
-        if object_getClassName(self) != object_getClassName(object) {
-            return false
-        } else if let otherEvent = object as? Event {
-            if self.eventStartTime  != otherEvent.eventStartTime    { return false }
-            if self.travelTime      != otherEvent.travelTime        { return false }
-            if self.venueName       != otherEvent.venueName         { return false }
-            if self.venueAddress    != otherEvent.venueAddress      { return false }
-            if self.venuePostCode   != otherEvent.venuePostCode     { return false }
-            if self.venueCity       != otherEvent.venueCity         { return false }
-            if self.venuePhone      != otherEvent.venuePhone        { return false }
-            if self.accessInfo      != otherEvent.accessInfo        { return false }
-            if self.timezone        != otherEvent.timezone          { return false }
-            
-            return super.isEqual(object)
+    override func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
+        var changes = try super.compareProperties(otherTripElement)
+
+        if let otherEvent = otherTripElement as? Event {
+            changes.appendOpt(checkProperty(PropertyKey.eventStartTimeKey, new: self.eventStartTime, old: otherEvent.eventStartTime))
+            changes.appendOpt(checkProperty(PropertyKey.travelTimeKey, new: self.travelTime, old: otherEvent.travelTime))
+            changes.appendOpt(checkProperty(PropertyKey.venueNameKey, new: self.venueName, old: otherEvent.venueName))
+            changes.appendOpt(checkProperty(PropertyKey.venueAddressKey, new: self.venueAddress, old: otherEvent.venueAddress))
+            changes.appendOpt(checkProperty(PropertyKey.venuePostCodeKey, new: self.venuePostCode, old: otherEvent.venuePostCode))
+            changes.appendOpt(checkProperty(PropertyKey.venueCityKey, new: self.venueCity, old: otherEvent.venueCity))
+            changes.appendOpt(checkProperty(PropertyKey.venuePhoneKey, new: self.venuePhone, old: otherEvent.venuePhone))
+            changes.appendOpt(checkProperty(PropertyKey.accessInfoKey, new: self.accessInfo, old: otherEvent.accessInfo))
+            changes.appendOpt(checkProperty(PropertyKey.timezoneKey, new: self.timezone, old: otherEvent.timezone))
         } else {
-            return false
+            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
         }
+        return changes
     }
     
     

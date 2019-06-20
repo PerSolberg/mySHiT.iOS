@@ -185,39 +185,38 @@ class GenericTransport: TripElement {
 
     
     // MARK: Methods
-    override func isEqual(_ object: Any?) -> Bool {
-        if object_getClassName(self) != object_getClassName(object) {
-            return false
-        } else if let otherTransport = object as? GenericTransport {
-            if self.segmentId             != otherTransport.segmentId              { return false }
-            if self.segmentCode           != otherTransport.segmentCode            { return false }
-            if self.legNo                 != otherTransport.legNo                  { return false }
-            if self.departureTime         != otherTransport.departureTime          { return false }
-            if self.departureLocation     != otherTransport.departureLocation      { return false }
-            if self.departureStop         != otherTransport.departureStop          { return false }
-            if self.departureAddress      != otherTransport.departureAddress       { return false }
-            if self.departureTimeZone     != otherTransport.departureTimeZone      { return false }
-            if self.departureCoordinates  != otherTransport.departureCoordinates   { return false }
-            if self.departureTerminalCode != otherTransport.departureTerminalCode  { return false }
-            if self.departureTerminalName != otherTransport.departureTerminalName  { return false }
-            if self.arrivalTime           != otherTransport.arrivalTime            { return false }
-            if self.arrivalLocation       != otherTransport.arrivalLocation        { return false }
-            if self.arrivalStop           != otherTransport.arrivalStop            { return false }
-            if self.arrivalAddress        != otherTransport.arrivalAddress         { return false }
-            if self.arrivalTimeZone       != otherTransport.arrivalTimeZone        { return false }
-            if self.arrivalCoordinates    != otherTransport.arrivalCoordinates     { return false }
-            if self.arrivalTerminalCode   != otherTransport.arrivalTerminalCode    { return false }
-            if self.arrivalTerminalName   != otherTransport.arrivalTerminalName    { return false }
-            if self.routeNo               != otherTransport.routeNo                { return false }
-            if self.companyName           != otherTransport.companyName            { return false }
-            if self.companyPhone          != otherTransport.companyPhone           { return false }
+    override func compareProperties(_ otherTripElement: TripElement) throws -> [TripElement.ChangedAttribute] {
+        var changes = try super.compareProperties(otherTripElement)
 
-            return super.isEqual(object)
+        if let otherTransport = otherTripElement as? GenericTransport {
+            changes.appendOpt(checkProperty(PropertyKey.segmentIdKey, new: self.segmentId, old: otherTransport.segmentId))
+            changes.appendOpt(checkProperty(PropertyKey.segmentCodeKey, new: self.segmentCode, old: otherTransport.segmentCode))
+            changes.appendOpt(checkProperty(PropertyKey.legNoKey, new: self.legNo, old: otherTransport.legNo))
+            changes.appendOpt(checkProperty(PropertyKey.departureTimeKey, new: self.departureTime, old: otherTransport.departureTime))
+            changes.appendOpt(checkProperty(PropertyKey.departureLocationKey, new: self.departureLocation, old: otherTransport.departureLocation))
+            changes.appendOpt(checkProperty(PropertyKey.departureStopKey, new: self.departureStop, old: otherTransport.departureStop))
+            changes.appendOpt(checkProperty(PropertyKey.departureAddressKey, new: self.departureAddress, old: otherTransport.departureAddress))
+            changes.appendOpt(checkProperty(PropertyKey.departureTimeZoneKey, new: self.departureTimeZone, old: otherTransport.departureTimeZone))
+            changes.appendOpt(checkProperty(PropertyKey.departureCoordinatesKey, new: self.departureCoordinates, old: otherTransport.departureCoordinates))
+            changes.appendOpt(checkProperty(PropertyKey.departureTerminalCodeKey, new: self.departureTerminalCode, old: otherTransport.departureTerminalCode))
+            changes.appendOpt(checkProperty(PropertyKey.departureTerminalNameKey, new: self.departureTerminalName, old: otherTransport.departureTerminalName))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalTimeKey, new: self.arrivalTime, old: otherTransport.arrivalTime))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalLocationKey, new: self.arrivalLocation, old: otherTransport.arrivalLocation))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalStopKey, new: self.arrivalStop, old: otherTransport.arrivalStop))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalAddressKey, new: self.arrivalAddress, old: otherTransport.arrivalAddress))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalTimeZoneKey, new: self.arrivalTimeZone, old: otherTransport.arrivalTimeZone))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalCoordinatesKey, new: self.arrivalCoordinates, old: otherTransport.arrivalCoordinates))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalTerminalCodeKey, new: self.arrivalTerminalCode, old: otherTransport.arrivalTerminalCode))
+            changes.appendOpt(checkProperty(PropertyKey.arrivalTerminalNameKey, new: self.arrivalTerminalName, old: otherTransport.arrivalTerminalName))
+            changes.appendOpt(checkProperty(PropertyKey.routeNoKey, new: self.routeNo, old: otherTransport.routeNo))
+            changes.appendOpt(checkProperty(PropertyKey.companyNameKey, new: self.companyName, old: otherTransport.companyName))
+            changes.appendOpt(checkProperty(PropertyKey.companyPhoneKey, new: self.companyPhone, old: otherTransport.companyPhone))
         } else {
-            return false
+            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
         }
+        return changes
     }
-    
+
     
     override func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let departureTime = departureTime {

@@ -22,11 +22,11 @@ class AlertLink : DeepLink {
         if let tripElementId = userInfo[.tripElementId] as? Int {
             print("Notification for trip element \(tripElementId)")
             guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
-                os_log("Unable to get root view controller or it is not a navigation controller", type: .error)
+                os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
                 return
             }
             guard let (trip, tripElement) = TripList.sharedList.tripElement(byId: tripElementId) else {
-                os_log("Unknown trip element", type: .info)
+                os_log("Unknown trip element", log: OSLog.general, type: .info)
                 return
             }
             if let vc = tripElement.tripElement.viewController(trip: trip, element: tripElement) {
@@ -39,7 +39,7 @@ class AlertLink : DeepLink {
         } else if let tripId = userInfo[.tripId] as? Int {
             print("Notification for trip \(tripId)")
         } else {
-            os_log("Unable to figure out what to do with alert", type: .error)
+            os_log("Unable to figure out what to do with alert", log: OSLog.general, type: .error)
         }
     }
 }

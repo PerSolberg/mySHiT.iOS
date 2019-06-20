@@ -97,7 +97,7 @@ class ChatTableController: UITableViewController {
             }
             trip.trip.refreshMessages()
         } else {
-            os_log("ERROR: Trip not set correctly", type: .error)
+            os_log("ERROR: Trip not set correctly", log: OSLog.general, type: .error)
         }
     }
 
@@ -123,7 +123,7 @@ class ChatTableController: UITableViewController {
             })
         }
         guard let trip = trip else {
-            os_log("ERROR: trip not correctly set up", type: .error)
+            os_log("ERROR: trip not correctly set up", log: OSLog.general, type: .error)
             return
         }
         if trip.trip.chatThread.count == 0 {
@@ -133,7 +133,7 @@ class ChatTableController: UITableViewController {
         }
         DispatchQueue.main.async(execute: {
             guard let trip = self.trip else {
-                os_log("ERROR: Trip not set up correctly, cannot reload", type: .error)
+                os_log("ERROR: Trip not set up correctly, cannot reload", log: OSLog.general, type: .error)
                 return
             }
             self.chatListTable.reloadData()
@@ -212,7 +212,7 @@ class ChatTableController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let trip = trip else {
-            os_log("ERROR: trip not correctly set up", type: .error)
+            os_log("ERROR: trip not correctly set up", log: OSLog.general, type: .error)
             return 0
         }
 

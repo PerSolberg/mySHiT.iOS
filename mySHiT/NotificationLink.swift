@@ -34,11 +34,11 @@ class NotificationLink : DeepLink {
             switch (changeType, changeOperation) {
             case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
                 guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
-                    os_log("Unable to get root view controller or it is not a navigation controller", type: .error)
+                    os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
                     return
                 }
                 if let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
-                    os_log("Message for current chat - No need to do anything, already handled by AppDelegate", type: .debug)
+                    os_log("Message for current chat - No need to do anything, already handled by AppDelegate", log: OSLog.general, type: .debug)
                 } else {
                     // If current view controller was deep linked, pop it from the navigation stack
                     if let dlVC = navVC.visibleViewController as? DeepLinkableViewController, dlVC.wasDeepLinked {
@@ -53,12 +53,12 @@ class NotificationLink : DeepLink {
                         chatViewController.trip = annotatedTrip
                         navVC.pushViewController(chatViewController, animated: true)
                     } else {
-                        os_log("Unable to get chat view controller or trip", type: .error)
+                        os_log("Unable to get chat view controller or trip", log: OSLog.general, type: .error)
                     }
                 }
                 
             case (Constant.changeType.chatMessage, Constant.changeOperation.update):
-                os_log("Ignoring chat update (read notification)", type: .debug)
+                os_log("Ignoring chat update (read notification)", log: OSLog.general, type: .debug)
                 
             case (Constant.changeType.chatMessage, _):
                 fatalError("Unknown change type/operation: (\(changeType), \(changeOperation))")
@@ -68,12 +68,12 @@ class NotificationLink : DeepLink {
                 
             case (_, Constant.changeOperation.update):
                 guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
-                    os_log("Unable to get root view controller or it is not a navigation controller", type: .error)
+                    os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
                     return
                 }
 
                 if let tripVC = navVC.visibleViewController as? TripDetailsViewController, let trip = tripVC.trip?.trip, trip.id == tripId {
-                    os_log("Update for current trip - No need to do anything, already handled by AppDelegate", type: .debug)
+                    os_log("Update for current trip - No need to do anything, already handled by AppDelegate", log: OSLog.general, type: .debug)
                 } else {
                     // If current view controller was deep linked, pop it from the navigation stack
                     if let dlVC = navVC.visibleViewController as? DeepLinkableViewController, dlVC.wasDeepLinked {
@@ -89,7 +89,7 @@ class NotificationLink : DeepLink {
                         tripViewController.tripCode = annotatedTrip.trip.code
                         navVC.pushViewController(tripViewController, animated: true)
                     } else {
-                        print("Unable to get trip details view controller or trip")
+                        os_log("Unable to get trip details view controller or trip", log: OSLog.general, type: .error)
                     }                    
                 }
                 

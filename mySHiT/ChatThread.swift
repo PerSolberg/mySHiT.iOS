@@ -302,14 +302,14 @@ class ChatThread:NSObject, NSCoding {
             unsavedMessages[0].save(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
                 if let _ = error {
                     self.retryCount += 1
-                    os_log("Error when saving message, retrying in %d seconds", type: .error, self.retryDelay)
+                    os_log("Error when saving message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
                     ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
                 } else if let _ = responseDictionary?[Constant.JSON.queryError] {
                     self.retryCount += 1
-                    os_log("Server error when saving message, retrying in %d seconds", type: .error, self.retryDelay)
+                    os_log("Server error when saving message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
                     ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
                 } else {
-                    os_log("Message saved successfully, saving next message", type: .debug)
+                    os_log("Message saved successfully, saving next message", log: OSLog.webService, type: .debug)
                     self.retryCount = 0
                     self.save()
                 }
@@ -346,7 +346,7 @@ class ChatThread:NSObject, NSCoding {
         message.read(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let _ = error {
                 self.retryCount += 1
-                os_log("Error when reading message, retrying in %d seconds", type: .error, self.retryDelay)
+                os_log("Error when reading message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
                 ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performRead(message: message) })
             } else if let _ = responseDictionary?[Constant.JSON.queryError] {
                 self.retryCount += 1
@@ -390,11 +390,11 @@ class ChatThread:NSObject, NSCoding {
         rsRequest.dictionaryFromRSTransaction(rsTransGetChat, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
                 //If there was an error, log it
-                os_log("Error : %s", type: .error, error.localizedDescription)
+                os_log("Error : %s", log: OSLog.webService, type: .error, error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                os_log("Error : %s", type: .error, errMsg)
+                os_log("Error : %s", log: OSLog.webService, type: .error, errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 if let responseDictionary = responseDictionary, let messageArray = responseDictionary[Constant.JSON.messageList] as? NSArray, let lastSeenDict =  responseDictionary[Constant.JSON.messageLastSeenByOthers] as? NSDictionary, let messageVersion = responseDictionary[Constant.JSON.messageVersion] as? Int {
@@ -425,13 +425,13 @@ class ChatThread:NSObject, NSCoding {
                             }
                         }
                     } else {
-                        os_log("INFO: Didn't find any messages in dictionary: %s", String(describing: responseDictionary))
+                        os_log("INFO: Didn't find any messages in dictionary: %s", log: OSLog.webService, String(describing: responseDictionary))
                     }
                     ChatThread.dqAccess.async {
                         NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                     }
                 } else {
-                    os_log("ERROR: Incorrect response: %s", type: .error, String(describing: responseDictionary))
+                    os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
             }
         })

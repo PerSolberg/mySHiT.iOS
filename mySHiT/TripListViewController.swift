@@ -137,7 +137,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NotificationCenter.default.removeObserver(self)
+        if isMovingToParent {
+            NotificationCenter.default.removeObserver(self)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -271,7 +273,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             let showText = NSLocalizedString(s.section.type.rawValue, comment: "test")
             return showText
         } else {
-            os_log("Section header not available")
+            os_log("Section header not available", log: OSLog.general, type: .error)
             return nil
         }
     }

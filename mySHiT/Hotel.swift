@@ -120,28 +120,27 @@ class Hotel: TripElement {
     }
     
     
-    // MARK: Methods
-    override func isEqual(_ object: Any?) -> Bool {
-        if object_getClassName(self) != object_getClassName(object) {
-            return false
-        } else if let otherHotel = object as? Hotel {
-            if self.checkInDate   != otherHotel.checkInDate       { return false }
-            if self.checkOutDate  != otherHotel.checkOutDate      { return false }
-            if self.hotelName     != otherHotel.hotelName         { return false }
-            if self.address       != otherHotel.address           { return false }
-            if self.postCode      != otherHotel.postCode          { return false }
-            if self.city          != otherHotel.city              { return false }
-            if self.phone         != otherHotel.phone             { return false }
-            if self.transferInfo  != otherHotel.transferInfo      { return false }
-            if self.timezone      != otherHotel.timezone          { return false }
-
-            return super.isEqual(object)
+    // MARK: Methods    
+    override func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
+        var changes = try super.compareProperties(otherTripElement)        
+        
+        if let otherHotel = otherTripElement as? Hotel {
+            changes.appendOpt(checkProperty(PropertyKey.checkInDateKey, new: self.checkInDate, old: otherHotel.checkInDate))
+            changes.appendOpt(checkProperty(PropertyKey.checkOutDateKey, new: self.checkOutDate, old: otherHotel.checkOutDate))
+            changes.appendOpt(checkProperty(PropertyKey.hotelNameKey, new: self.hotelName, old: otherHotel.hotelName))
+            changes.appendOpt(checkProperty(PropertyKey.addressKey, new: self.address, old: otherHotel.address))
+            changes.appendOpt(checkProperty(PropertyKey.postCodeKey, new: self.postCode, old: otherHotel.postCode))
+            changes.appendOpt(checkProperty(PropertyKey.cityKey, new: self.city, old: otherHotel.city))
+            changes.appendOpt(checkProperty(PropertyKey.phoneKey, new: self.phone, old: otherHotel.phone))
+            changes.appendOpt(checkProperty(PropertyKey.transferInfoKey, new: self.transferInfo, old: otherHotel.transferInfo))
+            changes.appendOpt(checkProperty(PropertyKey.timezoneKey, new: self.timezone, old: otherHotel.timezone))
         } else {
-            return false
+            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
         }
+        return changes
     }
     
-    
+
     override func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let checkInDate = checkInDate {
             let dateFormatter = DateFormatter()
