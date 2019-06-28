@@ -35,17 +35,17 @@ class ChatMessage: NSObject, NSCoding {
                  "deviceId": localId.deviceId,
                  "localId": localId.localId,
                  "message": messageText,
-                 "createdTS": ServerDate.convertServerDate(createdTimestamp, timeZoneName: ChatMessage.Timezone)
+                 "createdTS": ServerDate.convertServerDate(createdTimestamp, timeZone: Constant.timezoneUTC)
                ]
     }
 
-    static let Timezone = "UTC"
+    //static let Timezone = "UTC"
 
     static let webServiceChatPath = "thread"
     static let webServiceReadMessageVerb = "read"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransSendMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.put, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
-    var rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
+    var rsTransSendMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.put, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
+    //var rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: Constant.REST.mySHiT.baseURL, path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
 
     struct PropertyKey {
         static let idKey = "id"
@@ -108,9 +108,8 @@ class ChatMessage: NSObject, NSCoding {
                     elementData[Constant.JSON.msgDeviceId] as! String,
                     elementData[Constant.JSON.msgLocalId] as! String )
         messageText = elementData[Constant.JSON.msgText] as? String
-        storedTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgStoredTS] as? String ?? "", timeZoneName: ChatMessage.Timezone)
-        createdTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgCreatedTS] as! String, timeZoneName: ChatMessage.Timezone)
-
+        storedTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgStoredTS] as? String ?? "", timeZone: Constant.timezoneUTC)
+        createdTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgCreatedTS] as! String, timeZone: Constant.timezoneUTC)
     }
     
     
@@ -154,7 +153,7 @@ class ChatMessage: NSObject, NSCoding {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 if let returnedMessage = responseDictionary {
                     self.id = returnedMessage["id"] as? Int
-                    self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZoneName: ChatMessage.Timezone)
+                    self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZone: Constant.timezoneUTC)
                     NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                 } else {
                     os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
@@ -179,14 +178,14 @@ class ChatMessage: NSObject, NSCoding {
         assert( userCred.password != nil );
         assert( userCred.urlsafePassword != nil );
 
-        let rsRequest: RSTransactionRequest = RSTransactionRequest()
-        let rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
-        
+        let rsRequest /*: RSTransactionRequest*/ = RSTransactionRequest()
+        let rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: /*["userName":"dummy@default.com","password":"******"]*/ [ "userName":userCred.name!, "password":userCred.urlsafePassword!])
+
         //Set the parameters for the RSTransaction object
         rsTransReadMsg.path = webServiceChatPath + "/" + String(tripId) + "/" + webServiceReadMessageVerb + "/" + String(msgId)
-        rsTransReadMsg.parameters = [ "userName":userCred.name!
-            , "password":userCred.urlsafePassword!
-        ]
+//        rsTransReadMsg.parameters = [ "userName":userCred.name!
+//            , "password":userCred.urlsafePassword!
+//        ]
         
         //Send request
         rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in

@@ -10,31 +10,7 @@ import Foundation
 import UIKit
 import FirebaseMessaging
 import UserNotifications
-
-// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
-// Consider refactoring the code to use the non-optional operators.
-//fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-//  switch (lhs, rhs) {
-//  case let (l?, r?):
-//    return l < r
-//  case (nil, _?):
-//    return true
-//  default:
-//    return false
-//  }
-//}
-
-// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
-// Consider refactoring the code to use the non-optional operators.
-//fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-//  switch (lhs, rhs) {
-//  case let (l?, r?):
-//    return l > r
-//  default:
-//    return rhs < lhs
-//  }
-//}
-
+import os
 
 class Trip: NSObject, NSCoding {
     var id: Int!
@@ -141,11 +117,11 @@ class Trip: NSObject, NSCoding {
         static let notificationsKey = "notifications"
     }
 
-    static let webServiceTripPath = "trip/"
-    static let webServiceChatPath = "message"
+//    static let webServiceTripPath = "trip/"
+//    static let webServiceChatPath = "message"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceTripPath, parameters: ["userName":"dummy@default.com","password":"******"])
-    var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
+    var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: Constant.REST.mySHiT.Resource.trip /*webServiceTripPath*/, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
+    //    var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseURL, path: webServiceChatPath, parameters: [:])
 
     // MARK: Factory
     class func createFromDictionary( _ elementData: NSDictionary! ) -> Trip? {
@@ -337,7 +313,7 @@ class Trip: NSObject, NSCoding {
                     let newInfo = NotificationInfo(baseDate: tripStart, leadTime: tripLeadtime * 60)
 
                     if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
-                        print("Setting notification for trip \(String(describing:id)) at \(String(describing: newInfo?.notificationDate))")
+                        os_log("Setting notification for trip %d at %s", log: OSLog.notification, type: .debug, id, String(describing: newInfo?.notificationDate))
                         userInfo[.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
                         
                         let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!) //alertTime)
@@ -346,7 +322,7 @@ class Trip: NSObject, NSCoding {
                         let ntfContent = UNMutableNotificationContent()
                         ntfContent.body = String.localizedStringWithFormat(genericAlertMessage, title!, leadTimeText!, startTimeText!) as String
                         ntfContent.sound = UNNotificationSound.default
-                        ntfContent.userInfo = userInfo
+                        ntfContent.userInfo = userInfo.securePropertyList()
                         ntfContent.categoryIdentifier = "SHiT"
                         
                         let ntfDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: (newInfo?.notificationDate)!)
@@ -356,13 +332,13 @@ class Trip: NSObject, NSCoding {
                         
                         UNUserNotificationCenter.current().add(notification) {(error) in
                             if let error = error {
-                                print("Unable to schedule trip notification: \(error)")
+                                os_log("Unable to schedule trip notification: %{public}s", log: OSLog.notification, type:.error, String(describing: error))
                             }
                         }
 
                         notifications[Constant.Settings.tripLeadTime] = newInfo
                     } else {
-                        print("Not refreshing notification for trip \(String(describing:id)), already triggered")
+                        os_log("Not refreshing notification for trip %d, already triggered", log: OSLog.notification, type:.debug, id)
                     }
                 }
             } else {
@@ -389,7 +365,7 @@ class Trip: NSObject, NSCoding {
         assert( userCred.urlsafePassword != nil );
         
         //Set the parameters for the RSTransaction object
-        rsTransGetTripList.path = Swift.type(of: self).webServiceTripPath + code!
+        rsTransGetTripList.path = Constant.REST.mySHiT.Resource.trip + "/" /*Swift.type(of: self).webServiceTripPath*/ + code!
         rsTransGetTripList.parameters = [ "userName":userCred.name!,
             "password":userCred.urlsafePassword! ]
         

@@ -23,10 +23,6 @@ class RSTransaction: NSObject {
     var payload : [String: String]?
     
     convenience init(transactionType: RSTransactionType, baseURL: String,  path: String, parameters: [String: String]) {
-        //self.transactionType = transactionType
-        //self.baseURL = baseURL
-        //self.path = path
-        //self.parameters = parameters
         self.init(transactionType: transactionType, baseURL: baseURL, path: path, parameters: parameters, payload: nil)
     }
     
@@ -39,14 +35,13 @@ class RSTransaction: NSObject {
     }
     
     func getFullURLString() -> String {
-        return removeSlashFromEndOfString(self.baseURL) + "/" + removeSlashFromStartOfString(self.path)
+        return removeSlashFromEndOfString(/*self.*/baseURL) + "/" + removeSlashFromStartOfString(/*self.*/path)
     }
     
     
     fileprivate func removeSlashFromEndOfString(_ string: String) -> String
     {
         if string.hasSuffix("/") {
-            // SWIFT 3: return string.substring(to: string.characters.index(before: string.endIndex))
             return String(string.prefix(string.count - 1))
         } else {
             return string
@@ -56,7 +51,6 @@ class RSTransaction: NSObject {
     
     fileprivate func removeSlashFromStartOfString(_ string : String) -> String {
         if string.hasPrefix("/") {
-            // SWIFT 3: return string.substring(from: string.characters.index(after: string.startIndex))
             return String(string.suffix(string.count - 1))
         } else {
             return string

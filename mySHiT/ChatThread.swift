@@ -41,7 +41,7 @@ class ChatThread:NSObject, NSCoding {
 
     static let webServiceChatPath = "thread"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
+    var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
 
     struct PropertyKey {
         static let messagesKey = "messages"

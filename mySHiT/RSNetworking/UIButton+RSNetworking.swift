@@ -34,7 +34,5 @@ extension UIButton {
         RSRequest.imageFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, image: UIImage?, error: Error?) -> Void in
             self.setBackgroundImage(image, for:state)
         })
-        
     }
-
 }

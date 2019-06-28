@@ -16,7 +16,8 @@ struct Constant {
     static let dummyLocalisationComment = "Dummy comment"
     static let emptyString = ""
     
-    static let timezoneUTC = TimeZone(identifier: "UTC")
+    static let timezoneNameUTC = "UTC"
+    static let timezoneUTC = TimeZone(identifier: timezoneNameUTC)
     
     struct alert {
         static let actionOK = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
@@ -24,7 +25,27 @@ struct Constant {
     
     // REST service
     struct REST {
-        static let baseUrl = ""
+        struct mySHiT {
+            static let baseUrl = "https://www.shitt.no/mySHiT"
+            struct Resource {
+                static let trip = "trip"
+                static let thread = "thread"
+                static let user = "user"
+            }
+
+            struct Param {
+                static let userName = "userName"
+                static let password = "password"
+                static let sectioned = "sectioned"
+                static let details = "details"
+            }
+
+            struct ParamValue {
+                static let sectioned = "1"
+                static let unsectioned = "0"
+                static let detailsNonHistoric = "non-historic"
+            }
+        }
     }
 
     // JSON tags

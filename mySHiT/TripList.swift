@@ -10,6 +10,7 @@ import Foundation
 import FirebaseMessaging
 import UIKit
 import UserNotifications
+import os
 
 class TripList:NSObject, Sequence, NSCoding {
     typealias Index = Int
@@ -31,7 +32,7 @@ class TripList:NSObject, Sequence, NSCoding {
     // Private properties
     fileprivate var trips: [AnnotatedTrip]! = [AnnotatedTrip]()
     fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    fileprivate var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "trip", parameters: ["userName":"dummy@default.com","password":"******"])
+    fileprivate var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: "trip", parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
 
 
     fileprivate struct PropertyKey {
@@ -104,30 +105,27 @@ class TripList:NSObject, Sequence, NSCoding {
         let userCred = User.sharedUser.getCredentials()
         
         if ( userCred.name == nil || userCred.password == nil || userCred.urlsafePassword == nil ) {
-            print("User credentials missing or incomplete, cannot update from server")
+            os_log("User credentials missing or incomplete, cannot update from server", log: OSLog.general, type: .error)
             if let parentCompletionHandler = parentCompletionHandler {
                 parentCompletionHandler()
             }
             return
         }
         
-        //Set the parameters for the RSTransaction object
-        //TO DO: Remove string literals
-        rsTransGetTripList.parameters = [ "userName":userCred.name!,
-            "password":userCred.urlsafePassword!,
-            "sectioned":"0",
-            "details":"non-historic"]
+        rsTransGetTripList.parameters = [ Constant.REST.mySHiT.Param.userName : userCred.name!,
+            Constant.REST.mySHiT.Param.password : userCred.urlsafePassword!,
+            Constant.REST.mySHiT.Param.sectioned : Constant.REST.mySHiT.ParamValue.unsectioned,
+            Constant.REST.mySHiT.Param.details : Constant.REST.mySHiT.ParamValue.detailsNonHistoric ]
         
         //Send request
-        //print("TripList: Send request to refresh data")
         rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             if let error = error {
                 //If there was an error, log it
-                print("Error : \(error.localizedDescription)")
+                os_log("Error : %{public}s", log: OSLog.webService, type: .error,  error.localizedDescription)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else if let error = responseDictionary?[Constant.JSON.queryError] {
                 let errMsg = error as! String
-                print("Error : \(errMsg)")
+                os_log("Error : %{public}s", log: OSLog.webService, type: .error,  errMsg)
                 NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             } else {
                 //Set the tableData NSArray to the results returned from www.shitt.no

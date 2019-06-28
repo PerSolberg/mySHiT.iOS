@@ -28,12 +28,17 @@ class ServerDate {
     }
     
     class func convertServerDate (_ serverDateString: String, timeZoneName: String?) -> Date? {
+        var timeZone:TimeZone?
+        if let timeZoneName = timeZoneName {
+            timeZone = TimeZone(identifier: timeZoneName)
+        }
+        return convertServerDate(serverDateString, timeZone: timeZone)
+    }
+
+    class func convertServerDate (_ serverDateString: String, timeZone: TimeZone?) -> Date? {
         if let formatString = findFormatString(serverDateString) {
-            if let timeZoneName = timeZoneName {
-                let timezone = TimeZone(identifier: timeZoneName)
-                if timezone != nil {
-                    dateFormatter.timeZone = timezone
-                }
+            if let timeZone = timeZone {
+                dateFormatter.timeZone = timeZone
             }
             let locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.dateFormat = formatString
@@ -43,8 +48,15 @@ class ServerDate {
             return nil
         }
     }
-
+    
     class func convertServerDate (_ localDate: Date, timeZoneName: String?) -> String {
+        let locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.locale = locale
+        return dateFormatter.string(from: localDate)
+    }
+
+    class func convertServerDate (_ localDate: Date, timeZone: TimeZone?) -> String {
         let locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         dateFormatter.locale = locale

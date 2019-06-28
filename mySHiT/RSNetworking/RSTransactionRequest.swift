@@ -53,14 +53,9 @@ class RSTransactionRequest: NSObject {
         request.httpMethod = "POST"
         var params = Data()
         if let payload = transaction.payload {
-            //params = dictionaryToQueryString(payload)
             params = try! JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
-//            print("JSON payload:")
-//            print(params)
-            //using: String.Encoding.utf8)
         }
         request.httpBody = params //params.
-        //request.httpBody = params.data(using: String.Encoding.utf8, allowLossyConversion: true)
         
         let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
         
@@ -82,14 +77,9 @@ class RSTransactionRequest: NSObject {
         request.httpMethod = "PUT"
         var params = Data()
         if let payload = transaction.payload {
-            //params = dictionaryToQueryString(payload)
             params = try! JSONSerialization.data(withJSONObject: payload, options: .init(rawValue: 0))
-//            print("JSON payload:")
-//            print(params)
-            //using: String.Encoding.utf8)
         }
-        request.httpBody = params //params.
-        //request.httpBody = params.data(using: String.Encoding.utf8, allowLossyConversion: true)
+        request.httpBody = params
         
         let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
         
@@ -101,12 +91,10 @@ class RSTransactionRequest: NSObject {
     
     fileprivate func dataFromRSTransactionGet(_ transaction: RSTransaction, completionHandler handler: @escaping dataFromRSTransactionCompletionClosure)
     {
-        
         let sessionConfiguration = URLSessionConfiguration.default
         
         let urlString = transaction.getFullURLString() + "?" + dictionaryToQueryString(transaction.parameters)
         let url: URL = URL(string: urlString)!
-//        print("URL = \(urlString)")
         
         var request = URLRequest(url:url)
         request.httpMethod = "GET"
@@ -127,7 +115,7 @@ class RSTransactionRequest: NSObject {
             } else {
                 handler(response, nil, error)
             }
-        } /*as! (URLResponse?, Data?, Error?) -> Void */)
+        })
     }
     
     
@@ -140,7 +128,6 @@ class RSTransactionRequest: NSObject {
             }
             
             if let httpResponse = response as? HTTPURLResponse {
-                print("Response code = \(httpResponse.statusCode)")
                 if httpResponse.statusCode != 200 {
                     let httpError = NSError(domain: "HTTP", code: httpResponse.statusCode, userInfo: nil)
                     handler(response, nil, httpError)
@@ -161,14 +148,12 @@ class RSTransactionRequest: NSObject {
             if let jsonResponse = jsonResponse as? [String:Any] {
                 resultDictionary.setDictionary(jsonResponse)
             } else if let jsonResponse = jsonResponse as? [Any] {
-                print("JSON Array")
                 resultDictionary[self.dictKey] = jsonResponse
             } else {
-                print("Unknown JSON type")
                 resultDictionary[self.dictKey] = errMsg
             }
             handler(response, resultDictionary.copy() as? NSDictionary, error)
-        } /* as! (URLResponse?, Data?, Error?) -> Void */)
+        })
     }
     
     
@@ -182,7 +167,7 @@ class RSTransactionRequest: NSObject {
             
             let image = UIImage(data: responseData!)
             handler(response,image?.copy() as! UIImage?, error)
-        } /* as! (URLResponse?, Data?, Error?) -> Void */)
+        })
     }
     
     
@@ -194,6 +179,5 @@ class RSTransactionRequest: NSObject {
             }
         }
         return parts.joined(separator: "&")
-
     }
 }

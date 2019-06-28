@@ -25,11 +25,9 @@ class User : NSObject, NSCoding {
     fileprivate var srvInitials:String?
     fileprivate var srvShortName:String?
     
-    // TO DO: Remove literals
     fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: "https://www.shitt.no/mySHiT", path: "user", parameters: ["userName":"dummy@default.com","password":"******"])
-    
-
+    fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: Constant.REST.mySHiT.Resource.user, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
+ 
     // Prevent other classes from instantiating - User is singleton!
     override fileprivate init () {
         super.init()

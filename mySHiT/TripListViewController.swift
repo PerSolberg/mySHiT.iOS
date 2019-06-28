@@ -19,6 +19,8 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     var sections: [TripListSectionInfo]!
     var tripToRefresh: IndexPath?
+    
+    var isLoggingIn = false
 
     // MARK: Archiving paths
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -100,10 +102,11 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         refreshControl = UIRefreshControl()
         refreshControl!.backgroundColor = tripListTable.backgroundColor
         refreshControl!.tintColor = UIColor.blue
-        refreshControl!.addTarget(self, action: #selector(/*TripListViewController.*/reloadTripsFromServer), for: .valueChanged)
+        refreshControl!.addTarget(self, action: #selector(reloadTripsFromServer), for: .valueChanged)
     }
 
     func showLogonScreen(animated: Bool) {
+        isLoggingIn = true
         let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
         let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
         view.window!.makeKeyAndVisible()
@@ -137,7 +140,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if isMovingToParent {
+        if isMovingToParent || isLoggingIn {
             NotificationCenter.default.removeObserver(self)
         }
     }
@@ -201,6 +204,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
         // closure didn't always dismiss the refrech control)
+        os_log("Handling network error in TripList", log: OSLog.general, type:.info)
         DispatchQueue.main.async(execute: {
             let alert = UIAlertController(
                 title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
@@ -233,6 +237,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     @objc func logonComplete(_ notification:Notification) {
+        isLoggingIn = false
         reloadTripsFromServer()
     }
 
@@ -356,9 +361,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     func saveSections() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections!, toFile: TripListViewController.ArchiveSectionsURL.path)
         if !isSuccessfulSave {
-            print("Failed to save sections...")
-        } else {
-//            print("Trip sections saved to iOS keyed archive")
+            os_log("Failed to save sections", log: OSLog.general, type: .error)
         }
     }
     

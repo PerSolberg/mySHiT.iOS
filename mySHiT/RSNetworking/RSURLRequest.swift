@@ -22,17 +22,14 @@ class RSURLRequest: NSObject {
     
     
     func dataFromURL(_ url : URL, completionHandler handler: @escaping dataFromURLCompletionClosure) {
-        
         let sessionConfiguration = URLSessionConfiguration.default
         let request = URLRequest(url:url)
         let urlSession = URLSession(configuration:sessionConfiguration, delegate: nil, delegateQueue: nil)
-        
         
         _ = urlSession.dataTask(with: request, completionHandler: {(responseData: Data?, response: URLResponse?, error: NSError?) -> Void in
             
             handler(response,responseData,error)
         } as! (Data?, URLResponse?, Error?) -> Void).resume();
-        
     }
     
     
@@ -43,7 +40,7 @@ class RSURLRequest: NSObject {
             }
             let responseString = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue)
             handler(response,responseString,error)
-        } /*as! RSURLRequest.dataFromURLCompletionClosure*/ )
+        })
     }
     
     
@@ -77,8 +74,7 @@ class RSURLRequest: NSObject {
                 resultDictionary[RSURLRequest.dictKey] = ""
             }
             handler(response, (resultDictionary.copy() as! NSDictionary), error)
-            
-        } /*as! RSURLRequest.dataFromURLCompletionClosure */ )
+        })
     }
     
     func imageFromURL(_ url : URL, completionHandler handler: @escaping imageFromURLCompletionClosure) {
@@ -94,9 +90,7 @@ class RSURLRequest: NSObject {
             }
             let image = UIImage(data: responseData)
             handler(response, (image?.copy() as! UIImage), error)
-        } /* as! RSURLRequest.dataFromURLCompletionClosure */)
+        })
     }
-    
-    
     
 }

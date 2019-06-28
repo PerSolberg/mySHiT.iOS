@@ -12,10 +12,8 @@ import UIKit
 extension UIImageView {
     
     func setImageForURL(_ url: String, placeHolder: UIImage) -> Void{
-        
         self.image = placeHolder
         setImageForURL(url)
-        
     }
     
     func setImageForURL(_ urlStr: String) -> Void {
@@ -38,6 +36,5 @@ extension UIImageView {
         RSRequest.imageFromRSTransaction(transaction, completionHandler: {(response: URLResponse?, image: UIImage?, error: Error?) -> Void in
             self.image = image
             })
-        
       }
 }

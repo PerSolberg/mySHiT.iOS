@@ -17,13 +17,7 @@ open class RSUtilities: NSObject {
         case wifinetwork
     }
     
-    /*isHostReachable will be depreciated in the future as it does not reflect
-    *What is actually being done
-    */
-    
-    open class func isHostnameReachable(_ hostname: NSString) -> Bool {
-        return isNetworkAvailable(hostname);
-    }
+
     /*Checks to see if a host is reachable*/
     open class func isNetworkAvailable(_ hostname: NSString) -> Bool {
         
@@ -40,7 +34,6 @@ open class RSUtilities: NSObject {
     
     /*Determines the type of network which is available*/
     open class func networkConnectionType(_ hostname: NSString) -> ConnectionType {
-        
         let reachabilityRef = SCNetworkReachabilityCreateWithName(nil,hostname.utf8String!)
         
         var flags: SCNetworkReachabilityFlags = SCNetworkReachabilityFlags()
@@ -52,13 +45,12 @@ open class RSUtilities: NSObject {
             // determine what type of connection is available
             let isCellularConnection = (flags.rawValue & SCNetworkReachabilityFlags.isWWAN.rawValue) != 0
             if isCellularConnection {
-                return ConnectionType.mobile3GNETWORK // cellular connection available
+                return ConnectionType.mobile3GNETWORK
             } else {
-                return ConnectionType.wifinetwork // wifi connection available
+                return ConnectionType.wifinetwork
             }
         }
-        return ConnectionType.nonetwork // no connection at all
+        return ConnectionType.nonetwork
     }
-    
     
 }
