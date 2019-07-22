@@ -107,11 +107,17 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         airlineTextField.setText(flightElement.companyName, detectChanges: detectChanges)
         departureTimeTextField.setText(flightElement.startTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
         let departureInfo = buildLocationInfo(stopName: flightElement.departureStop, location: flightElement.departureLocation, terminalName: flightElement.departureTerminalName, address: flightElement.departureAddress)
-        departureLocationTextView.setText(departureInfo, detectChanges: detectChanges)
+        let attrDepartureInfo = NSMutableAttributedString(string: departureInfo)
+        attrDepartureInfo.setAttributes([.font : departureLocationTextView.font as Any])
+        attrDepartureInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        departureLocationTextView.setText(attrDepartureInfo, detectChanges: detectChanges)
         
         arrivalTimeTextField.setText(flightElement.endTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
         let arrivalInfo = buildLocationInfo(stopName: flightElement.arrivalStop, location: flightElement.arrivalLocation, terminalName: flightElement.arrivalTerminalName, address: flightElement.arrivalAddress)
-        arrivalLocationTextView.setText(arrivalInfo, detectChanges: detectChanges)
+        let attrArrivalInfo = NSMutableAttributedString(string: arrivalInfo)
+        attrArrivalInfo.setAttributes([.font : arrivalLocationTextView.font as Any])
+        attrArrivalInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        arrivalLocationTextView.setText(attrArrivalInfo, detectChanges: detectChanges)
         
         if let refList = flightElement.references {
             let horisontalHuggingLabel = flightNoLabel.contentHuggingPriority(for: .horizontal)

@@ -15,7 +15,6 @@ extension UITableView
         if let messageText = messageText {
             DispatchQueue.main.async(execute: {
                 let messageView = UILabel()
-                //let messageView = UITextView()
                 
                 messageView.text = messageText
                 messageView.textAlignment = .center

@@ -105,10 +105,16 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         companyTextField.setText(transportElement.companyName ?? "<Unknown company>", detectChanges: detectChanges)
 
         let departureInfo = buildLocationInfo(stopName: transportElement.departureStop, location: transportElement.departureLocation, terminalName: transportElement.departureTerminalName, address: transportElement.departureAddress)
-        departureTextView.setText(departureInfo, detectChanges: detectChanges)
+        let attrDepartureInfo = NSMutableAttributedString(string: departureInfo)
+        attrDepartureInfo.setAttributes([.font : departureTextView.font as Any])
+        attrDepartureInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        departureTextView.setText(attrDepartureInfo, detectChanges: detectChanges)
         
         let arrivalInfo = buildLocationInfo(stopName: transportElement.arrivalStop, location: transportElement.arrivalLocation, terminalName: transportElement.arrivalTerminalName, address: transportElement.arrivalAddress)
-        arrivalTextView.setText(arrivalInfo, detectChanges: detectChanges)
+        let attrArrivalInfo = NSMutableAttributedString(string: arrivalInfo)
+        attrArrivalInfo.setAttributes([.font : arrivalTextView.font as Any])
+        attrArrivalInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        arrivalTextView.setText(attrArrivalInfo, detectChanges: detectChanges)
 
         phoneText.setText(transportElement.companyPhone, detectChanges: detectChanges)
         

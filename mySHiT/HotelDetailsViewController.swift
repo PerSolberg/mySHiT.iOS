@@ -106,7 +106,10 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
             fullAddress += "\n" + hotelElement.postCode! + " " + hotelElement.city!
         }
         hotelNameTextField.setText(hotelElement.hotelName, detectChanges: detectChanges)
-        hotelAddressTextView.setText(fullAddress, detectChanges: detectChanges)
+        let attrAddress = NSMutableAttributedString(string: fullAddress)
+        attrAddress.setAttributes([.font : hotelAddressTextView.font as Any])
+        attrAddress.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        hotelAddressTextView.setText(attrAddress, detectChanges: detectChanges)
         checkInTextField.setText(hotelElement.startTime(dateStyle: .medium, timeStyle: .none), detectChanges: detectChanges)
         checkOutTextField.setText(hotelElement.endTime(dateStyle: .medium, timeStyle: .none), detectChanges: detectChanges)
         

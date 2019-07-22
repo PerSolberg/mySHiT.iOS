@@ -15,7 +15,7 @@ extension UIViewController
         if type(of:vc) != type(of:self) {
             return false
         } else {
-            print("Not sure if view controllers are identical - probably not")
+            // Not sure if view controllers are identical - probably not
             return false
         }
     }
@@ -25,9 +25,11 @@ extension UIViewController
         for ref in refList {
             if let refType = ref[typeKey], let refNo = ref[refKey] {
                 var refText:NSAttributedString?
-                if let refUrl = ref[urlKey], let url = URL(string: refUrl) {
+                if let refUrl = ref[urlKey]/*, let url = URL(string: refUrl)*/ {
                     let hyperlinkText = NSMutableAttributedString(string: refNo)
-                    hyperlinkText.addAttribute(NSAttributedString.Key.link, value: url, range: NSMakeRange(0, hyperlinkText.length))
+                    hyperlinkText.addLink(for: ".+") { match -> String? in
+                        return refUrl
+                    }
                     refText = hyperlinkText
                 } else {
                     refText = NSAttributedString(string:refNo)

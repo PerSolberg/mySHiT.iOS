@@ -41,7 +41,7 @@
 // unableToDisplayElement
 "SHiT, we're sorry but there was an unexpected error displaying this element." = "SHiT! Vi ber om ursäkt, men det uppstod ett oväntat fel när vi skulle visa detta reseelementet.";
 // shortcutSendMessageSubtitle
-"Send message to participants" = "Skicke meddelande till resenärer";
+"Send message to participants" = "Skicka meddelande till resenärer";
 
 // Push notifications
 "NTF.INSERT.ADDRESS" = "%@: Adressinformation uppdaterad";

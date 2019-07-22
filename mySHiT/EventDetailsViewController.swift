@@ -91,7 +91,10 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
                 fullAddress += "\n" + eventElement.venuePostCode! + " " + eventElement.venueCity!
             }
             venueNameTextField.setText(eventElement.venueName, detectChanges: detectChanges)
-            venueAddressTextView.setText(fullAddress, detectChanges: detectChanges)
+            let attrAddress = NSMutableAttributedString(string: fullAddress)
+            attrAddress.setAttributes([.font : venueAddressTextView.font as Any])
+            attrAddress.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+            venueAddressTextView.setText(attrAddress, detectChanges: detectChanges)
             startTimeTextField.setText(eventElement.startTime(dateStyle: .none, timeStyle: .short), detectChanges: detectChanges)
             travelTimeTextField.setText(eventElement.travelTimeInfo, detectChanges: detectChanges)
 

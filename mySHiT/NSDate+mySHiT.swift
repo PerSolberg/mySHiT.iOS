@@ -11,30 +11,13 @@ extension Date
 {
     func isGreaterThanDate(_ dateToCompare : Date) -> Bool
     {
-        return self.compare(dateToCompare) == ComparisonResult.orderedDescending
-//        var isGreater = false
-//
-//        if self.compare(dateToCompare) == ComparisonResult.orderedDescending
-//        {
-//            isGreater = true
-//        }
-//
-//        return isGreater
+        return compare(dateToCompare) == ComparisonResult.orderedDescending
     }
     
     
     func isLessThanDate(_ dateToCompare : Date) -> Bool
     {
-        return self.compare(dateToCompare) == ComparisonResult.orderedAscending
-
-//        var isLess = false
-//
-//        if self.compare(dateToCompare) == ComparisonResult.orderedAscending
-//        {
-//            isLess = true
-//        }
-//
-//        return isLess
+        return compare(dateToCompare) == ComparisonResult.orderedAscending
     }
 
     func addDays(_ daysToAdd : Int) -> Date

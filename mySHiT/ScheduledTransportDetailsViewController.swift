@@ -106,11 +106,17 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         
         departureTimeTextField.text = transportElement.startTime(dateStyle: .medium, timeStyle: .short)
         let departureInfo = buildLocationInfo(stopName: transportElement.departureStop, location: transportElement.departureLocation, terminalName: transportElement.departureTerminalName, address: transportElement.departureAddress)
-        departureInfoTextView.setText(departureInfo, detectChanges: detectChanges)
+        let attrDepartureInfo = NSMutableAttributedString(string: departureInfo)
+        attrDepartureInfo.setAttributes([.font : departureInfoTextView.font as Any])
+        attrDepartureInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        departureInfoTextView.setText(attrDepartureInfo, detectChanges: detectChanges)
         
         arrivalTimeTextField.text = transportElement.endTime(dateStyle: .medium, timeStyle: .short)
         let arrivalInfo = buildLocationInfo(stopName: transportElement.arrivalStop, location: transportElement.arrivalLocation, terminalName: transportElement.arrivalTerminalName, address: transportElement.arrivalAddress)
-        arrivalInfoTextView.setText(arrivalInfo, detectChanges: detectChanges)
+        let attrArrivalInfo = NSMutableAttributedString(string: arrivalInfo)
+        attrArrivalInfo.setAttributes([.font : arrivalInfoTextView.font as Any])
+        attrArrivalInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        arrivalInfoTextView.setText(attrArrivalInfo, detectChanges: detectChanges)
         //referenceTextView.text = "references go here"
     }
 
