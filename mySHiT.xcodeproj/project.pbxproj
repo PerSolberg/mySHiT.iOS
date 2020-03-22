@@ -18,6 +18,7 @@
 		8520FB3F2292BC9E002E7CF2 /* UITextView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */; };
 		8520FB412293105C002E7CF2 /* Phone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8520FB402293105C002E7CF2 /* Phone.swift */; };
 		85229DD01BFE041A000893E5 /* PrivateTransportDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85229DCF1BFE041A000893E5 /* PrivateTransportDetailsViewController.swift */; };
+		853126D7242105AB00D99A6D /* ServerTimestamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853126D6242105AB00D99A6D /* ServerTimestamp.swift */; };
 		853ADF511C32996D0092832C /* UITableView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853ADF501C32996D0092832C /* UITableView+mySHiT.swift */; };
 		85595BEA22CC0D2200A51E4E /* String+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85595BE922CC0D2200A51E4E /* String+mySHiT.swift */; };
 		855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F33581BDEE853002CB89B /* AlertListViewController.swift */; };
@@ -135,6 +136,7 @@
 		8520FB402293105C002E7CF2 /* Phone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phone.swift; sourceTree = "<group>"; };
 		85229DCF1BFE041A000893E5 /* PrivateTransportDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateTransportDetailsViewController.swift; sourceTree = "<group>"; };
 		852ED3821E1FD7CA005F5146 /* mySHiT.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mySHiT.entitlements; sourceTree = "<group>"; };
+		853126D6242105AB00D99A6D /* ServerTimestamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTimestamp.swift; sourceTree = "<group>"; };
 		853ADF501C32996D0092832C /* UITableView+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+mySHiT.swift"; sourceTree = "<group>"; };
 		85595BE922CC0D2200A51E4E /* String+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+mySHiT.swift"; sourceTree = "<group>"; };
 		855F33581BDEE853002CB89B /* AlertListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertListViewController.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 				85EA06FB2019307D00C61D48 /* AlertLink.swift */,
 				8520FB402293105C002E7CF2 /* Phone.swift */,
 				85DBE0E322E61293002382EB /* Address.swift */,
+				853126D6242105AB00D99A6D /* ServerTimestamp.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -700,6 +703,7 @@
 				859F903D1E3699450006AEC4 /* EventDetailsViewController.swift in Sources */,
 				859D44171BD4EC7E0068E5B3 /* User.swift in Sources */,
 				85FEFC7B1BCA7F4000D8E38E /* RSTransaction.swift in Sources */,
+				853126D7242105AB00D99A6D /* ServerTimestamp.swift in Sources */,
 				85DBE0E422E61293002382EB /* Address.swift in Sources */,
 				85BF60311E66FCA500E5D785 /* ScheduledTransport.swift in Sources */,
 				85EA06F6200CDFC800C61D48 /* DeepLinkManager.swift in Sources */,

@@ -57,6 +57,7 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
 

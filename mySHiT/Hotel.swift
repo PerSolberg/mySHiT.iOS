@@ -10,7 +10,12 @@ import Foundation
 import UIKit
 
 class Hotel: TripElement {
+    let defaultCheckInTime = ( hour: 16, minute: 0 )
+    let defaultCheckOutTime = ( hour: 10, minute: 0 )
+    
+    //
     // MARK: Properties
+    //
     var checkInDate: Date?
     var checkOutDate: Date?
     var hotelName: String?
@@ -22,10 +27,16 @@ class Hotel: TripElement {
     var timezone: String?
     
     override var startTime:Date? {
-        return checkInDate
+        if let checkInDate = checkInDate {
+            return checkInDate.addHours(defaultCheckInTime.hour).addMinutes(defaultCheckInTime.minute)
+        }
+        return nil
     }
     override var endTime:Date? {
-        return checkOutDate
+        if let checkOutDate = checkOutDate {
+            return checkOutDate.addHours(defaultCheckOutTime.hour).addMinutes(defaultCheckOutTime.minute)
+        }
+        return nil
     }
     override var title: String? {
         return hotelName
@@ -70,7 +81,9 @@ class Hotel: TripElement {
     }
 
     
+    //
     // MARK: NSCoding
+    //
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(checkInDate, forKey: PropertyKey.checkInDateKey)
@@ -85,7 +98,9 @@ class Hotel: TripElement {
     }
     
     
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
@@ -120,27 +135,32 @@ class Hotel: TripElement {
     }
     
     
-    // MARK: Methods    
-    override func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
-        var changes = try super.compareProperties(otherTripElement)        
-        
-        if let otherHotel = otherTripElement as? Hotel {
-            changes.appendOpt(checkProperty(PropertyKey.checkInDateKey, new: self.checkInDate, old: otherHotel.checkInDate))
-            changes.appendOpt(checkProperty(PropertyKey.checkOutDateKey, new: self.checkOutDate, old: otherHotel.checkOutDate))
-            changes.appendOpt(checkProperty(PropertyKey.hotelNameKey, new: self.hotelName, old: otherHotel.hotelName))
-            changes.appendOpt(checkProperty(PropertyKey.addressKey, new: self.address, old: otherHotel.address))
-            changes.appendOpt(checkProperty(PropertyKey.postCodeKey, new: self.postCode, old: otherHotel.postCode))
-            changes.appendOpt(checkProperty(PropertyKey.cityKey, new: self.city, old: otherHotel.city))
-            changes.appendOpt(checkProperty(PropertyKey.phoneKey, new: self.phone, old: otherHotel.phone))
-            changes.appendOpt(checkProperty(PropertyKey.transferInfoKey, new: self.transferInfo, old: otherHotel.transferInfo))
-            changes.appendOpt(checkProperty(PropertyKey.timezoneKey, new: self.timezone, old: otherHotel.timezone))
-        } else {
-            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
-        }
-        return changes
-    }
-    
+    //
+    // MARK: Methods
+    //
+    override func update(fromDictionary elementData: NSDictionary!) -> Bool {
+        changed = super.update(fromDictionary: elementData)
 
+        if let checkInDateText = elementData[Constant.JSON.hotelCheckIn] as? String {
+            checkInDate = ServerDate.convertServerDate(checkInDateText, timeZoneName: timezone)
+        }
+        if let checkOutDateText = elementData[Constant.JSON.hotelCheckOut] as? String {
+            checkOutDate = ServerDate.convertServerDate(checkOutDateText, timeZoneName: timezone)
+        }
+        hotelName = elementData[Constant.JSON.hotelName] as? String
+        address = elementData[Constant.JSON.hotelAddress] as? String
+        postCode = elementData[Constant.JSON.hotelPostCode] as? String
+        city = elementData[Constant.JSON.hotelCity] as? String
+        phone = elementData[Constant.JSON.hotelPhone] as? String
+        transferInfo = elementData[Constant.JSON.hotelTransferInfo] as? String
+
+        if self.isMember(of: Hotel.self) && changed {
+            setNotification()
+        }
+        return changed
+    }
+
+    
     override func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let checkInDate = checkInDate {
             let dateFormatter = DateFormatter()
@@ -158,6 +178,7 @@ class Hotel: TripElement {
         return nil
     }
 
+    
     override func endTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let checkOutDate = checkOutDate {
             let dateFormatter = DateFormatter()

@@ -36,7 +36,7 @@ class ChatTableController: UITableViewController {
     
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
         }
     }
     
@@ -117,11 +117,13 @@ class ChatTableController: UITableViewController {
 
     
     @objc func refreshChat() {
-        if let refreshControl = refreshControl {
-            DispatchQueue.main.async(execute: {
-                refreshControl.endRefreshing()
-            })
-        }
+        DispatchQueue.main.async(execute: {
+            if let refreshControl = self.refreshControl {
+                if refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
+            }
+        })
         guard let trip = trip else {
             os_log("ERROR: trip not correctly set up", log: OSLog.general, type: .error)
             return
@@ -203,12 +205,14 @@ class ChatTableController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    
     //
     // MARK: UITableViewDataSource methods
     //
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
+    
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let trip = trip else {
@@ -218,6 +222,7 @@ class ChatTableController: UITableViewController {
 
         return trip.trip.chatThread.count
     }
+    
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return nil
@@ -285,6 +290,7 @@ class ChatTableController: UITableViewController {
     // MARK: Section header callbacks
     //
     
+    
     //
     // MARK: NSCoding
     //
@@ -305,6 +311,6 @@ class ChatTableController: UITableViewController {
 
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
-}
+//fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+//	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+//}

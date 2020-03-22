@@ -11,20 +11,30 @@ import UIKit
 
 
 class Event: TripElement {
+    let defaultDuration = ( hour: 4, minute: 0 )
+
+    //
     // MARK: Properties
-    var eventStartTime: Date?
-    var travelTime: Int?
-    var venueName: String?
-    var venueAddress: String?
-    var venuePostCode: String?
-    var venueCity: String?
-    var venuePhone: String?
-    var accessInfo: String?
-    var timezone: String?
+    //
+    var eventStartTime: Date? { willSet { checkChange(eventStartTime, newValue) } }
+    var travelTime: Int? { willSet { checkChange(travelTime, newValue) } }
+    var venueName: String? { willSet { checkChange(venueName, newValue) } }
+    var venueAddress: String? { willSet { checkChange(venueAddress, newValue) } }
+    var venuePostCode: String? { willSet { checkChange(venuePostCode, newValue) } }
+    var venueCity: String? { willSet { checkChange(venueCity, newValue) } }
+    var venuePhone: String? { willSet { checkChange(venuePhone, newValue) } }
+    var accessInfo: String? { willSet { checkChange(accessInfo, newValue) } }
+    var timezone: String? { willSet { checkChange(timezone, newValue) } }
 
 
     override var startTime:Date? {
         return eventStartTime
+    }
+    override var endTime:Date? {
+        if let eventStartTime = eventStartTime {
+            return eventStartTime.addHours(defaultDuration.hour).addMinutes(defaultDuration.minute)
+        }
+        return nil
     }
     override var startTimeZone: String? {
         return timezone
@@ -40,7 +50,10 @@ class Event: TripElement {
     }
     var travelTimeInfo: String? {
         if let travelTime = travelTime {
-            return DateComponentsFormatter().string(from: Double(travelTime) * 60.0)
+            let dcf = DateComponentsFormatter()
+            dcf.unitsStyle = .short
+            dcf.includesApproximationPhrase = true
+            return dcf.string(from: Double(travelTime) * 60.0)
         }
         return nil
     }
@@ -69,7 +82,10 @@ class Event: TripElement {
         static let timezoneKey = "timezone"
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(eventStartTime, forKey: PropertyKey.eventStartTimeKey)
@@ -83,7 +99,10 @@ class Event: TripElement {
         aCoder.encode(timezone, forKey: PropertyKey.timezoneKey)
     }
         
+    
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         eventStartTime = aDecoder.decodeObject(forKey: PropertyKey.eventStartTimeKey) as? Date
@@ -116,26 +135,28 @@ class Event: TripElement {
     }
     
     
+    //
     // MARK: Methods
-    override func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
-        var changes = try super.compareProperties(otherTripElement)
-
-        if let otherEvent = otherTripElement as? Event {
-            changes.appendOpt(checkProperty(PropertyKey.eventStartTimeKey, new: self.eventStartTime, old: otherEvent.eventStartTime))
-            changes.appendOpt(checkProperty(PropertyKey.travelTimeKey, new: self.travelTime, old: otherEvent.travelTime))
-            changes.appendOpt(checkProperty(PropertyKey.venueNameKey, new: self.venueName, old: otherEvent.venueName))
-            changes.appendOpt(checkProperty(PropertyKey.venueAddressKey, new: self.venueAddress, old: otherEvent.venueAddress))
-            changes.appendOpt(checkProperty(PropertyKey.venuePostCodeKey, new: self.venuePostCode, old: otherEvent.venuePostCode))
-            changes.appendOpt(checkProperty(PropertyKey.venueCityKey, new: self.venueCity, old: otherEvent.venueCity))
-            changes.appendOpt(checkProperty(PropertyKey.venuePhoneKey, new: self.venuePhone, old: otherEvent.venuePhone))
-            changes.appendOpt(checkProperty(PropertyKey.accessInfoKey, new: self.accessInfo, old: otherEvent.accessInfo))
-            changes.appendOpt(checkProperty(PropertyKey.timezoneKey, new: self.timezone, old: otherEvent.timezone))
-        } else {
-            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
+    //
+    override func update(fromDictionary elementData: NSDictionary!) -> Bool {
+        changed = super.update(fromDictionary: elementData)
+        
+        timezone = elementData[Constant.JSON.eventTimezone] as? String
+        eventStartTime =  ServerDate.convertServerDate(elementData[Constant.JSON.eventStartTime] as? String, timeZoneName: timezone)
+        travelTime = elementData[Constant.JSON.eventTravelTime] as? Int
+        venueName = elementData[Constant.JSON.eventVenueName] as? String
+        venueAddress = elementData[Constant.JSON.eventVenueAddress] as? String
+        venuePostCode = elementData[Constant.JSON.eventVenuePostCode] as? String
+        venueCity = elementData[Constant.JSON.eventVenueCity] as? String
+        venuePhone = elementData[Constant.JSON.eventVenuePhone] as? String
+        accessInfo = elementData[Constant.JSON.eventAccessInfo] as? String
+        
+        if self.isMember(of: Event.self) && changed {
+            setNotification()
         }
-        return changes
+        return changed
     }
-    
+
     
     override func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let eventStartTime = eventStartTime {
@@ -154,6 +175,7 @@ class Event: TripElement {
         return nil
     }
     
+    
     override func setNotification() {
         // First delete any existing notifications for this trip element
         cancelNotifications()
@@ -163,7 +185,7 @@ class Event: TripElement {
             let defaults = UserDefaults.standard
             var eventLeadtime = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
             let genericAlertMessage = NSLocalizedString(Constant.msg.eventAlertMessage, comment: Constant.dummyLocalisationComment)
-            
+
             if let travelTime = travelTime {
                 eventLeadtime += travelTime;
             }

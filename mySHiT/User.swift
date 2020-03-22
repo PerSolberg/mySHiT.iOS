@@ -17,7 +17,9 @@ class User : NSObject, NSCoding {
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveUserURL = DocumentsDirectory.appendingPathComponent("user")
 
-    // Private properties
+    //
+    // MARK: Properties
+    //
     fileprivate var srvUserId:Int?
     fileprivate var srvUserName:String?
     fileprivate var srvCommonName:String?
@@ -28,23 +30,6 @@ class User : NSObject, NSCoding {
     fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
     fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: Constant.REST.mySHiT.Resource.user, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
  
-    // Prevent other classes from instantiating - User is singleton!
-    override fileprivate init () {
-        super.init()
-        loadUser()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
-        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
-        srvUserId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
-        srvUserName = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String
-        srvFullName  = aDecoder.decodeObject(forKey: PropertyKey.fullNameKey) as? String
-        srvCommonName  = aDecoder.decodeObject(forKey: PropertyKey.commonNameKey) as? String
-        srvShortName  = aDecoder.decodeObject(forKey: PropertyKey.shortNameKey) as? String
-        srvInitials = aDecoder.decodeObject(forKey: PropertyKey.initialsKey) as? String
-    }
-
     // Public properties
     var userName:String? {
         get {
@@ -105,7 +90,43 @@ class User : NSObject, NSCoding {
         static let initialsKey = "initals"
     }
     
-    // Functions
+    
+    //
+    // MARK: Initialisers
+    //
+    // Prevent other classes from instantiating - User is singleton!
+    override fileprivate init () {
+        super.init()
+        loadUser()
+    }
+
+    
+    //
+    // MARK: NSCoding
+    //
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(srvUserId, forKey: PropertyKey.userIdKey)
+        aCoder.encode(srvUserName, forKey: PropertyKey.userNameKey)
+        aCoder.encode(srvFullName, forKey: PropertyKey.fullNameKey)
+        aCoder.encode(srvCommonName, forKey: PropertyKey.commonNameKey)
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        // NB: use conditional cast (as?) for any optional properties
+        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        srvUserId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
+        srvUserName = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String
+        srvFullName  = aDecoder.decodeObject(forKey: PropertyKey.fullNameKey) as? String
+        srvCommonName  = aDecoder.decodeObject(forKey: PropertyKey.commonNameKey) as? String
+        srvShortName  = aDecoder.decodeObject(forKey: PropertyKey.shortNameKey) as? String
+        srvInitials = aDecoder.decodeObject(forKey: PropertyKey.initialsKey) as? String
+    }
+
+
+    //
+    // MARK: Functions
+    //
     func hasCredentials() -> Bool {
         if userName == nil || userName == "" || password == nil || password == "" {
             return false
@@ -186,15 +207,6 @@ class User : NSObject, NSCoding {
         }
     }
 
-    
-    // MARK: NSCoding
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(srvUserId, forKey: PropertyKey.userIdKey)
-        aCoder.encode(srvUserName, forKey: PropertyKey.userNameKey)
-        aCoder.encode(srvFullName, forKey: PropertyKey.fullNameKey)
-        aCoder.encode(srvCommonName, forKey: PropertyKey.commonNameKey)
-    }
-    
     
     func saveUser() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)

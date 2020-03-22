@@ -26,7 +26,7 @@ struct Constant {
     // REST service
     struct REST {
         struct mySHiT {
-            static let baseUrl = "https://www.shitt.no/mySHiT"
+            static let baseUrl = "https://www.shitt.no/mySHiT/v2"
             struct Resource {
                 static let trip = "trip"
                 static let thread = "thread"
@@ -36,14 +36,19 @@ struct Constant {
             struct Param {
                 static let userName = "userName"
                 static let password = "password"
-                static let sectioned = "sectioned"
-                static let details = "details"
+                //static let sectioned = "sectioned"
+                //static let details = "details"
             }
 
             struct ParamValue {
-                static let sectioned = "1"
-                static let unsectioned = "0"
-                static let detailsNonHistoric = "non-historic"
+                //static let sectioned = "1"
+                //static let unsectioned = "0"
+                //static let detailsNonHistoric = "non-historic"
+            }
+            
+            struct ResultValue {
+                static let contentList = "list"
+                static let contentDetails = "details"
             }
         }
     }
@@ -51,8 +56,11 @@ struct Constant {
     // JSON tags
     struct JSON {
         static let queryCount = "count"
-        static let queryResults = "results"
+//        static let queryResults = "results"
         static let queryError = "error"
+        static let queryTripList = "trips"
+//        static let queryTripDetails = "tripDetails"
+        static let queryContent = "content"
         
         static let userFullName = "fullName"
         static let userCommonName = "commonName"
@@ -136,6 +144,11 @@ struct Constant {
         static let msgStoredTS = "storedTS"
         static let msgCreatedTS = "createdTS"
 
+        static let srvTS = "timestamp"
+        static let srvTSFormatted = "formatted"
+        static let srvTSEpoch = "epoch"
+        static let srvTSEpochSec = "sec"
+        static let srvTSEpochMicrosec = "microsec"
     }
     
     // User interface messages
@@ -172,8 +185,6 @@ struct Constant {
     struct notification {
         static let networkError = NSNotification.Name(rawValue: "networkError")
         static let dataRefreshed = NSNotification.Name(rawValue: "dataRefreshed")
-        //static let tripElementsRefreshed = "dataRefreshed"
-        //static let tripsRefreshed = "dataRefreshed"
         static let logonSuccessful = NSNotification.Name(rawValue: "logonSuccessful")
         static let logonFailed = NSNotification.Name(rawValue: "logonFailed")
         static let refreshTripList = NSNotification.Name(rawValue: "RefreshTripList")

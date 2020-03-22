@@ -59,6 +59,7 @@ struct SecItemWrapper {
         return rawResult
     }
     
+    
     static func add(_ attributes: [String: AnyObject]) throws -> AnyObject? {
         var rawResult: AnyObject?
         let rawStatus = SecItemAdd(attributes as CFDictionary, &rawResult)
@@ -69,6 +70,7 @@ struct SecItemWrapper {
         return rawResult
     }
     
+    
     static func update(_ query: [String: AnyObject],
         attributesToUpdate: [String: AnyObject]) throws {
             let rawStatus = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
@@ -76,6 +78,7 @@ struct SecItemWrapper {
                 throw error
             }
     }
+    
     
     static func delete(_ query: [String: AnyObject]) throws {
         let rawStatus = SecItemDelete(query as CFDictionary)

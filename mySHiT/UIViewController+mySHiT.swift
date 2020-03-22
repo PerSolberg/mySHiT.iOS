@@ -19,8 +19,9 @@ extension UIViewController
             return false
         }
     }
-    
-    func getAttributedReferences(_ refList: [ [String:String] ], typeKey: String, refKey: String, urlKey: String) -> NSDictionary {
+
+//  func getAttributedReferences(_ refList: [ [String:String] ], typeKey: String, refKey: String,
+    func getAttributedReferences(_ refList: Set<[String:String]>, typeKey: String, refKey: String, urlKey: String) -> NSDictionary {
         let refDict = NSMutableDictionary()
         for ref in refList {
             if let refType = ref[typeKey], let refNo = ref[refKey] {

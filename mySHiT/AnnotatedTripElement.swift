@@ -17,11 +17,15 @@ class AnnotatedTripElement: NSObject, NSCoding {
         static let tripElementKey = "tripElement"
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     func encode(with aCoder: NSCoder) {
         aCoder.encode(modified.rawValue, forKey: PropertyKey.modifiedKey)
         aCoder.encode(tripElement, forKey: PropertyKey.tripElementKey)
     }
+    
     
     required convenience init?(coder aDecoder: NSCoder) {
         let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
@@ -34,6 +38,7 @@ class AnnotatedTripElement: NSObject, NSCoding {
         self.init(tripElement: tripElement, modified: modified)
     }
     
+    
     init?(tripElement: TripElement) {
         self.modified = .Unchanged
         self.tripElement = tripElement
@@ -41,6 +46,7 @@ class AnnotatedTripElement: NSObject, NSCoding {
         super.init()
     }
 
+    
     init?(tripElement: TripElement, modified: ChangeState) {
         self.modified = modified
         self.tripElement = tripElement

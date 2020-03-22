@@ -10,7 +10,9 @@ import Foundation
 import UserNotifications
 
 class DeepLinkManager {
-    // Private properties
+    //
+    // MARK: properties
+    //
     private static let sharedMgr = DeepLinkManager()
     private var deepLink : DeepLink?
     
@@ -18,18 +20,20 @@ class DeepLinkManager {
     fileprivate init () {
     }
     
-    // Public properties
-    
-    
+
+    //
     // MARK: Public functions
+    //
     static func current() -> DeepLinkManager {
         return sharedMgr
     }
 
+    
     func set(linkHandler:DeepLink) {
         deepLink = linkHandler
     }
 
+    
     func checkAndHandle() {
         // Check if deep link has been set; if so, handle it and reset
         guard let deepLink = deepLink else {

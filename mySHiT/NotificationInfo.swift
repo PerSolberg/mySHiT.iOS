@@ -20,7 +20,10 @@ class NotificationInfo: NSObject, NSCoding {
         static let leadTimeKey = "leadTime"
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     func encode(with aCoder: NSCoder) {
         aCoder.encode(baseDate, forKey: PropertyKey.baseDateKey)
         aCoder.encode(notificationDate, forKey: PropertyKey.notificationDateKey)
@@ -28,7 +31,9 @@ class NotificationInfo: NSObject, NSCoding {
     }
     
     
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
         baseDate  = aDecoder.decodeObject(forKey: PropertyKey.baseDateKey) as? Date
@@ -51,7 +56,10 @@ class NotificationInfo: NSObject, NSCoding {
         self.leadTime = leadTime
     }
 
+    
+    //
     // MARK: Methods
+    //
     func needsRefresh(baseDate: Date!, notificationDate: Date!, leadTime: Int!) -> Bool {
         let now = Date()
         if (self.notificationDate > now) {
@@ -68,9 +76,11 @@ class NotificationInfo: NSObject, NSCoding {
         return false;
     }
 
+    
     func needsRefresh(newNotification: NotificationInfo) -> Bool {
         return needsRefresh(baseDate: newNotification.baseDate, notificationDate: newNotification.notificationDate, leadTime: newNotification.leadTime)
     }
+    
     
     func combine(with: NotificationInfo) {
         self.notificationDate = with.notificationDate

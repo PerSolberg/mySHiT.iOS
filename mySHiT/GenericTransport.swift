@@ -10,29 +10,31 @@ import Foundation
 import UIKit
 
 class GenericTransport: TripElement {
+    //
     // MARK: Properties
-    var segmentId: Int?
-    var segmentCode: String?
-    var legNo: Int?
-    var departureTime: Date?
-    var departureLocation: String?
-    var departureStop: String?
-    var departureAddress: String?
-    var departureTimeZone: String?
-    var departureCoordinates: String?
-    var departureTerminalCode: String?
-    var departureTerminalName: String?
-    var arrivalTime: Date?
-    var arrivalLocation: String?
-    var arrivalStop: String?
-    var arrivalAddress: String?
-    var arrivalTimeZone: String?
-    var arrivalCoordinates: String?
-    var arrivalTerminalCode: String?
-    var arrivalTerminalName: String?
-    var routeNo: String?
-    var companyName: String?
-    var companyPhone: String?
+    //
+    var segmentId: Int? { willSet { checkChange(segmentId, newValue) } }
+    var segmentCode: String? { willSet { checkChange(segmentCode, newValue) } }
+    var legNo: Int? { willSet { checkChange(legNo, newValue) } }
+    var departureTime: Date? { willSet { checkChange(departureTime, newValue) } }
+    var departureLocation: String?  { willSet { checkChange(departureLocation, newValue) } }
+    var departureStop: String?  { willSet { checkChange(departureStop, newValue) } }
+    var departureAddress: String?  { willSet { checkChange(departureAddress, newValue) } }
+    var departureTimeZone: String?  { willSet { checkChange(departureTimeZone, newValue) } }
+    var departureCoordinates: String?  { willSet { checkChange(departureCoordinates, newValue) } }
+    var departureTerminalCode: String?  { willSet { checkChange(departureTerminalCode, newValue) } }
+    var departureTerminalName: String?  { willSet { checkChange(departureTerminalName, newValue) } }
+    var arrivalTime: Date? { willSet { checkChange(arrivalTime, newValue) } }
+    var arrivalLocation: String? { willSet { checkChange(arrivalLocation, newValue) } }
+    var arrivalStop: String? { willSet { checkChange(arrivalStop, newValue) } }
+    var arrivalAddress: String? { willSet { checkChange(arrivalAddress, newValue) } }
+    var arrivalTimeZone: String? { willSet { checkChange(arrivalTimeZone, newValue) } }
+    var arrivalCoordinates: String? { willSet { checkChange(arrivalCoordinates, newValue) } }
+    var arrivalTerminalCode: String? { willSet { checkChange(arrivalTerminalCode, newValue) } }
+    var arrivalTerminalName: String? { willSet { checkChange(arrivalTerminalName, newValue) } }
+    var routeNo: String? { willSet { checkChange(routeNo, newValue) } }
+    var companyName: String? { willSet { checkChange(companyName, newValue) } }
+    var companyPhone: String? { willSet { checkChange(companyPhone, newValue) } }
     
     override var startTime:Date? {
         return departureTime
@@ -92,7 +94,10 @@ class GenericTransport: TripElement {
         static let companyPhoneKey = "companyPhone"
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(segmentId, forKey: PropertyKey.segmentIdKey)
@@ -120,14 +125,14 @@ class GenericTransport: TripElement {
     }
     
     
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
-        //segmentId = aDecoder.decodeObject(forKey: PropertyKey.segmentIdKey) as? Int
         segmentId = aDecoder.decodeObject(forKey: PropertyKey.segmentIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.segmentIdKey)
         segmentCode = aDecoder.decodeObject(forKey: PropertyKey.segmentCodeKey) as? String
-        //legNo = aDecoder.decodeObject(forKey: PropertyKey.legNoKey) as? Int
         legNo = aDecoder.decodeObject(forKey: PropertyKey.legNoKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.legNoKey)
         departureTime  = aDecoder.decodeObject(forKey: PropertyKey.departureTimeKey) as? Date
         departureLocation = aDecoder.decodeObject(forKey: PropertyKey.departureLocationKey) as? String
@@ -184,37 +189,45 @@ class GenericTransport: TripElement {
     }
 
     
+    //
     // MARK: Methods
-    override func compareProperties(_ otherTripElement: TripElement) throws -> [TripElement.ChangedAttribute] {
-        var changes = try super.compareProperties(otherTripElement)
+    //
+    override func update(fromDictionary elementData: NSDictionary!) -> Bool {
+        changed = super.update(fromDictionary: elementData)
 
-        if let otherTransport = otherTripElement as? GenericTransport {
-            changes.appendOpt(checkProperty(PropertyKey.segmentIdKey, new: self.segmentId, old: otherTransport.segmentId))
-            changes.appendOpt(checkProperty(PropertyKey.segmentCodeKey, new: self.segmentCode, old: otherTransport.segmentCode))
-            changes.appendOpt(checkProperty(PropertyKey.legNoKey, new: self.legNo, old: otherTransport.legNo))
-            changes.appendOpt(checkProperty(PropertyKey.departureTimeKey, new: self.departureTime, old: otherTransport.departureTime))
-            changes.appendOpt(checkProperty(PropertyKey.departureLocationKey, new: self.departureLocation, old: otherTransport.departureLocation))
-            changes.appendOpt(checkProperty(PropertyKey.departureStopKey, new: self.departureStop, old: otherTransport.departureStop))
-            changes.appendOpt(checkProperty(PropertyKey.departureAddressKey, new: self.departureAddress, old: otherTransport.departureAddress))
-            changes.appendOpt(checkProperty(PropertyKey.departureTimeZoneKey, new: self.departureTimeZone, old: otherTransport.departureTimeZone))
-            changes.appendOpt(checkProperty(PropertyKey.departureCoordinatesKey, new: self.departureCoordinates, old: otherTransport.departureCoordinates))
-            changes.appendOpt(checkProperty(PropertyKey.departureTerminalCodeKey, new: self.departureTerminalCode, old: otherTransport.departureTerminalCode))
-            changes.appendOpt(checkProperty(PropertyKey.departureTerminalNameKey, new: self.departureTerminalName, old: otherTransport.departureTerminalName))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalTimeKey, new: self.arrivalTime, old: otherTransport.arrivalTime))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalLocationKey, new: self.arrivalLocation, old: otherTransport.arrivalLocation))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalStopKey, new: self.arrivalStop, old: otherTransport.arrivalStop))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalAddressKey, new: self.arrivalAddress, old: otherTransport.arrivalAddress))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalTimeZoneKey, new: self.arrivalTimeZone, old: otherTransport.arrivalTimeZone))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalCoordinatesKey, new: self.arrivalCoordinates, old: otherTransport.arrivalCoordinates))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalTerminalCodeKey, new: self.arrivalTerminalCode, old: otherTransport.arrivalTerminalCode))
-            changes.appendOpt(checkProperty(PropertyKey.arrivalTerminalNameKey, new: self.arrivalTerminalName, old: otherTransport.arrivalTerminalName))
-            changes.appendOpt(checkProperty(PropertyKey.routeNoKey, new: self.routeNo, old: otherTransport.routeNo))
-            changes.appendOpt(checkProperty(PropertyKey.companyNameKey, new: self.companyName, old: otherTransport.companyName))
-            changes.appendOpt(checkProperty(PropertyKey.companyPhoneKey, new: self.companyPhone, old: otherTransport.companyPhone))
-        } else {
-            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
+        segmentId = elementData[Constant.JSON.transportSegmentId] as? Int
+        segmentCode = elementData[Constant.JSON.transportSegmentCode] as? String
+        legNo = elementData[Constant.JSON.transportLegNo] as? Int
+        departureLocation = elementData[Constant.JSON.transportDeptLocation] as? String
+        departureStop = elementData[Constant.JSON.transportDeptStop] as? String
+        departureAddress = elementData[Constant.JSON.transportDeptAddress] as? String
+        departureTimeZone = elementData[Constant.JSON.transportDeptTimezone] as? String
+        if let departureTimeText = elementData[Constant.JSON.transportDeptTime] as? String {
+            departureTime = ServerDate.convertServerDate(departureTimeText, timeZoneName: departureTimeZone)
         }
-        return changes
+        departureCoordinates = elementData[Constant.JSON.transportDeptCoordinates] as? String
+        departureTerminalCode = elementData[Constant.JSON.transportDeptTerminalCode] as? String
+        departureTerminalName = elementData[Constant.JSON.transportDeptTerminalName] as? String
+        
+        arrivalLocation = elementData[Constant.JSON.transportArrLocation] as? String
+        arrivalStop = elementData[Constant.JSON.transportArrStop] as? String
+        arrivalAddress = elementData[Constant.JSON.transportArrAddress] as? String
+        arrivalTimeZone = elementData[Constant.JSON.transportArrTimezone] as? String
+        if let arrivalTimeText = elementData[Constant.JSON.transportArrTime] as? String {
+            arrivalTime = ServerDate.convertServerDate(arrivalTimeText, timeZoneName: arrivalTimeZone)
+        }
+        arrivalCoordinates = elementData[Constant.JSON.transportArrCoordinates] as? String
+        arrivalTerminalCode = elementData[Constant.JSON.transportArrTerminalCode] as? String
+        arrivalTerminalName = elementData[Constant.JSON.transportArrTerminalName] as? String
+        
+        routeNo = elementData[Constant.JSON.transportRouteNo] as? String
+        companyName = elementData[Constant.JSON.transportCompany] as? String
+        companyPhone = elementData[Constant.JSON.transportCompanyPhone] as? String
+
+        if self.isMember(of: GenericTransport.self) && changed {
+            setNotification()
+        }
+        return changed
     }
 
     
@@ -235,6 +248,7 @@ class GenericTransport: TripElement {
         return nil
     }
 
+    
     override func endTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         if let arrivalTime = arrivalTime {
             let dateFormatter = DateFormatter()
@@ -252,6 +266,7 @@ class GenericTransport: TripElement {
         return nil
     }
 
+    
     override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
         guard element.tripElement == self else {
             fatalError("Inconsistent trip element and annotated trip element")

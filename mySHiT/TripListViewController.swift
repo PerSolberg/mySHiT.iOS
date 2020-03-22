@@ -10,25 +10,31 @@ import UIKit
 import os
 //import Security
 
-class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
+class TripListViewController: UITableViewController {
     // MARK: Constants
 
 
+    //
     // MARK: Properties
+    //
     @IBOutlet var tripListTable: UITableView!
 
-    var sections: [TripListSectionInfo]!
+    var sections = [TripListSectionInfo]()
     var tripToRefresh: IndexPath?
-    
     var isLoggingIn = false
+    var activeSections:[(offset:Int, element:TripListSectionInfo)] {
+        return sections.enumerated().filter { return $0.element.firstTrip != nil }
+    }
 
-    // MARK: Archiving paths
+    // Archiving paths
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveTripsURL = DocumentsDirectory.appendingPathComponent("trips")
     static let ArchiveSectionsURL = DocumentsDirectory.appendingPathComponent("sections")
 
     
+    //
     // MARK: Navigation
+    //
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
         tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
@@ -39,11 +45,11 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
         }
     }
-    
-    
+
+
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
@@ -59,7 +65,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                     let indexPath = tableView.indexPath(for: selectedTripCell)!
                     let s = getSectionById(indexPath.section)
                     
-                    let selectedTrip = TripList.sharedList[s!.section.firstTrip + indexPath.row]!
+                    let selectedTrip = TripList.sharedList[s!.section.firstTrip! + indexPath.row]!
                     tripToRefresh = indexPath
                     destinationController.tripCode = selectedTrip.trip.code
                     destinationController.tripSection = s!.section.type
@@ -73,28 +79,34 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
 
+    //
     // MARK: Constructors
-    func initCommon() {
-        sections = [TripListSectionInfo]()
+    //
+    func addMissingSections() {
         for tls in TripListSection.allValues {
-            sections.append( TripListSectionInfo(visible: true, type: tls, firstTrip: -1)! )
+            let found = sections.contains { return $0.type == tls }
+            if !found {
+                sections.append( TripListSectionInfo(visible: true, type: tls, firstTrip: -1) )
+            }
         }
     }
 
 
     required init?( coder: NSCoder) {
         super.init(coder: coder)
-        initCommon()
+        addMissingSections()
     }
 
 
     override init(style: UITableView.Style) {
         super.init(style: style)
-        initCommon()
+        addMissingSections()
     }
 
     
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -105,6 +117,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         refreshControl!.addTarget(self, action: #selector(reloadTripsFromServer), for: .valueChanged)
     }
 
+    
     func showLogonScreen(animated: Bool) {
         isLoggingIn = true
         let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
@@ -113,30 +126,32 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
     }
 
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Load data & check if section list is complete (if not, add missing elements)
-        var sectionList = loadTrips()
-        if sectionList == nil {
-            sectionList = [TripListSectionInfo]()
+        // TODO: No need to reload every time, only when launching
+        if TripList.sharedList.count == 0 {
+            print("Loading trips")
+            loadTrips()
+            updateSections()
         }
-        sections = sectionList
-        classifyTrips()
-        updateSections()
-        saveTrips()
+
         tripListTable.estimatedRowHeight = 40
         tripListTable.rowHeight = UITableView.automaticDimension
         DispatchQueue.main.async(execute: {
             self.tripListTable.reloadData()
         })
 
+        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.refreshTripList, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.dataRefreshed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
     }
  
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -145,6 +160,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
         }
     }
 
+    
     override func viewDidAppear(_ animated: Bool) {
         if !User.sharedUser.hasCredentials() {
             showLogonScreen(animated: false)
@@ -152,17 +168,14 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
         if let indexPath = tripToRefresh {
             let s = getSectionById(indexPath.section)
-            let selectedTrip = TripList.sharedList[s!.section.firstTrip + indexPath.row]!
+            let selectedTrip = TripList.sharedList[s!.section.firstTrip! + indexPath.row]!
             
-            selectedTrip.modified = .Unchanged
-            if let elements = selectedTrip.trip.elements {
-                for element in elements {
-                    if element.modified == .Changed {
-                        selectedTrip.modified = .Changed
-                        break
-                    }
-                }
-            }
+            let prevModStatus = selectedTrip.modified
+            selectedTrip.modified = selectedTrip.trip.changes() > 0 ? .Changed : .Unchanged
+//            if selectedTrip.trip.changes() > 0 {
+//                selectedTrip.modified = .Changed
+//            }
+            
             UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
             
             if let cell = tableView.cellForRow(at: indexPath), let imgView = cell.viewWithTag(4) as? UIImageView {
@@ -170,25 +183,27 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
             }
 
             tripToRefresh = nil
-            TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+            if (selectedTrip.modified != prevModStatus) {
+                TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+            }
         }
     }
     
     
     @objc func refreshTripList() {
-        if let refreshControl = refreshControl {
-            DispatchQueue.main.async(execute: {
+        DispatchQueue.main.async(execute: {
+            if let refreshControl = self.refreshControl {
                 if refreshControl.isRefreshing {
                     refreshControl.endRefreshing()
                 }
-            })
-        }
+            }
+        })
         if (TripList.sharedList.count == 0) {
             tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: Constant.dummyLocalisationComment))
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
-        classifyTrips()
+
         updateSections()
         DispatchQueue.main.async(execute: {
             self.tripListTable.reloadData()
@@ -242,27 +257,17 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
+    //
     // MARK: UITableViewDataSource methods
+    //
     override func numberOfSections(in tableView: UITableView) -> Int {
-        var sectionCount = 0
-        for s in sections {
-            if s.firstTrip > -1 {
-                sectionCount += 1
-            }
-        }
-        return sectionCount
+        return activeSections.count
     }
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let s = getSectionById(section) {
-            if s.section.visible! {
+            if s.section.visible {
                 return s.itemCount
             } else {
                 return 0
@@ -293,7 +298,7 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
         //print("RowIndex: section = \(indexPath.section), row = \(indexPath.row)")
         if let s = getSectionById(indexPath.section) {
-            let rowIdx = s.section.firstTrip + indexPath.row
+            let rowIdx = s.section.firstTrip! + indexPath.row
             let trip = TripList.sharedList[rowIdx]!.trip
 
             let lblName = cell!.viewWithTag(1) as! UILabel
@@ -336,7 +341,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 
 
+    //
     // MARK: Section header callbacks
+    //
     @objc func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
         let indexPath : IndexPath = IndexPath(row: 0, section: (recognizer.view!.tag))
         if let s = getSectionById(indexPath.section) {
@@ -351,7 +358,9 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
     
 
+    //
     // MARK: NSCoding
+    //
     func saveTrips() {
         TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
         saveSections()
@@ -359,37 +368,40 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
 
     
     func saveSections() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections!, toFile: TripListViewController.ArchiveSectionsURL.path)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections, toFile: TripListViewController.ArchiveSectionsURL.path)
         if !isSuccessfulSave {
             os_log("Failed to save sections", log: OSLog.general, type: .error)
         }
     }
     
     
-    func loadTrips() -> [TripListSectionInfo]? {        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-        let sectionList = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo]
-        return sectionList
+    func loadTrips() {
+        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
+        sections = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
     }
     
 
-
+    //
     // MARK: Actions
+    //
 
     
+    //
     // MARK: Functions
-    func classifyTrips() {
+    //
+    func updateSections() {
         let defaults = UserDefaults.standard
         let upcomingPref:UserPrefUpcomingTrips! = UserPrefUpcomingTrips(rawValue: (defaults.string(forKey: "upcoming_trips") ?? UserPrefUpcomingTrips.NextOrWithin7Days.rawValue))!
 
         let today = Date()
-        let updatedSections = sections
-        for s in updatedSections! {
-            s.firstTrip = -1
-        }
 
-        var prevSection:TripListSection! = .Historic
-        for aTrip in TripList.sharedList.reverse() {
-            //print(aTrip)
+        addMissingSections()
+        for s in sections {
+            s.firstTrip = nil
+        }
+        
+        var prevSection:TripListSection = .Historic
+        for (ix, aTrip) in TripList.sharedList.enumerated().reversed() {
             if aTrip.trip.tense == .past {
                 aTrip.section = .Historic
             } else if aTrip.trip.tense == .present {
@@ -407,69 +419,30 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
                     aTrip.section = .Future
                 }
             }
+            if prevSection != aTrip.section || ix == 0 {
+                let section = sections.first { return $0.type == aTrip.section }
+                section!.firstTrip = ix
+            }
             prevSection = aTrip.section
         }
     }
 
     
-    func updateSections() {
-        // First add any missing sections
-        for tls in TripListSection.allValues {
-            var found = false
-            for s in sections {
-                if s.type == tls {
-                    found = true
-                    break
-                }
-            }
-            if !found {
-                sections.append( TripListSectionInfo(visible: true, type: tls, firstTrip: -1)! )
-            }
-        }
-
-        // Then update section parameter
-        for s in sections {
-            s.firstTrip = -1
-            for ti in TripList.sharedList.indices {
-                if TripList.sharedList[ti]!.section == s.type {
-                    s.firstTrip = ti
-                    break
-                }
-            }
-        }
-    }
-
-    
     func getSectionById(_ sectionNo:Int) -> (index: Int, section:TripListSectionInfo, itemCount:Int)? {
-        // Find section in section list
-        var sectionCount = 0
-        var sectionIdx:Int?
-        var firstTripThisSection:Int?
-        var firstTripNextSection:Int?
-        for ix in sections.indices {
-            if sections[ix].firstTrip > -1 {
-                // Found section containing data
-                if sectionCount == sectionNo {
-                    // Found desired section
-                    sectionIdx = ix
-                    firstTripThisSection = sections[ix].firstTrip
-                } else if sectionCount > sectionNo && firstTripNextSection == nil {
-                    // Found next section containing data
-                    firstTripNextSection = sections[ix].firstTrip
-                }
-                sectionCount += 1
-            }
-        }
-        if let sectionIdx = sectionIdx {
-            if firstTripNextSection == nil {
-                firstTripNextSection = TripList.sharedList.count
-            }
-            return (sectionIdx, sections[sectionIdx], firstTripNextSection! - firstTripThisSection!)
-        } else {
+        let activeSections = self.activeSections
+        if sectionNo >= activeSections.count {
             return nil
         }
+        var firstTripNextSection = TripList.sharedList.count
+        if sectionNo + 1 < activeSections.count {
+            firstTripNextSection = activeSections[sectionNo + 1].element.firstTrip!
+        }
+
+        let sectionIdx = activeSections[sectionNo].offset
+        return (sectionIdx, sections[sectionIdx], firstTripNextSection - sections[sectionIdx].firstTrip!)
     }
     
+
     func logout() {
         // Empty memory structures, clear notification (part of clear) and update keyed archive
         TripList.sharedList.clear()
@@ -486,8 +459,3 @@ class TripListViewController: UITableViewController /*, UITextFieldDelegate */ {
     }
 }
 
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
-}

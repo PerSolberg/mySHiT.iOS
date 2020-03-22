@@ -13,8 +13,10 @@ class Flight: ScheduledTransport {
     static let RefType_ETicketNo  = "ETKT"
     static let RefType_Amadeus    = "Amadeus"
     
+    //
     // MARK: Properties
-    var airlineCode: String?
+    //
+    var airlineCode: String?  { willSet { checkChange(airlineCode, newValue) } }
     
     struct PropertyKey {
         static let airlineCodeKey = "airlineCode"
@@ -45,14 +47,19 @@ class Flight: ScheduledTransport {
         return code + " " + route
     }
 
+    
+    //
     // MARK: NSCoding
+    //
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(airlineCode, forKey: PropertyKey.airlineCodeKey)
     }
     
     
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         airlineCode = aDecoder.decodeObject(forKey: PropertyKey.airlineCodeKey) as? String
@@ -67,18 +74,20 @@ class Flight: ScheduledTransport {
     }
     
     
-    // MARK: Methods 
-    override func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
-        var changes = try super.compareProperties(otherTripElement)
-        
-        if let otherFlight = otherTripElement as? Flight {
-            changes.appendOpt(checkProperty(PropertyKey.airlineCodeKey, new: self.airlineCode, old: otherFlight.airlineCode))
-        } else {
-            throw ModelError.compareTypeMismatch(selfType: String(describing: Swift.type(of: self)), otherType: String(describing: Swift.type(of: otherTripElement)))
+    //
+    // MARK: Methods
+    //
+    override func update(fromDictionary elementData: NSDictionary!) -> Bool {
+        changed = super.update(fromDictionary: elementData)
+
+        airlineCode = elementData[Constant.JSON.airlineCompanyCode] as? String
+                
+        if self.isMember(of: Flight.self) && changed {
+            setNotification()
         }
-        return changes
+        return changed
     }
-    
+
     
     override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
         guard element.tripElement == self else {

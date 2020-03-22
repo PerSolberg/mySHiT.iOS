@@ -348,7 +348,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // in case it is terminated later.
         // If the application supports background execution, this method is called instead
         // of applicationWillTerminate: when the user quits.
-        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+//        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
     }
 
     
@@ -359,11 +359,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if (RSUtilities.isNetworkAvailable("www.shitt.no")) {
             // Network available, refreshing information from server
             TripList.sharedList.getFromServer()
+        } else {
+            NotificationCenter.default.post(name: Constant.notification.refreshTripList, object: self)
+            NotificationCenter.default.post(name: Constant.notification.refreshTripElements, object: self)
         }
-        
-        NotificationCenter.default.post(name: Constant.notification.refreshTripList, object: self)
-        NotificationCenter.default.post(name: Constant.notification.refreshTripElements, object: self)
-        
+
         DeepLinkManager.current().checkAndHandle()
     }
     
@@ -392,7 +392,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         var defaultsToRegister = [String: AnyObject]()
-        for var p in preferences {
+        for p in preferences {
             if let k = p["Key"] as? String, let v = p["DefaultValue"] {
                 defaultsToRegister[k] = v
             }

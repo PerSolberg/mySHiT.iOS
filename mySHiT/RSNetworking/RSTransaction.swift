@@ -35,27 +35,7 @@ class RSTransaction: NSObject {
     }
     
     func getFullURLString() -> String {
-//        return removeSlashFromEndOfString(/*self.*/baseURL) + "/" + removeSlashFromStartOfString(/*self.*/path)
         return baseURL.trimSuffix("/") + "/" + path.trimPrefix("/")
     }
-    
-    
-//    fileprivate func removeSlashFromEndOfString(_ string: String) -> String
-//    {
-//        string.trimSuffix("/")
-////        if string.hasSuffix("/") {
-////            return String(string.prefix(string.count - 1))
-////        } else {
-////            return string
-////        }
-//    }
-//
-//    fileprivate func removeSlashFromStartOfString(_ string : String) -> String {
-//        string.trimPrefix("/")
-////        if string.hasPrefix("/") {
-////            return String(string.suffix(string.count - 1))
-////        } else {
-////            return string
-////        }
-//    }
+        
 }

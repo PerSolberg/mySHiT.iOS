@@ -20,14 +20,16 @@ class TripElement: NSObject, NSCoding {
     
     static let MinimumNotificationSeparation : TimeInterval = 10 * 60  // Minutes between notifications for same trip element
     
-    var type: String!
-    var subType: String!
-    var id: Int!
-    var references: [ [String:String] ]?
+    var type: String { willSet { checkChange(type, newValue) } }
+    var subType: String { willSet { checkChange(subType, newValue) } }
+    var id: Int { willSet { checkChange(id, newValue) } }
+//    var references: [ [String:String] ]?
+    var references: Set<[String:String]>? { willSet { checkChange(references, newValue) } }
     var serverData: NSDictionary?
     
     var changedAttributes:[(attr:String, old:String, new:String)] = []
-
+    var changed = false
+    
     // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
     var notifications = [ String: NotificationInfo ]()
     
@@ -85,14 +87,14 @@ class TripElement: NSObject, NSCoding {
             break
         }
         
-        var imageName = basePath + type! + "/" + subType + "/" + iconName
+        var imageName = basePath + type + "/" + subType + "/" + iconName
         // First try exact match
         if let image = UIImage(named: imageName) {
             return image
         }
         
         // Try ignoring subtype
-        imageName = basePath + type! + "/" + iconName
+        imageName = basePath + type + "/" + iconName
         if let image = UIImage(named: imageName) {
             return image
         }
@@ -106,6 +108,7 @@ class TripElement: NSObject, NSCoding {
         return nil
     }
 
+    
     struct PropertyKey {
         static let typeKey = "type"
         static let subTypeKey = "subtype"
@@ -114,8 +117,11 @@ class TripElement: NSObject, NSCoding {
         static let serverDataKey = "serverData"
         static let notificationsKey = "notifications"
     }
+
     
+    //
     // MARK: Factory
+    //
     class func createFromDictionary( _ elementData: NSDictionary! ) -> TripElement? {
         let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
         let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
@@ -143,8 +149,10 @@ class TripElement: NSObject, NSCoding {
         return elem
     }
 
-    
+
+    //
     // MARK: NSCoding
+    //
     func encode(with aCoder: NSCoder) {
         aCoder.encode(type, forKey: PropertyKey.typeKey)
         aCoder.encode(subType, forKey: PropertyKey.subTypeKey)
@@ -155,153 +163,107 @@ class TripElement: NSObject, NSCoding {
     }
     
     
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as? String
-        subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as? String
+        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String
+        subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as! String
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         
-        references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
+//        references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
+        if let refSet = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? Set<[String:String]> {
+            references = refSet
+        } else if let refList = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]] {
+            references = Set(refList)
+        }
         serverData = aDecoder.decodeObject(forKey: PropertyKey.serverDataKey) as? NSDictionary
         notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
     }
     
     
-    init?(id: Int?, type: String?, subType: String?, references: [ [String:String] ]?) {
+//    init?(id: Int, type: String, subType: String, references: [ [String:String] ]?) {
+    init?(id: Int, type: String, subType: String, references: Set<[String:String]>?) {
         // Initialize stored properties.
-        super.init()
-        if id == nil || type == nil || subType == nil {
-            return nil
-        }
-
         self.id = id
         self.type = type
         self.subType = subType
         self.references = references
+        super.init()
     }
     
     
     required init?(fromDictionary elementData: NSDictionary!) {
-        id = elementData[Constant.JSON.elementId] as? Int
-        type = elementData[Constant.JSON.elementType] as? String
-        subType = elementData[Constant.JSON.elementSubType] as? String
-        references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
+        let inputId = elementData[Constant.JSON.elementId] as? Int
+        let inputType = elementData[Constant.JSON.elementType] as? String
+        let inputSubType = elementData[Constant.JSON.elementSubType] as? String
+        
+        if inputId == nil || inputType == nil || inputSubType == nil {
+            return nil
+        }
+        id = inputId!
+        type = inputType!
+        subType = inputSubType!
+//        references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
+        if let refList = elementData[Constant.JSON.elementReferences] as? [ [String:String] ] {
+            references = Set(refList)
+        }
         serverData = elementData
     }
     
     
+    //
     // MARK: Methods
-    override final func isEqual(_ object: Any?) -> Bool {
-        if object_getClassName(self) != object_getClassName(object) {
-            return false
-        } else if let otherTripElement = object as? TripElement {
-            do {
-                let changes = try compareProperties(otherTripElement)
-                
-                if changes.count != 0 {
-//                    print("Changes: \(String(describing: changes))")
-                    os_log("Changes: %s", log: OSLog.delta, type: .debug, String(describing: changes))
-                }
-                return changes.count == 0
-            }
-            catch ModelError.compareTypeMismatch(let selfType, let otherType) {
-                os_log("Compare type mismatch: %s vs %s", log: OSLog.delta, type: .error, selfType, otherType)
-                return false
-            }
-            catch {
-                fatalError("Unexpected error: \(error)")
-            }
-        } else {
-            return false
-        }
-    }
-    
-
-    func compareProperties(_ otherTripElement: TripElement) throws -> [ChangedAttribute] {
-        var changes = [ChangedAttribute]()
-        changes.appendOpt(checkProperty(PropertyKey.typeKey, new: self.type, old: otherTripElement.type))
-        changes.appendOpt(checkProperty(PropertyKey.subTypeKey, new: self.subType, old: otherTripElement.subType))
-        changes.appendOpt(checkProperty(PropertyKey.idKey, new: self.id, old: otherTripElement.id))
-
-        if let myRefs = self.references, let otherRefs = otherTripElement.references {
-            if myRefs.count != otherRefs.count { changes.append(("references.count", String(myRefs.count), String(otherRefs.count))) }
-            check_refs: for myRef in myRefs {
-                for otherRef in otherRefs {
-                    if (otherRef == myRef) {
-                        continue check_refs
-                    }
-                }
-                let refType = myRef["type"] ?? "<None>"
-                let refNo = myRef["refNo"] ?? "<None>"
-                changes.append(("references.\(refType)", new: refNo, old: ""))
-            }
-        } else if (self.references != nil || otherTripElement.references != nil) {
-            changes.append(("references", self.references == nil ? "none" : String(self.references!.count), otherTripElement.references == nil ? "none" : String(otherTripElement.references!.count)))
-        }
-
-        return changes
+    //
+    func checkChange<T:Equatable>(_ old: T, _ new: T) {
+        let propertyChanged = (old != new)
+//        if propertyChanged {
+//            print("Property changed: '" + String(describing: old) + "' -> '" + String(describing: new) + "'")
+//        }
+        changed = changed || propertyChanged
     }
 
 
-    func checkProperty(_ name: String, new: String?, old: String?) -> ChangedAttribute? {
-        if let old = old, let new = new, old == new {
-            return nil
-        } else if old == nil && new == nil {
-            return nil
-        } else {
-            return (name, old ?? "", new ?? "")
+    func update(fromDictionary elementData: NSDictionary!) -> Bool {
+        assert(id == elementData[Constant.JSON.elementId] as? Int, "Update error: inconsistent trip element IDs")
+        changed = false
+
+        type = elementData[Constant.JSON.elementType] as! String
+        subType = elementData[Constant.JSON.elementSubType] as! String
+
+        // TODO: Proper handling of references
+//        references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
+        if let refList = elementData[Constant.JSON.elementReferences] as? [ [String:String] ] {
+            references = Set(refList)
         }
-    }
-    
-    func checkProperty(_ name: String, new: Int?, old: Int?) -> ChangedAttribute? {
-        if let old = old, let new = new, old == new {
-            return nil
-        } else if old == nil && new == nil {
-            return nil
-        } else {
-            return (name, old == nil ? "nil" : String(old!), new == nil ? "nil" : String(new!) )
+
+        serverData = elementData
+
+        if self.isMember(of: TripElement.self) {
+            print("TripElement ", id, " updated")
         }
+
+        return changed
     }
 
-    func checkProperty(_ name: String, new: Date?, old: Date?) -> ChangedAttribute? {
-        if let old = old, let new = new, old == new {
-            return nil
-        } else if old == nil && new == nil {
-            return nil
-        } else {
-            let isoFormatter = ISO8601DateFormatter()
-            isoFormatter.formatOptions = [.withSpaceBetweenDateAndTime, .withFullDate, .withFullTime, .withTimeZone]
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateStyle = .full  //dateStyle
-//            dateFormatter.timeStyle = .full //timeStyle
-//            dateFormatter.timeZone = Constant.timezoneUTC
-            
-            var oldDate = "nil", newDate = "nil"
-            if let old = old {
-                oldDate = isoFormatter.string(from: old)
-            }
-            if let new = new {
-                newDate = isoFormatter.string(from: new)
-            }
-            
-            return (name, oldDate, newDate )
-        }
-    }
-    
     
     func startTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         return nil
     }
 
+    
     func endTime(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String? {
         return nil
     }
     
+    
     func setNotification() {
         // Generic trip element can't have notifications (start date/time not known)
-        // Subclasses that support notifications must override this method (and use method below to set notifications)
+        // Subclasses that support notifications must override this method (and use
+        // method below to set notifications)
     }
+    
     
     func setNotification(notificationType: String, leadTime: Int, alertMessage: String, userInfo: UserInfo?) {
         // Logic starts here
@@ -366,13 +328,11 @@ class TripElement: NSObject, NSCoding {
         
     }
     
+    
     func cancelNotifications() {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Constant.Settings.deptLeadTime + String(id), Constant.Settings.legLeadTime + String(id)])
     }
 
-    func copyState(from: TripElement) {
-        self.notifications = from.notifications
-    }
     
     func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
         guard element.tripElement == self else {

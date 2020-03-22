@@ -24,7 +24,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     var trip:AnnotatedTrip?
 
     // Section data
-    var sections: [TripElementListSectionInfo]! = [TripElementListSectionInfo]()
+    var sections:[TripElementListSectionInfo] = [TripElementListSectionInfo]()
 
     // DeepLinkableViewController
     var wasDeepLinked: Bool
@@ -32,7 +32,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     // MARK: Navigation
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
         }
     }
     
@@ -43,7 +43,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         if let segueId = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
             let indexPath = tableView.indexPath(for: selectedTripCell)!
             let s = getSectionById(indexPath.section)
-            let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
+            let selectedElement = trip!.trip.elements![s!.section.firstTripElement! + indexPath.row]
             
             switch (segueId) {
             case Constant.segue.showFlightInfo:
@@ -129,14 +129,13 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             if let elements = trip.trip.elements, elements.count > 0 {
                 updateSections()
             } else {
-                // Load details from server
-//tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTripDetails, comment: Constant.dummyLocalisationComment))
                 tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
 
                 trip.trip.loadDetails()
             }
         }
 
+        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
@@ -153,10 +152,10 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     override func viewDidAppear(_ animated: Bool) {
         if let indexPath = elementToRefresh {
             let s = getSectionById(indexPath.section)
-            let selectedElement = trip!.trip.elements![s!.section.firstTripElement + indexPath.row]
-            let rowIdx = s!.section.firstTripElement + indexPath.row
-            let tripElement = trip!.trip.elements![rowIdx].tripElement
-            
+            let rowIdx = s!.section.firstTripElement! + indexPath.row
+            let selectedElement = trip!.trip.elements![rowIdx]
+            let tripElement = selectedElement.tripElement
+
             selectedElement.modified = .Unchanged
             if let cell = tripDetailsTable.cellForRow(at: indexPath), let imgView = cell.viewWithTag(5) as? UIImageView {
                 imgView.image = tripElement.icon?.overlayBadge(selectedElement.modified)
@@ -170,27 +169,22 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
 
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+//    override func didReceiveMemoryWarning() {
+//        super.didReceiveMemoryWarning()
+//        // Dispose of any resources that can be recreated.
+//    }
     
     
     // MARK: UITableViewDataSource methods
     override func numberOfSections(in tableView: UITableView) -> Int {
-        var sectionCount = 0
-        for s in sections {
-            if s.firstTripElement > -1 {
-                sectionCount += 1
-            }
-        }
-        return sectionCount
+        let activeSections = sections.filter { $0.firstTripElement != nil }
+        return activeSections.count
     }
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let s = getSectionById(section) {
-            if s.section.visible! {
+            if s.section.visible {
                 return s.itemCount
             } else {
                 return 0
@@ -220,7 +214,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         
         //Get data from TripList element
         if let s = getSectionById(indexPath.section) {
-            let rowIdx = s.section.firstTripElement + indexPath.row
+            let rowIdx = s.section.firstTripElement! + indexPath.row
             let tripElement = trip!.trip.elements![rowIdx].tripElement
             
             let lblName = cell!.viewWithTag(1) as! UILabel
@@ -263,7 +257,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let s = getSectionById(indexPath.section) {
-            let rowIdx = s.section.firstTripElement + indexPath.row
+            let rowIdx = s.section.firstTripElement! + indexPath.row
             let tripElement = trip!.trip.elements![rowIdx].tripElement
             let selectedCell = tableView.cellForRow(at: indexPath)
             switch (tripElement.type, tripElement.subType) {
@@ -353,13 +347,13 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     
     
     @objc func refreshTripElements() {
-        if let refreshControl = refreshControl {
-            DispatchQueue.main.async(execute: {
+        DispatchQueue.main.async(execute: {
+            if let refreshControl = self.refreshControl {
                 if refreshControl.isRefreshing {
                     refreshControl.endRefreshing()
                 }
-            })
-        }
+            }
+        })
 
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
@@ -383,9 +377,8 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         var lastSectionTitle = ""
         var lastElementTense = Tenses.future
         if let trip = trip, let elements = trip.trip.elements {
-            for i in elements.indices {
-                //let elemStartDate = dateFormatter.stringFromDate(elements[i].tripElement.startTime!)
-                let elemStartDate = elements[i].tripElement.startTime(dateStyle: .medium, timeStyle: .none) ?? lastSectionTitle
+            for (i, element) in elements.enumerated() {
+                let elemStartDate = element.tripElement.startTime(dateStyle: .medium, timeStyle: .none) ?? lastSectionTitle
                 if elemStartDate != lastSectionTitle {
                     // First check if previous section should be hidden by default
                     // For active trips, past dates are collapsed by default; active and future dates are expanded
@@ -394,10 +387,10 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
                         sections[sections.count - 1].visible = false
                     }
                     
-                    sections.append( TripElementListSectionInfo(visible: true, title: elemStartDate, firstTripElement: i)! )
+                    sections.append( TripElementListSectionInfo(visible: true, title: elemStartDate, firstTripElement: i) )
                     lastSectionTitle = elemStartDate
                 }
-                lastElementTense = elements[i].tripElement.tense!
+                lastElementTense = element.tripElement.tense!
             }
         }
     }
@@ -408,11 +401,9 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             return nil
         }
 
-        var firstTripNextSection: Int
+        var firstTripNextSection = trip!.trip.elements!.count
         if (sectionNo + 1) < sections.count {
-            firstTripNextSection = sections[sectionNo + 1].firstTripElement
-        } else {
-            firstTripNextSection = trip!.trip.elements!.count
+            firstTripNextSection = sections[sectionNo + 1].firstTripElement!
         }
 
         return (sectionNo, sections[sectionNo], firstTripNextSection - sections[sectionNo].firstTripElement!)
@@ -420,7 +411,3 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
 }
 
 
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
-}

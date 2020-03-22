@@ -39,12 +39,10 @@ class ChatMessage: NSObject, NSCoding {
                ]
     }
 
-    //static let Timezone = "UTC"
-
     static let webServiceChatPath = "thread"
     static let webServiceReadMessageVerb = "read"
     var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransSendMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.put, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
+    var rsTransSendMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.put, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: [:])
     //var rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: Constant.REST.mySHiT.baseURL, path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
 
     struct PropertyKey {
@@ -60,7 +58,10 @@ class ChatMessage: NSObject, NSCoding {
         static let createdTimestampKey = "createdTS"
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     func encode(with aCoder: NSCoder) {
         aCoder.encode(id, forKey: PropertyKey.idKey)
         aCoder.encode(userId, forKey: PropertyKey.userIdKey)
@@ -74,12 +75,18 @@ class ChatMessage: NSObject, NSCoding {
         aCoder.encode(createdTimestamp, forKey: PropertyKey.createdTimestampKey)
     }
     
+    
+    //
     // MARK: Equatable
+    //
     static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
         return lhs.localId == rhs.localId
     }
     
+    
+    //
     // MARK: Initialisers
+    //
     required init?(coder aDecoder: NSCoder) {
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         userId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
@@ -109,7 +116,7 @@ class ChatMessage: NSObject, NSCoding {
                     elementData[Constant.JSON.msgLocalId] as! String )
         messageText = elementData[Constant.JSON.msgText] as? String
         storedTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgStoredTS] as? String ?? "", timeZone: Constant.timezoneUTC)
-        createdTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgCreatedTS] as! String, timeZone: Constant.timezoneUTC)
+        createdTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgCreatedTS] as? String, timeZone: Constant.timezoneUTC)
     }
     
     
@@ -125,7 +132,9 @@ class ChatMessage: NSObject, NSCoding {
     }
     
     
+    //
     // MARK: Functions
+    //
     func save(tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?) -> Void) {
         let userCred = User.sharedUser.getCredentials()
         
@@ -183,9 +192,6 @@ class ChatMessage: NSObject, NSCoding {
 
         //Set the parameters for the RSTransaction object
         rsTransReadMsg.path = webServiceChatPath + "/" + String(tripId) + "/" + webServiceReadMessageVerb + "/" + String(msgId)
-//        rsTransReadMsg.parameters = [ "userName":userCred.name!
-//            , "password":userCred.urlsafePassword!
-//        ]
         
         //Send request
         rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
@@ -204,6 +210,7 @@ class ChatMessage: NSObject, NSCoding {
             parentResponseHandler(response, responseDictionary, error)
         })
     }
+    
     
     static func read(fromUserInfo userInfo: UserInfo/*[AnyHashable:Any]*/, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
         //super.init(fromDictionary: elementData)

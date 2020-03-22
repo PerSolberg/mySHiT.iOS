@@ -11,9 +11,13 @@ import UIKit
 import os
 
 class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController {
+    //
     // MARK: Constants
+    //
     
+    //
     // MARK: Properties
+    //
     @IBOutlet var rootView: UIView!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var messageTextView: UITextView!
@@ -26,20 +30,27 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     // DeepLinkableViewController
     var wasDeepLinked = false
 
+    
+    //
     // MARK: Actions
+    //
     @IBAction func openSettings(_ sender: Any) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(appSettings, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+            UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
         }
     }
 
+    //
     // MARK: Archiving paths
+    //
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveTripsURL = DocumentsDirectory.appendingPathComponent("trips")
     static let ArchiveSectionsURL = DocumentsDirectory.appendingPathComponent("sections")
     
     
+    //
     // MARK: Navigation
+    //
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
         return
@@ -70,10 +81,13 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     }
     
     
+    //
     // MARK: Constructors
+    //
     func initCommon() {
         // Initialisation logic common to all constructurs can go here
     }
+    
     
     required init?( coder: NSCoder) {
         super.init(coder: coder)
@@ -81,7 +95,9 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     }
     
     
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -106,6 +122,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         initialBottomConstraint = bottomSpacingConstraint.constant
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -115,12 +132,14 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
+    
     override func viewDidAppear(_ animated: Bool) {
         if !User.sharedUser.hasCredentials() {
             showLogonScreen(animated: false)
         }
     }
 
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -130,10 +149,12 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         }
     }
     
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     @objc func manageKeyboard (notification: Notification) {
         let isShowing = (notification.name == UIResponder.keyboardWillShowNotification)
@@ -158,7 +179,10 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         }
     }
     
+    
+    //
     //MARK: Functions
+    //
     func showLogonScreen(animated: Bool) {
         let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
         let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
@@ -183,12 +207,17 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     }
     
 
+    //
     // MARK: TextViewDelegate
+    //
     func textViewDidChange(_ textView: UITextView) {
         controlSendButton()
     }
     
+    
+    //
     // MARK: Actions
+    //
     @IBAction func sendMessage(_ sender: Any) {
         guard let trip = trip else {
             os_log("ERROR: Trip not correctly set up for chat", log: OSLog.general, type: .error)
@@ -211,7 +240,9 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     }
 
 
+    //
     // MARK: Functions
+    //
     func controlSendButton() {
         if messageTextView.hasText {
             sendButton.isEnabled = true
@@ -224,6 +255,6 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
 
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
-}
+//fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+//	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+//}

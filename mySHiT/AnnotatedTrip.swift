@@ -9,11 +9,9 @@
 import Foundation
 
 class AnnotatedTrip: NSObject, NSCoding {
-    //var visible: Bool
     var section: TripListSection
     var trip: Trip
     var modified: ChangeState
-    //var tripData: NSDictionary
     
     struct PropertyKey {
         static let modifiedKey = "modified"
@@ -21,12 +19,16 @@ class AnnotatedTrip: NSObject, NSCoding {
         static let tripKey = "trip"
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     func encode(with aCoder: NSCoder) {
         aCoder.encode(modified.rawValue, forKey: PropertyKey.modifiedKey)
         aCoder.encode(section.rawValue, forKey: PropertyKey.sectionKey)
         aCoder.encode(trip, forKey: PropertyKey.tripKey)
     }
+    
     
     required convenience init?(coder aDecoder: NSCoder) {
         let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
@@ -41,6 +43,7 @@ class AnnotatedTrip: NSObject, NSCoding {
         self.init(section: section, trip: trip, modified: modified)
     }
 
+    
     init?(section: TripListSection, trip: Trip, modified: ChangeState) {
         self.modified = modified
         self.section = section

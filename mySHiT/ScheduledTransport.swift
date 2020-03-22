@@ -10,7 +10,9 @@ import Foundation
 import UIKit
 
 class ScheduledTransport: GenericTransport {
+    //
     // MARK: Properties
+    //
     override var title: String? {
         let company = companyName ?? "XX"
         let route = routeNo ?? "***"
@@ -41,11 +43,29 @@ class ScheduledTransport: GenericTransport {
         return nil
     }
     
+    
+    //
     // MARK: NSCoding
+    //
     
+    
+    //
     // MARK: Initialisers
+    //
     
+    
+    //
     // MARK: Methods
+    //
+    override func update(fromDictionary elementData: NSDictionary!) -> Bool {
+        changed = super.update(fromDictionary: elementData)
+        
+        if self.isMember(of: ScheduledTransport.self) && changed {
+            setNotification()
+        }
+        return changed
+    }
+
     
     override func setNotification() {
         // First delete any existing notifications for this trip element (either one or two)
@@ -65,8 +85,6 @@ class ScheduledTransport: GenericTransport {
             if legLeadtime > 0 {
                 setNotification(notificationType: Constant.Settings.legLeadTime, leadTime: legLeadtime, alertMessage: genericAlertMessage, userInfo: nil)
             }
-        } else {
-            //print("Not setting notifications for past trip element \(id)")
         }
     }
 
