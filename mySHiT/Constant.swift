@@ -10,56 +10,32 @@
 import UIKit
 
 struct Constant {
-    static let test = "id"
     static let deviceType = "iOS"
     
-    static let dummyLocalisationComment = "Dummy comment"
     static let emptyString = ""
     
     static let timezoneNameUTC = "UTC"
     static let timezoneUTC = TimeZone(identifier: timezoneNameUTC)
     
+    struct archive {
+        fileprivate static let archiveDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+        static let tripsURL = archiveDirectory.appendingPathComponent("trips")
+        static let sectionsURL = archiveDirectory.appendingPathComponent("sections")
+    }
+
     struct alert {
         static let actionOK = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
     }
     
-    // REST service
-    struct REST {
-        struct mySHiT {
-            static let baseUrl = "https://www.shitt.no/mySHiT/v2"
-            struct Resource {
-                static let trip = "trip"
-                static let thread = "thread"
-                static let user = "user"
-            }
-
-            struct Param {
-                static let userName = "userName"
-                static let password = "password"
-                //static let sectioned = "sectioned"
-                //static let details = "details"
-            }
-
-            struct ParamValue {
-                //static let sectioned = "1"
-                //static let unsectioned = "0"
-                //static let detailsNonHistoric = "non-historic"
-            }
-            
-            struct ResultValue {
-                static let contentList = "list"
-                static let contentDetails = "details"
-            }
-        }
-    }
-
     // JSON tags
     struct JSON {
+        static let status = "status"
+        static let errorMsg = "errorMsg"
+        static let errorCode = "errorCode"
+        static let retryMode = "retryMode"
+
         static let queryCount = "count"
-//        static let queryResults = "results"
-        static let queryError = "error"
         static let queryTripList = "trips"
-//        static let queryTripDetails = "tripDetails"
         static let queryContent = "content"
         
         static let userFullName = "fullName"
@@ -71,7 +47,9 @@ struct Constant {
         static let tripId = "id"
         static let tripItineraryId = "itineraryId"
         static let tripStartDate = "startDate"
+        static let tripStartTimezone = "startTimezone"
         static let tripEndDate = "endDate"
+        static let tripEndTimezone = "endTimezone"
         static let tripDescription = "description"
         static let tripCode = "code"
         static let tripName = "name"
@@ -85,6 +63,7 @@ struct Constant {
         
         static let hotelCheckIn = "checkIn"
         static let hotelCheckOut = "checkOut"
+        static let hotelTimezone = "timezone"
         static let hotelName = "hotelName"
         static let hotelAddress = "address"
         static let hotelPostCode = "postCode"
@@ -153,32 +132,31 @@ struct Constant {
     
     // User interface messages
     struct msg {
-        static let retrievingTrips = "Retrieving your trips from SHiT"
-//        static let retrievingTripDetails = "Retrieving trip details from SHiT"
-        static let retrievingTripDetails = NSLocalizedString("Retrieving trip details from SHiT", comment: Constant.dummyLocalisationComment)
-        static let tripAlertMessage = "SHiT trip '%@' starts in %@ (%@)"
-        static let transportAlertMessage = "%@ departs in %@, at %@"
-        static let eventAlertMessage = "%@ starts in %@, at %@"
-        static let noDetailsAvailable = "No details available yet"
-        static let networkUnavailable = "Network unavailable, please refresh when network is available again"
-        static let connectError = "Error connecting to SHiT, please check your Internet connection"
-        static let connectErrorTitle = "Connection Error"
-        static let connectErrorText = "Could not connect to SHiT, please check your Internet connection"
-        static let logonFailureTitle = "Logon failed"
-        static let logonFailureText = "Please check your user name and password"
-        static let alertBoxTitle = "Alert"
-        static let noTrips = "You have no SHiT trips yet"
-        static let noMessages = "CHAT.BCKGND.NOMSG"
-        static let unknownElement = "SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server."
-        static let unableToDisplayElement = "SHiT, we're sorry but there was an unexpected error displaying this element."
-        static let chatMsgSeenByOne = "CHAT.SEEN_BY.ONE"
-        static let chatMsgSeenByTwoOrMore = "CHAT.SEEN_BY.TWO_OR_MORE"
-        static let chatMsgSeenByEveryone = "CHAT.SEEN_BY.ALL"
-        static let retrievingChatThread = "CHAT.BCKGND.LOADING"
-        static let chatNtfIgnoreAction = "CHAT.NTF.IGNORE"
-        static let chatNtfReplyAction = "CHAT.NTF.REPLY"
-        static let chatNtfReplySend = "CHAT.NTF.REPLY.SEND"
-        static let shortcutSendMessageSubtitle = NSLocalizedString("Send message to participants", comment: Constant.dummyLocalisationComment)
+        static let retrievingTrips = NSLocalizedString("Retrieving your trips from SHiT", comment: "")
+        static let retrievingTripDetails = NSLocalizedString("Retrieving trip details from SHiT", comment: "")
+        static let tripAlertMessage = NSLocalizedString("SHiT trip '%@' starts in %@ (%@)", comment: "")
+        static let transportAlertMessage = NSLocalizedString("%@ departs in %@, at %@", comment: "")
+        static let eventAlertMessage = NSLocalizedString("%@ starts in %@, at %@", comment: "")
+        static let noDetailsAvailable = NSLocalizedString("No details available yet", comment: "")
+        static let networkUnavailable = NSLocalizedString("Network unavailable, please refresh when network is available again", comment: "")
+        static let connectError = NSLocalizedString("Error connecting to SHiT, please check your Internet connection", comment: "")
+        static let connectErrorTitle = NSLocalizedString("Connection Error", comment: "")
+        static let connectErrorText = NSLocalizedString("Could not connect to SHiT, please check your Internet connection", comment: "")
+        static let logonFailureTitle = NSLocalizedString("Logon failed", comment: "")
+        static let logonFailureText = NSLocalizedString("Please check your user name and password", comment: "")
+        static let alertBoxTitle = NSLocalizedString("Alert", comment: "")
+        static let noTrips = NSLocalizedString("You have no SHiT trips yet", comment: "")
+        static let noMessages = NSLocalizedString("CHAT.BCKGND.NOMSG", comment: "")
+        static let unknownElement = NSLocalizedString("SHiT, we're sorry but the app doesn't recognise this kind of trip element, hence we cannot present the information nicely but here is a dump of what was received from the server.", comment: "")
+        static let unableToDisplayElement = NSLocalizedString("SHiT, we're sorry but there was an unexpected error displaying this element.", comment: "")
+        static let chatMsgSeenByOne = NSLocalizedString("CHAT.SEEN_BY.ONE", comment: "")
+        static let chatMsgSeenByTwoOrMore = NSLocalizedString("CHAT.SEEN_BY.TWO_OR_MORE", comment: "")
+        static let chatMsgSeenByEveryone = NSLocalizedString("CHAT.SEEN_BY.ALL", comment: "")
+        static let retrievingChatThread = NSLocalizedString("CHAT.BCKGND.LOADING", comment: "")
+        static let chatNtfIgnoreAction = NSLocalizedString("CHAT.NTF.IGNORE", comment: "")
+        static let chatNtfReplyAction = NSLocalizedString("CHAT.NTF.REPLY", comment: "")
+        static let chatNtfReplySend = NSLocalizedString("CHAT.NTF.REPLY.SEND", comment: "")
+        static let shortcutSendMessageSubtitle = NSLocalizedString("Send message to participants", comment: "")
     }
     
     // Notifications
@@ -200,16 +178,6 @@ struct Constant {
         static let replyToChatMessage = "REPLY.CHAT.MSG"
         static let ignoreChatMessage = "IGNORE.CHAT.MSG"
     }
-    
-//    struct ntfUserInfo {
-//        static let tripId = "tripId"
-//        static let tripElementId = "tripElementID"
-//        static let timeZone = "timeZone"
-//        static let leadTimeType = "leadTimeType"        
-//        static let changeType = "changeType"
-//        static let changeOp = "changeOperation"
-//        static let fromUserId = "fromUserId"
-//    }
     
     struct changeType {
         static let chatMessage = "CHATMESSAGE"
@@ -236,11 +204,7 @@ struct Constant {
 
     // Firebase Cloud Messaging (FCM)
     struct Firebase {
-        // No longer needed, format changed from "/topics/xxx" to "xxx"
-        private static let topicRoot = "/topics"
-        
         // These are ready to use as is
-        //static let topicGlobal = "\(topicRoot)/GLOBAL"
         static let topicGlobal = "GLOBAL"
         
         // These should be suffixed with IDs

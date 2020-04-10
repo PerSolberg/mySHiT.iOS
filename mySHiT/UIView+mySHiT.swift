@@ -61,7 +61,6 @@ extension UIView
         }
         
         if dictionary.count < 1 {
-            //print("Dictionary empty, returning")
             return
         }
 
@@ -91,7 +90,6 @@ extension UIView
         
         var firstValueField: UIView?
         for (key, value) in dictionary {
-            //print("Entry: Key = \(String(describing: key)), value = \(String(describing: value))")
             var changed = false
             if (value is NSNull) {
                 // Empty element - ignore
@@ -192,7 +190,7 @@ extension UIView
             } else {
                 firstValueField = valueWrapper
             }
-            // Constrain to "external" view
+            // Constrain to external view
             if constrainValueFieldWidthToView != nil {
                 let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .width, relatedBy: .equal, toItem: constrainValueFieldWidthToView, attribute: .width, multiplier: 1.0, constant: 0)
                 rootView.addConstraint(valueWidthConstraint)
@@ -289,7 +287,7 @@ extension UIView
             } else {
                 firstValueField = valueWrapper
             }
-            // Constrain to "external" view
+            // Constrain to external view
             if constrainValueFieldWidthToView != nil {
                 let valueWidthConstraint = NSLayoutConstraint(item: valueWrapper, attribute: .width, relatedBy: .equal, toItem: constrainValueFieldWidthToView, attribute: .width, multiplier: 1.0, constant: 0)
                 rootView.addConstraint(valueWidthConstraint)
@@ -305,7 +303,6 @@ extension UIView
     
     func colourSubviews() {
         self.processSubviews(true, processChildrenFirst: false, action: { (view, level) -> Void in
-            print("\(level): \(view.debugDescription)")
             let colors = [UIColor.yellow, UIColor.lightGray, UIColor.blue, UIColor.brown, UIColor.gray, UIColor.green, UIColor.magenta]
             if level < colors.count {
                 view.backgroundColor = colors[level]

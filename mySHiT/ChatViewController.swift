@@ -40,14 +40,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         }
     }
 
-    //
-    // MARK: Archiving paths
-    //
-    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let ArchiveTripsURL = DocumentsDirectory.appendingPathComponent("trips")
-    static let ArchiveSectionsURL = DocumentsDirectory.appendingPathComponent("sections")
-    
-    
+
     //
     // MARK: Navigation
     //
@@ -60,7 +53,6 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        // print("Preparing for segue '\(segue.identifier)'")
         if let segueId = segue.identifier {
             switch (segueId) {
             case Constant.segue.embedChatTable:
@@ -84,14 +76,8 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     //
     // MARK: Constructors
     //
-    func initCommon() {
-        // Initialisation logic common to all constructurs can go here
-    }
-    
-    
     required init?( coder: NSCoder) {
         super.init(coder: coder)
-        initCommon()
     }
     
     
@@ -102,17 +88,16 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         super.viewDidLoad()
         
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
-            _ = RSUtilities.networkConnectionType("www.shitt.no")
+//            _ = RSUtilities.networkConnectionType("www.shitt.no")
             
             //If host is not reachable, display a UIAlertController informing the user
-            let alert = UIAlertController(
-                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
-                preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(Constant.alert.actionOK)
-            self.present(alert, animated: true, completion: nil)
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError, completion: nil)
         }
-         
+
+        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+
         messageTextView.delegate = self
         if let trip = trip {
              messageTextView.text = trip.trip.chatThread.messageBeingEntered
@@ -127,32 +112,16 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         super.viewWillAppear(animated)
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
-    
-    override func viewDidAppear(_ animated: Bool) {
-        if !User.sharedUser.hasCredentials() {
-            showLogonScreen(animated: false)
-        }
-    }
-
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
         if let trip = trip {
             trip.trip.chatThread.messageBeingEntered = messageTextView.text
         }
-    }
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     
@@ -183,26 +152,11 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     //
     //MARK: Functions
     //
-    func showLogonScreen(animated: Bool) {
-        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
-        let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
-        view.window!.makeKeyAndVisible()
-        view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
-    }
-    
-    
     @objc func handleNetworkError() {
         if let chatTableController = chatTableController {
             chatTableController.handleNetworkError()
         } else {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                    message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(Constant.alert.actionOK)
-                self.present(alert, animated: true, completion: nil)
-            })
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError, completion: nil)
         }
     }
     
@@ -252,9 +206,3 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     }
     
 }
-
-
-// Helper function inserted by Swift 4.2 migrator.
-//fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-//	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
-//}

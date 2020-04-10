@@ -39,9 +39,6 @@ class ChatThread:NSObject, NSCoding {
     
     static let retryDelays = [ 1: 5.0, 10: 30.0, 20: 300.0, 30: 1800.0 ]
 
-    static let webServiceChatPath = "thread"
-    var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransGetChat: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
 
     struct PropertyKey {
         static let messagesKey = "messages"
@@ -101,22 +98,26 @@ class ChatThread:NSObject, NSCoding {
     }
 
 
-    var lastDisplayedItem:Int? {
+    // Unsynced method should only be used from tasks on dispatch queue dqAccess
+    fileprivate var lastDisplayedItemUnsynced:Int? {
         var item:Int?
         
-        ChatThread.dqAccess.sync {
-            if let id = lastDisplayedId {
-                item = self.messages.firstIndex(where: { (m) -> Bool in
-                    return (m.localId ?? ChatMessage.missingLocalId) == id
-                })
-            } else if let id = lastSeenByUserLocal ?? lastSeenByUserServer {
-                item = self.messages.firstIndex(where: { (m) -> Bool in
-                    return (m.id ?? 0) == id
-                })
-            }
+        if let id = lastDisplayedId {
+            item = self.messages.firstIndex(where: { (m) -> Bool in
+                return (m.localId ?? ChatMessage.missingLocalId) == id
+            })
+        } else if let id = lastSeenByUserLocal ?? lastSeenByUserServer {
+            item = self.messages.firstIndex(where: { (m) -> Bool in
+                return (m.id ?? 0) == id
+            })
         }
         
         return item
+    }
+    var lastDisplayedItem:Int? {
+        ChatThread.dqAccess.sync {
+            return lastDisplayedItemUnsynced
+        }
     }
     
     
@@ -151,7 +152,7 @@ class ChatThread:NSObject, NSCoding {
                     fatalError("Trying to retrieve non-existing message [\(index)] of \(self.messages.count)")
                 }
                 message = self.messages[index]
-                lastDisplayedPosition = index > (lastDisplayedItem ?? -1) ? .bottom : .top
+                lastDisplayedPosition = index > (lastDisplayedItemUnsynced ?? -1) ? .bottom : .top
                 lastDisplayedId = message.localId
 
                 if let msgId = message.id, msgId > (lastSeenByUserLocal ?? 0) {
@@ -180,7 +181,7 @@ class ChatThread:NSObject, NSCoding {
             return message
         }
         set(newValue) {
-            ChatThread.dqAccess.async(flags:.barrier) {
+            ChatThread.dqAccess.sync(flags:.barrier) {
                 guard index < self.messages.count else {
                     fatalError("Trying to update non-existing message [\(index)] of \(self.messages.count)")
                 }
@@ -261,32 +262,35 @@ class ChatThread:NSObject, NSCoding {
             fatalError("Adding message with no ID")
         }
 
-        // First check if message already exists and has been saved in non-blocking thread
-        var matchedIdx:Int?
-        ChatThread.dqAccess.sync {
-            matchedIdx = self.messages.firstIndex(where: { (m) -> Bool in
-                m.localId == msg.localId && m.isStored
-            })
-        }
-        
-        if matchedIdx == nil {
-            // Message not found, updating array in thread safe manner
-            ChatThread.dqAccess.async(flags:.barrier) {
+        ChatThread.dqAccess.async(flags:.barrier) {
+            // Check if message already exists
+            // (may have been added by parallel thread)
+//            Doesn't work for some reason
+//            let matchedIdx2 = self.messages.firstIndex(of: msg)
+            let matchedIdx = self.messages.firstIndex {
+                $0.localId == msg.localId
+            }
+
+            if let matchedIdx = matchedIdx, self.messages[matchedIdx].isStored {
+                // Already stored, so should be in correct order - no need to update
+            } else {
                 let insertBeforeIdx = self.messages.firstIndex(where: { (m) -> Bool in
                     (!m.isStored) || (m.id! >= msgId)
                 })
-                let removeIdx = self.messages.firstIndex(of: msg)
 
-                if let insertBeforeIdx = insertBeforeIdx, let removeIdx = removeIdx {
+                if let insertBeforeIdx = insertBeforeIdx, let removeIdx = matchedIdx {
                     if insertBeforeIdx == removeIdx {
                         self.messages[insertBeforeIdx] = msg
+                    } else if insertBeforeIdx > removeIdx {
+                        self.messages.insert(msg, at: insertBeforeIdx)
+                        self.messages.remove(at: removeIdx)
                     } else {
                         self.messages.remove(at: removeIdx)
                         self.messages.insert(msg, at: insertBeforeIdx)
                     }
                 } else if let insertBeforeIdx = insertBeforeIdx {
                     self.messages.insert(msg, at: insertBeforeIdx)
-                } else if let _ = removeIdx {
+                } else if let _ = matchedIdx {
                     fatalError("Inconsistent array update!")
                 } else {
                     self.messages.append(msg)
@@ -296,7 +300,7 @@ class ChatThread:NSObject, NSCoding {
     }
     
     
-    // Resets thread; clears all messages save on server but keeps
+    // Resets thread; clears all messages saved on server but keeps
     // all messages only stored locally
     func reset() {
         ChatThread.dqAccess.async(flags:.barrier) {
@@ -313,19 +317,25 @@ class ChatThread:NSObject, NSCoding {
             return !m.isStored
         })
         if !unsavedMessages.isEmpty {
-            unsavedMessages[0].save(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-                if let _ = error {
-                    self.retryCount += 1
-                    os_log("Error when saving message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
-                    ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
-                } else if let _ = responseDictionary?[Constant.JSON.queryError] {
-                    self.retryCount += 1
-                    os_log("Server error when saving message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
-                    ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
-                } else {
+            unsavedMessages[0].save(tripId: tripId, responseHandler: { (handledStatus: SHiTHandledStatus?, response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+                let status = handledStatus ?? SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+                if status.status == .ok {
                     os_log("Message saved successfully, saving next message", log: OSLog.webService, type: .debug)
                     self.retryCount = 0
                     self.save()
+                } else {
+                    switch status.retry ?? .normal {
+                    case .normal:
+                        self.retryCount += 1
+                        os_log("Error when saving message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
+                        ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performSave() })
+
+                    case .stop:
+                        os_log("Error when saving message, stopping", log: OSLog.webService, type: .error)
+                        
+                    case .skip:
+                        os_log("Error when saving message, skipping", log: OSLog.webService, type: .info)
+                    }
                 }
             })
         }
@@ -358,14 +368,8 @@ class ChatThread:NSObject, NSCoding {
             return
         }
         message.read(tripId: tripId, responseHandler: { (response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let _ = error {
-                self.retryCount += 1
-                os_log("Error when reading message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
-                ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performRead(message: message) })
-            } else if let _ = responseDictionary?[Constant.JSON.queryError] {
-                self.retryCount += 1
-                ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performRead(message: message) })
-            } else {
+            let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+            if status.status == .ok {
                 self.retryCount = 0
                 if let responseDictionary = responseDictionary, let lastSeenByUser = responseDictionary[Constant.JSON.messageLastSeenByMe] as? Int, let lastSeenByOthers = responseDictionary[Constant.JSON.messageLastSeenByOthers] as? NSDictionary {
                     if lastSeenByUser > (self.lastSeenByUserServer ?? 0) {
@@ -373,6 +377,19 @@ class ChatThread:NSObject, NSCoding {
                         self.lastSeenByOthers = lastSeenByOthers
                         NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                     }
+                }
+            } else {
+                switch status.retry ?? .normal {
+                case .normal:
+                    self.retryCount += 1
+                    os_log("Error when reading message, retrying in %d seconds", log: OSLog.webService, type: .error, self.retryDelay)
+                    ChatThread.dqServerComm.asyncAfter(deadline: .now() + self.retryDelay, execute: { () -> Void in self.performRead(message: message) })
+
+                case .stop:
+                    os_log("Error when reading message, stopping", log: OSLog.webService, type: .error)
+                    
+                case .skip:
+                    os_log("Error when reading message, skipping", log: OSLog.webService, type: .info)
                 }
             }
         })
@@ -385,32 +402,16 @@ class ChatThread:NSObject, NSCoding {
     
 
     func refresh(mode:RefreshMode) {
-        let userCred = User.sharedUser.getCredentials()
-        
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
-        
         //Set the parameters for the RSTransaction object
-        rsTransGetChat.path = type(of: self).webServiceChatPath + "/" + String(tripId)
-        rsTransGetChat.parameters = [ "userName":userCred.name!
-            , "password":userCred.urlsafePassword!
-            ]
-
+        var extraParams:[URLQueryItem] = []
         if let lastMessageId = messageVersion, mode == .incremental {
-            rsTransGetChat.parameters["lastMessageId"] = String(lastMessageId)
+            extraParams += [ URLQueryItem(name: "lastMessageId", value: String(lastMessageId)) ]
         }
-        //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransGetChat, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                //If there was an error, log it
-                os_log("Error : %s", log: OSLog.webService, type: .error, error.localizedDescription)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                os_log("Error : %s", log: OSLog.webService, type: .error, errMsg)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else {
+        let chatThreadResource = SHiTResource.thread(key: String(tripId), parameters: extraParams)
+
+        RESTRequest.get(chatThreadResource) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+            if status.status == .ok {
                 if let responseDictionary = responseDictionary, let messageArray = responseDictionary[Constant.JSON.messageList] as? NSArray, let lastSeenDict =  responseDictionary[Constant.JSON.messageLastSeenByOthers] as? NSDictionary, let messageVersion = responseDictionary[Constant.JSON.messageVersion] as? Int {
                     self.lastSeenByUserServer = (responseDictionary[Constant.JSON.messageLastSeenByMe] as? Int)
                     self.lastSeenByOthers = lastSeenDict
@@ -448,7 +449,7 @@ class ChatThread:NSObject, NSCoding {
                     os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
             }
-        })
+        }
     }
 
 

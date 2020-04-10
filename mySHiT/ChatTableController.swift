@@ -11,24 +11,20 @@ import UIKit
 import os
 
 class ChatTableController: UITableViewController {
-    // MARK: Constants
-    
-    
+    //
     // MARK: Properties
+    //
     @IBOutlet var chatListTable: UITableView!
     
     var trip:AnnotatedTrip?
     
-    // MARK: Archiving paths
-    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let ArchiveTripsURL = DocumentsDirectory.appendingPathComponent("trips")
-    static let ArchiveSectionsURL = DocumentsDirectory.appendingPathComponent("sections")
     
-    
+    //
     // MARK: Navigation
+    //
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-        chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
+        chatListTable.setBackgroundMessage(Constant.msg.retrievingTrips)
         TripList.sharedList.getFromServer()
         return
     }
@@ -41,25 +37,22 @@ class ChatTableController: UITableViewController {
     }
     
     
+    //
     // MARK: Constructors
-    func initCommon() {
-
-    }
-    
-    
-    required init?( coder: NSCoder) {
+    //
+    required init?(coder: NSCoder) {
         super.init(coder: coder)
-        initCommon()
     }
     
     
     override init(style: UITableView.Style) {
         super.init(style: style)
-        initCommon()
     }
     
     
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -75,13 +68,6 @@ class ChatTableController: UITableViewController {
         refreshControl!.addTarget(self, action: #selector(reloadChatThreadFromServer), for: .valueChanged)
     }
     
-    func showLogonScreen(animated: Bool) {
-        // Get login screen from storyboard and present it
-        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
-        let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
-        view.window!.makeKeyAndVisible()
-        view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -90,7 +76,6 @@ class ChatTableController: UITableViewController {
 
         if let trip = trip {
             if let savedPosition = trip.trip.chatThread.exactPosition {
-                //print("ChatTable: Restoring exact position: \(String(describing: savedPosition))")
                 self.chatListTable.contentOffset = savedPosition
             } else {
                 trip.trip.chatThread.savePosition()
@@ -101,11 +86,6 @@ class ChatTableController: UITableViewController {
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        if !User.sharedUser.hasCredentials() {
-            showLogonScreen(animated: false)
-        }
-    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -117,19 +97,13 @@ class ChatTableController: UITableViewController {
 
     
     @objc func refreshChat() {
-        DispatchQueue.main.async(execute: {
-            if let refreshControl = self.refreshControl {
-                if refreshControl.isRefreshing {
-                    refreshControl.endRefreshing()
-                }
-            }
-        })
+        endRefreshing()
         guard let trip = trip else {
             os_log("ERROR: trip not correctly set up", log: OSLog.general, type: .error)
             return
         }
         if trip.trip.chatThread.count == 0 {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noMessages, comment: Constant.dummyLocalisationComment))
+            chatListTable.setBackgroundMessage(Constant.msg.noMessages)
         } else {
             chatListTable.setBackgroundMessage(nil)
         }
@@ -146,6 +120,7 @@ class ChatTableController: UITableViewController {
         saveTrips()
     }
     
+    
     func restorePosition() {
         if let trip = trip, let lastSeenRow = trip.trip.chatThread.lastDisplayedItem {
             let ip = IndexPath(row: lastSeenRow, section: 0)
@@ -153,6 +128,7 @@ class ChatTableController: UITableViewController {
         }
     }
 
+    
     func handleNetworkError() {
         // Should only be called if this view controller is displayed (notification observers
         // added in viewWillAppear and removed in viewWillDisappear
@@ -160,25 +136,10 @@ class ChatTableController: UITableViewController {
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
         // closure didn't always dismiss the refrech control)
-        DispatchQueue.main.async(execute: {
-            let alert = UIAlertController(
-                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
-                preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(Constant.alert.actionOK)
-            self.present(alert, animated: true, completion: {
-                DispatchQueue.main.async {
-                    if let refreshControl = self.refreshControl {
-                        if refreshControl.isRefreshing {
-                            refreshControl.endRefreshing()
-                        }
-                    }
-                }
-            })
-        })
+        showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError) { self.endRefreshing() }
         
         if (TripList.sharedList.count == 0) {
-            chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: Constant.dummyLocalisationComment))
+            chatListTable.setBackgroundMessage(Constant.msg.networkUnavailable)
         } else {
             chatListTable.setBackgroundMessage(nil)
         }
@@ -186,7 +147,7 @@ class ChatTableController: UITableViewController {
     
     
     @objc func reloadChatThreadFromServer() {
-        chatListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingChatThread, comment: Constant.dummyLocalisationComment))
+        chatListTable.setBackgroundMessage(Constant.msg.retrievingChatThread)
         guard let trip = trip else {
             fatalError("Trip not configured correctly for chat thread")
         }
@@ -194,7 +155,7 @@ class ChatTableController: UITableViewController {
         trip.trip.chatThread.refresh(mode:.full)
     }
     
-    
+
     func logonComplete(_ notification:Notification) {
         reloadChatThreadFromServer()
     }
@@ -250,14 +211,15 @@ class ChatTableController: UITableViewController {
             kCellIdentifier = ownMessage ? kCellIdentifierOwnMessageWithUserInfo : kCellIdentifierWithUserInfo
 
             if msg.lastSeenBy.contains(ChatThread.LastSeenByEveryone) {
-                seenByInfo = String.localizedStringWithFormat(NSLocalizedString(Constant.msg.chatMsgSeenByEveryone, comment: "") ) as String
+                seenByInfo = Constant.msg.chatMsgSeenByEveryone
+//                seenByInfo = String.localizedStringWithFormat(Constant.msg.chatMsgSeenByEveryone) as String
             } else if msg.lastSeenBy.count > 1 {
                 let finalName = msg.lastSeenBy.last!
                 let nameList = msg.lastSeenBy.prefix(msg.lastSeenBy.count - 1).joined(separator: ", ")
                 
-                seenByInfo = String.localizedStringWithFormat(NSLocalizedString(Constant.msg.chatMsgSeenByTwoOrMore, comment:""), nameList, finalName) as String
+                seenByInfo = String.localizedStringWithFormat(Constant.msg.chatMsgSeenByTwoOrMore, nameList, finalName) as String
             } else {
-                seenByInfo = String.localizedStringWithFormat(NSLocalizedString(Constant.msg.chatMsgSeenByOne, comment:""), msg.lastSeenBy[0]) as String
+                seenByInfo = String.localizedStringWithFormat(Constant.msg.chatMsgSeenByOne, msg.lastSeenBy[0]) as String
             }
         }
         
@@ -295,7 +257,7 @@ class ChatTableController: UITableViewController {
     // MARK: NSCoding
     //
     func saveTrips() {
-        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+        TripList.sharedList.saveToArchive()
     }
     
     
@@ -308,9 +270,3 @@ class ChatTableController: UITableViewController {
     // MARK: Functions
     //
 }
-
-
-// Helper function inserted by Swift 4.2 migrator.
-//fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-//	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
-//}

@@ -26,9 +26,6 @@ class TripList:NSObject, Sequence, NSCoding {
     //
     fileprivate var lastUpdateTS:ServerTimestamp?
     fileprivate var trips: [AnnotatedTrip]! = [AnnotatedTrip]()
-    fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    fileprivate var rsTransGetTripList: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: "trip", parameters: [:] )
-
 
     fileprivate struct PropertyKey {
         static let tripsKey = "trips"
@@ -89,7 +86,6 @@ class TripList:NSObject, Sequence, NSCoding {
                 return nil
             }
             nextIndex -= 1
-            //print(nextIndex)
             return self.trips[nextIndex + 1]
         }
     }
@@ -114,7 +110,7 @@ class TripList:NSObject, Sequence, NSCoding {
     //
     // MARK: CollectionType
     //
-    var count: Index /*.Distance */ {
+    var count: Index {
         return trips.count
     }
 
@@ -128,37 +124,33 @@ class TripList:NSObject, Sequence, NSCoding {
 
     
     func getFromServer(parentCompletionHandler: (() -> Void)?) {
-        let userCred = User.sharedUser.getCredentials()
-        
-        if ( userCred.name == nil || userCred.password == nil || userCred.urlsafePassword == nil ) {
+        if !User.sharedUser.hasCredentials() {
             os_log("User credentials missing or incomplete, cannot update from server", log: OSLog.general, type: .error)
             if let parentCompletionHandler = parentCompletionHandler {
                 parentCompletionHandler()
             }
             return
         }
-        
-        rsTransGetTripList.parameters = [ Constant.REST.mySHiT.Param.userName : userCred.name!,
-            Constant.REST.mySHiT.Param.password : userCred.urlsafePassword!]
-        
-        //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransGetTripList, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                //If there was an error, log it
-                os_log("Error : %{public}s", log: OSLog.webService, type: .error,  error.localizedDescription)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                os_log("Error : %{public}s", log: OSLog.webService, type: .error,  errMsg)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else {
+
+        let tripListResource = SHiTResource.tripList(parameters: [])
+        RESTRequest.get(tripListResource) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+//            if let error = error {
+//                //If there was an error, log it
+//                os_log("Communication error : %{public}s", log: OSLog.webService, type: .error,  error.localizedDescription)
+//                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
+//            } else if let error = responseDictionary?[Constant.JSON.queryError] {
+//                let errMsg = error as! String
+//                os_log("Server error : %{public}s", log: OSLog.webService, type: .error,  errMsg)
+//                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
+            let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+//            if !SHiTResource.handleStandardError(response: response, responseDictionary: responseDictionary, error: error).handled {
+            if status.status == .ok {
                 self.update(fromDictionary: responseDictionary)
-                NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
             }
             if let parentCompletionHandler = parentCompletionHandler {
                 parentCompletionHandler()
             }
-        })
+        }
         return
     }
     
@@ -167,6 +159,7 @@ class TripList:NSObject, Sequence, NSCoding {
     func update(fromDictionary responseData: NSDictionary!) {
         TripList.dqAccess.async(flags: .barrier) {
             self.performUpdate(fromDictionary: responseData)
+            NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
         }
     }
 
@@ -185,7 +178,8 @@ class TripList:NSObject, Sequence, NSCoding {
             return
         }
         
-        if contentType == Constant.REST.mySHiT.ResultValue.contentList {
+        let initialLoad = ( lastUpdateTS == nil )
+        if contentType == SHiTResource.Result.contentList {
             if let lastUpdateTS = lastUpdateTS, serverTS <= lastUpdateTS {
                 return;
             }
@@ -193,21 +187,26 @@ class TripList:NSObject, Sequence, NSCoding {
         }
 
         // Add or update trips received from server
+        var changed = false
         var tripIDs = Set<Int>()
         var added = false
         for tripObj in newTrips {
             if let tripDict = tripObj as? NSDictionary, let tripId = tripDict[Constant.JSON.tripId] as? Int {
                 tripIDs.insert(tripId)
                 if let aTrip = trip(byId: tripId) {
-                    let changed = aTrip.trip.update(fromDictionary: tripDict, updateTS: serverTS)
-                    if changed {
+                    let detailsAlreadyLoaded = aTrip.trip.detailsLoaded
+                    let tripChanged = aTrip.trip.update(fromDictionary: tripDict, updateTS: serverTS)
+                    if tripChanged {
+                        changed = true
                         aTrip.modified = .Changed
 //                        aTrip.trip.refreshNotifications()
+                    } else if detailsAlreadyLoaded != aTrip.trip.detailsLoaded {
+                        changed = true
                     }
                 } else {
                     if let newTrip = Trip(fromDictionary: tripDict, updateTS: serverTS) {
                         newTrip.registerForPushNotifications()
-                        trips.append( AnnotatedTrip(section: .Historic, trip: newTrip, modified: .New)! )
+                        trips.append( AnnotatedTrip(section: .Historic, trip: newTrip, modified: initialLoad ? .Unchanged : .New)! )
                         added = true
                     } else {
                         os_log("Unable to create trip from dictionary", log: OSLog.general, type: .error)
@@ -218,21 +217,27 @@ class TripList:NSObject, Sequence, NSCoding {
             }
         }
         
-        if contentType == Constant.REST.mySHiT.ResultValue.contentList {
+        if contentType == SHiTResource.Result.contentList {
             // Remove trips no longer in list - but only if we received complete list
             for (ix, aTrip) in trips.enumerated().reversed() {
                 if !tripIDs.contains(aTrip.trip.id) {
                     aTrip.trip.deregisterPushNotifications()
                     trips.remove(at: ix)
+                    changed = true
                 }
             }
         }
         
         // If new trips were added, sort the list
         if added {
-            trips.sort(by:{ $0.trip.isBefore($1.trip) ?? false  })
+            trips.sort(by:{ !($0.trip.isBefore($1.trip) ?? false) })
+            changed = true
         }
 
+        if changed {
+            saveToArchive()
+        }
+        
         // Set application badge
         DispatchQueue.main.async(execute: {
             UIApplication.shared.applicationIconBadgeNumber = self.changes()
@@ -241,19 +246,24 @@ class TripList:NSObject, Sequence, NSCoding {
     
     
     // Load from keyed archive
-    func loadFromArchive(_ path:String) {
+    func loadFromArchive() {
+        let path = Constant.archive.tripsURL.path
         let newTripList = NSKeyedUnarchiver.unarchiveObject(withFile: path) as? [AnnotatedTrip]
         trips = newTripList ?? [AnnotatedTrip]()
         refreshNotifications()
     }
 
 
-    func saveToArchive(_ path:String) {
+    func saveToArchive() {
+        let path = Constant.archive.tripsURL.path
+        
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(trips!, toFile: path)
         if !isSuccessfulSave {
             os_log("Failed to save trips", log: OSLog.general, type: .error)
         } else {
             os_log("Trips saved to iOS keyed archive", log: OSLog.general, type: .info)
+//            print("Trips saved:")
+//            printStack(filterMySHiT: true)
         }
     }
     
@@ -293,6 +303,7 @@ class TripList:NSObject, Sequence, NSCoding {
 
         // Empty list and cancel all notifications
         trips = [AnnotatedTrip]()
+        lastUpdateTS = nil
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
     
@@ -300,7 +311,13 @@ class TripList:NSObject, Sequence, NSCoding {
     func changes() -> Int {
         var changes = 0
         for t in trips {
-            changes += t.trip.changes()
+            let tripChanges = t.trip.changes()
+            
+            if tripChanges > 0 {
+                changes += tripChanges
+            } else if t.modified != .Unchanged {
+                changes += 1
+            }
         }
         return changes
     }

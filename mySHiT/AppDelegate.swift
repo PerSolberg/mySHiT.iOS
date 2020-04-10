@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var appSettings = Dictionary<AnyHashable, Any>()
     var avPlayer:AVAudioPlayer?
 
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {        
         // First save current app settings, so we can avoid refreshing when Firebase settings change
         let defaults = UserDefaults.standard
@@ -40,10 +41,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Set up notification categories
         //
         let chatIgnoreAction = UNNotificationAction(identifier: Constant.ntfAction.ignoreChatMessage,
-                                              title: String(format: NSLocalizedString(Constant.msg.chatNtfIgnoreAction, comment:Constant.dummyLocalisationComment), locale: NSLocale.current),
+                                              title: Constant.msg.chatNtfIgnoreAction,
                                               options: .foreground)
 
-        let chatReplyAction = UNTextInputNotificationAction(identifier: Constant.ntfAction.replyToChatMessage, title: String(format: NSLocalizedString(Constant.msg.chatNtfReplyAction, comment:Constant.dummyLocalisationComment), locale: NSLocale.current), options: .foreground, textInputButtonTitle: String(format: NSLocalizedString(Constant.msg.chatNtfReplySend, comment:Constant.dummyLocalisationComment), locale: NSLocale.current), textInputPlaceholder: Constant.emptyString)
+        let chatReplyAction = UNTextInputNotificationAction(identifier: Constant.ntfAction.replyToChatMessage, title:  Constant.msg.chatNtfReplyAction, options: .foreground, textInputButtonTitle: Constant.msg.chatNtfReplySend, textInputPlaceholder: Constant.emptyString)
         
         let newChatMsgCategory = UNNotificationCategory(identifier: Constant.ntfCategory.newChatMessage,
                                                      actions: [chatReplyAction, chatIgnoreAction],
@@ -72,11 +73,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
 
+    
     @objc func refreshShortcuts() {
         DispatchQueue.main.async {
             self.configureShortCuts(UIApplication.shared)
         }
     }
+    
     
     func configureShortCuts(_ application: UIApplication) {
         let chatIcon = UIApplicationShortcutIcon(templateImageName: Constant.icon.chat)
@@ -136,6 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         application.shortcutItems = shortcuts
     }
     
+    
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         
         switch (shortcutItem.type) {
@@ -146,22 +150,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             DeepLinkManager.current().checkAndHandle()
 
         default:
-            os_log("Don't know how to handle shortcut type '%s'", log: OSLog.general, type: .error, shortcutItem.type)
+            os_log("Don't know how to handle shortcut type '%{public}s'", log: OSLog.general, type: .error, shortcutItem.type)
         }
 
         completionHandler(true)
     }
 
-    // Handle remote notification registration.
-    func application(_ application: UIApplication,
-                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data){
-        // No need to do anything? (was needed in earlier versions)
-    }
-
+    
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
         // The token is not currently available.
-        os_log("Remote notification support is unavailable due to error: %s", log: OSLog.notification, type: .error, error.localizedDescription)
+        os_log("Remote notification support is unavailable due to error: %{public}s", log: OSLog.notification, type: .error, error.localizedDescription)
     }
 
     
@@ -173,6 +172,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             completionHandler(UIBackgroundFetchResult.newData);
         }
     }
+    
     
     func handleRemoteNotification(userInfo: UserInfo, parentCompletionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         guard let changeType = userInfo[.changeType] as? String, let changeOperation = userInfo[.changeOperation] as? String else {
@@ -334,6 +334,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         parentCompletionHandler()
     }
 
+    
     private func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationRequest) {
         os_log("Registered with Firebase", log: OSLog.notification, type: .debug)
         Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
@@ -348,7 +349,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // in case it is terminated later.
         // If the application supports background execution, this method is called instead
         // of applicationWillTerminate: when the user quits.
-//        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+//        TripList.sharedList.saveToArchive()
     }
 
     
@@ -356,12 +357,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Restart any tasks that were paused (or not yet started) while the application
         // was inactive. If the application was previously in the background, optionally
         // refresh the user interface.
-        if (RSUtilities.isNetworkAvailable("www.shitt.no")) {
-            // Network available, refreshing information from server
-            TripList.sharedList.getFromServer()
+        os_log("Application did become active", log: OSLog.general, type: .debug)
+        if RSUtilities.isNetworkAvailable( SHiTResource.host /*Constant.REST.mySHiT.baseUrl*/) {
+            os_log("Retrieving trip list from server", log: OSLog.general, type: .debug)
+            if User.sharedUser.hasCredentials() {
+                TripList.sharedList.getFromServer()
+            }
         } else {
-            NotificationCenter.default.post(name: Constant.notification.refreshTripList, object: self)
-            NotificationCenter.default.post(name: Constant.notification.refreshTripElements, object: self)
+            os_log("Network unavailable", log: OSLog.general, type: .debug)
         }
 
         DeepLinkManager.current().checkAndHandle()
@@ -371,7 +374,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate.
         // See also applicationDidEnterBackground:.
-        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+        TripList.sharedList.saveToArchive()
     }
 
     

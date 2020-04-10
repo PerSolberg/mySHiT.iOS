@@ -11,8 +11,9 @@
 import UIKit
 
 class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLinkableViewController {
-    
+    //
     // MARK: Properties
+    //
     @IBOutlet weak var rootScrollView: UIScrollView!
     @IBOutlet weak var contentView: UIStackView!
     @IBOutlet weak var venueNameTextField: UITextField!
@@ -31,13 +32,20 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     // DeepLinkableViewController
     var wasDeepLinked = false
     
-    // Section data
     
+    //
     // MARK: Navigation
+    //
     
+    
+    //
     // MARK: Constructors
+    //
     
+    
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
         rootScrollView.minimumZoomScale = 1.0
@@ -51,15 +59,14 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         venuePhoneText.alignBaseline(to: venuePhoneLabel)
         venuePhoneText.textContainer.lineFragmentPadding = 0.0
         venuePhoneText.isScrollEnabled = false
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
 
         populateScreen(detectChanges: false)
     }
@@ -74,10 +81,14 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     }
     
     
+    //
     // MARK: Actions
+    //
     
     
+    //
     // MARK: Functions
+    //
     func populateScreen(detectChanges: Bool) {
         if let eventElement = tripElement?.tripElement as? Event {
             var fullAddress:String = eventElement.venueAddress ?? ""
@@ -104,7 +115,6 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
                 var separator = ""
                 for ref in refList {
                     if let _ = ref["type"], let refNo   = ref["refNo"] {
-                        //print("Reference: Type = \(refType), Ref # = \(refNo)")
                         references.append(separator + refNo)
                         separator = ", "
                     }
@@ -114,14 +124,7 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
             venuePhoneText.setText(eventElement.venuePhone, detectChanges: detectChanges)
             accessInfoTextView.setText(eventElement.accessInfo, detectChanges: detectChanges)
         } else {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(Constant.alert.actionOK)
-                self.present(alert, animated: true, completion: { })
-            })
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
 
             self.navigationController?.popViewController(animated: true)
         }
@@ -144,6 +147,7 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         })
     }
 
+    
     @objc override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
@@ -154,7 +158,10 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         }
     }
 
+    
+    //
     // MARK: ScrollViewDelegate
+    //
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentView
     }

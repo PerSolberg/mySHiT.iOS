@@ -10,18 +10,22 @@ import UIKit
 import UserNotifications
 
 class AlertListViewController: UITableViewController {
-    // MARK: Constants
-    
-    
+    //
     // MARK: Properties
+    //
     @IBOutlet weak var alertListTable: UITableView!
     
     var notifications:[UNNotificationRequest]? = nil
     
+    
+    //
     // MARK: Navigation
+    //
     
     
+    //
     // MARK: Constructors
+    //
     required init?( coder: NSCoder) {
         super.init(coder: coder)
     }
@@ -32,7 +36,9 @@ class AlertListViewController: UITableViewController {
     }
     
     
-    // MARK: Callbacks    
+    //
+    // MARK: Callbacks
+    //
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -41,13 +47,14 @@ class AlertListViewController: UITableViewController {
     }
     
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
     
     
+    //
     // MARK: UITableViewDataSource methods
+    //
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let notifications = notifications /*UIApplication.shared.scheduledLocalNotifications*/ {
             return notifications.count
@@ -101,7 +108,9 @@ class AlertListViewController: UITableViewController {
     }
     
     
+    //
     // MARK: Actions
+    //
     func getNotifications() -> Void {
         UNUserNotificationCenter.current().getPendingNotificationRequests { (_ ntfList: [UNNotificationRequest]) in
             self.notifications = ntfList
@@ -112,7 +121,9 @@ class AlertListViewController: UITableViewController {
         }
     }
     
-    // MARK: Functions
     
+    //
+    // MARK: Functions
+    //
 }
 

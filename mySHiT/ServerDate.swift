@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 class ServerDate {
     typealias DayHourMinute = (days:Int, hours:Int, minutes:Int)
@@ -17,8 +18,10 @@ class ServerDate {
         "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$": "yyyy-MM-dd'T'HH:mm:ss"
     ]
     static var dateFormatter = DateFormatter()
-    
-    
+    static let defaultLocale = Locale(identifier: "en_US_POSIX")
+
+    static let dqAccess = DispatchQueue(label: "no.andmore.mySHiT.serverdate.access", target: .global())
+
     class func findFormatString (_ serverDateString: String) -> String? {
         for (pattern, format) in dateFormats {
             if let _ = serverDateString.range(of: pattern, options: .regularExpression) {
@@ -41,13 +44,19 @@ class ServerDate {
     class func convertServerDate (_ serverDateString: String?, timeZone: TimeZone?) -> Date? {
         if let serverDateString = serverDateString {
             if let formatString = findFormatString(serverDateString) {
-                if let timeZone = timeZone {
-                    dateFormatter.timeZone = timeZone
+                var result:Date?
+                dqAccess.sync {
+                    if let timeZone = timeZone {
+                        dateFormatter.timeZone = timeZone
+                    } else {
+                        dateFormatter.timeZone = Constant.timezoneUTC
+                        os_log("Using default time zone for timestamp '%{public}s'", log: OSLog.general, type: .info, serverDateString)
+                    }
+                    dateFormatter.dateFormat = formatString
+                    dateFormatter.locale = defaultLocale
+                    result = dateFormatter.date(from: serverDateString)
                 }
-                let locale = Locale(identifier: "en_US_POSIX")
-                dateFormatter.dateFormat = formatString
-                dateFormatter.locale = locale
-                return dateFormatter.date(from: serverDateString)
+                return result
             } else {
                 return nil
             }
@@ -58,17 +67,23 @@ class ServerDate {
     
     
     class func convertServerDate (_ localDate: Date, timeZoneName: String?) -> String {
-        let locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.locale = locale
-        return dateFormatter.string(from: localDate)
+        var result:String?
+        dqAccess.sync {
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            dateFormatter.locale = defaultLocale
+            result = dateFormatter.string(from: localDate)
+        }
+        return result!
     }
 
     
     class func convertServerDate (_ localDate: Date, timeZone: TimeZone?) -> String {
-        let locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.locale = locale
-        return dateFormatter.string(from: localDate)
+        var result:String?
+        dqAccess.sync {
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            dateFormatter.locale = defaultLocale
+            result = dateFormatter.string(from: localDate)
+        }
+        return result!
     }
 }

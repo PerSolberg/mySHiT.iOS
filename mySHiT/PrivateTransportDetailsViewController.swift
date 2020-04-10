@@ -53,18 +53,19 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         phoneText.isScrollEnabled = false
         phoneText.textContainer.lineFragmentPadding = 0.0
         
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+
         //self.view.colourSubviews()
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
         
         populateScreen(detectChanges: false, oldElement: nil)
     }
+    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -81,23 +82,22 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
     }
     
     
+    //
     // MARK: UITextViewDelegate
+    //
     
     
+    //
     // MARK: Actions
+    //
     
     
+    //
     // MARK: Functions
+    //
     func populateScreen(detectChanges: Bool, oldElement: GenericTransport?) {
         guard let transportElement = tripElement?.tripElement as? GenericTransport else {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(Constant.alert.actionOK)
-                self.present(alert, animated: true, completion: { })
-            })
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
             
             self.navigationController?.popViewController(animated: true)
             return
@@ -136,6 +136,7 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         }
     }
 
+    
     func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
         var locationInfo = stopName ?? ""
 
@@ -151,6 +152,7 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         return locationInfo
     }
 
+    
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
             if let transportElement = self.tripElement?.tripElement as? GenericTransport {
@@ -167,6 +169,7 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         })
     }
     
+    
     override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
@@ -177,7 +180,10 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         }
     }
     
+    
+    //
     // MARK: ScrollViewDelegate
+    //
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentView
     }

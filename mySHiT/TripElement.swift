@@ -23,7 +23,6 @@ class TripElement: NSObject, NSCoding {
     var type: String { willSet { checkChange(type, newValue) } }
     var subType: String { willSet { checkChange(subType, newValue) } }
     var id: Int { willSet { checkChange(id, newValue) } }
-//    var references: [ [String:String] ]?
     var references: Set<[String:String]>? { willSet { checkChange(references, newValue) } }
     var serverData: NSDictionary?
     
@@ -172,7 +171,6 @@ class TripElement: NSObject, NSCoding {
         subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as! String
         id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         
-//        references = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]]
         if let refSet = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? Set<[String:String]> {
             references = refSet
         } else if let refList = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]] {
@@ -183,7 +181,6 @@ class TripElement: NSObject, NSCoding {
     }
     
     
-//    init?(id: Int, type: String, subType: String, references: [ [String:String] ]?) {
     init?(id: Int, type: String, subType: String, references: Set<[String:String]>?) {
         // Initialize stored properties.
         self.id = id
@@ -205,7 +202,6 @@ class TripElement: NSObject, NSCoding {
         id = inputId!
         type = inputType!
         subType = inputSubType!
-//        references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
         if let refList = elementData[Constant.JSON.elementReferences] as? [ [String:String] ] {
             references = Set(refList)
         }
@@ -218,9 +214,6 @@ class TripElement: NSObject, NSCoding {
     //
     func checkChange<T:Equatable>(_ old: T, _ new: T) {
         let propertyChanged = (old != new)
-//        if propertyChanged {
-//            print("Property changed: '" + String(describing: old) + "' -> '" + String(describing: new) + "'")
-//        }
         changed = changed || propertyChanged
     }
 
@@ -232,17 +225,11 @@ class TripElement: NSObject, NSCoding {
         type = elementData[Constant.JSON.elementType] as! String
         subType = elementData[Constant.JSON.elementSubType] as! String
 
-        // TODO: Proper handling of references
-//        references = elementData[Constant.JSON.elementReferences] as? [ [String:String] ]
         if let refList = elementData[Constant.JSON.elementReferences] as? [ [String:String] ] {
             references = Set(refList)
         }
 
         serverData = elementData
-
-        if self.isMember(of: TripElement.self) {
-            print("TripElement ", id, " updated")
-        }
 
         return changed
     }

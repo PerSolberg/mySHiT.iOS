@@ -33,7 +33,10 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     
     // MARK: Constructors
     
+    
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
         rootScrollView.minimumZoomScale = 1.0
@@ -67,30 +70,20 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
             NotificationCenter.default.removeObserver(self)
         }
     }
-
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     
-    
+    //
     // MARK: Actions
+    //
     
     
+    //
     // MARK: Functions
+    //
     func populateScreen(detectChanges: Bool) {
         guard let hotelElement = tripElement?.tripElement as? Hotel else {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(Constant.alert.actionOK)
-                self.present(alert, animated: true, completion: { })
-            })
-            
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
+
             self.navigationController?.popViewController(animated: true)
             return
         }
@@ -119,7 +112,6 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
             var separator = ""
             for ref in refList {
                 if /*let refType = ref["type"], */let refNo   = ref["refNo"] {
-                    //print("Reference: Type = \(refType), Ref # = \(refNo)")
                     references.append(separator + refNo)
                     separator = ", "
                 }
@@ -147,6 +139,7 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         })
     }
     
+    
     @objc override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
@@ -158,7 +151,9 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     }
 
     
+    //
     // MARK: ScrollViewDelegate
+    //
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentView
     }

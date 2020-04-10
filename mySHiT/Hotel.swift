@@ -119,13 +119,10 @@ class Hotel: TripElement {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
         
-        if let checkInDateText = elementData[Constant.JSON.hotelCheckIn] as? String {
-            checkInDate = ServerDate.convertServerDate(checkInDateText, timeZoneName: timezone)
-        }
-        if let checkOutDateText = elementData[Constant.JSON.hotelCheckOut] as? String {
-            checkOutDate = ServerDate.convertServerDate(checkOutDateText, timeZoneName: timezone)
-        }
-        
+        let dictTimezone = elementData[Constant.JSON.hotelTimezone] as? String
+        checkInDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckIn] as? String, timeZoneName: dictTimezone)
+        checkOutDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckOut] as? String, timeZoneName: dictTimezone)
+
         hotelName = elementData[Constant.JSON.hotelName] as? String
         address = elementData[Constant.JSON.hotelAddress] as? String
         postCode = elementData[Constant.JSON.hotelPostCode] as? String
@@ -141,12 +138,10 @@ class Hotel: TripElement {
     override func update(fromDictionary elementData: NSDictionary!) -> Bool {
         changed = super.update(fromDictionary: elementData)
 
-        if let checkInDateText = elementData[Constant.JSON.hotelCheckIn] as? String {
-            checkInDate = ServerDate.convertServerDate(checkInDateText, timeZoneName: timezone)
-        }
-        if let checkOutDateText = elementData[Constant.JSON.hotelCheckOut] as? String {
-            checkOutDate = ServerDate.convertServerDate(checkOutDateText, timeZoneName: timezone)
-        }
+        let dictTimezone = elementData[Constant.JSON.hotelTimezone] as? String
+        checkInDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckIn] as? String, timeZoneName: dictTimezone)
+        checkOutDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckOut] as? String, timeZoneName: dictTimezone)
+
         hotelName = elementData[Constant.JSON.hotelName] as? String
         address = elementData[Constant.JSON.hotelAddress] as? String
         postCode = elementData[Constant.JSON.hotelPostCode] as? String
@@ -211,3 +206,4 @@ class Hotel: TripElement {
         return nil
     }
 }
+

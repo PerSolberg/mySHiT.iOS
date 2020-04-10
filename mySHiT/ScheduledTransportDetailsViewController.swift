@@ -32,7 +32,10 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     
     // MARK: Constructors
     
+    
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
         rootScrollView.minimumZoomScale = 1.0
@@ -43,17 +46,14 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         arrivalInfoTextView.textContainerInset = UIEdgeInsets.zero
         arrivalInfoTextView.textContainer.lineFragmentPadding = 0.0
 
-        //self.view.colourSubviews()
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)        
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
-        
         self.populateScreen(detectChanges: false, oldElement: nil)
     }
 
@@ -67,41 +67,36 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     }
 
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
+
+    //
     // MARK: UITextViewDelegate
+    //
     
     
+    //
     // MARK: ScrollViewDelegate
+    //
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentView
     }
 
 
+    //
     // MARK: Actions
+    //
     
     
+    //
     // MARK: Functions
+    //
     func populateScreen(detectChanges: Bool, oldElement: ScheduledTransport?) {
         guard let transportElement = tripElement?.tripElement as? ScheduledTransport else {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(Constant.alert.actionOK)
-                self.present(alert, animated: true, completion: { })
-            })
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
             
             self.navigationController?.popViewController(animated: true)
             return
         }
         
-        print(transportElement.routeNo as Any)
         companyTextField.text = transportElement.companyName
         routeNoTextField.text = transportElement.routeNo
         

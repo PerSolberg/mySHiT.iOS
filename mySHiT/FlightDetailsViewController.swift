@@ -9,8 +9,9 @@
 import UIKit
 
 class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrollViewDelegate, DeepLinkableViewController {
-    
+    //
     // MARK: Properties
+    //
     @IBOutlet weak var mainStackView: UIStackView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var flightNoLabel: UILabel!
@@ -30,11 +31,19 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     var wasDeepLinked = false
     
     
+    //
     // MARK: Navigation
+    //
     
-    // MARK: Constructors    
     
+    //
+    // MARK: Constructors
+    //
+    
+    
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
         scrollView.minimumZoomScale = 1.0
@@ -47,16 +56,15 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         arrivalLocationTextView.textContainerInset = UIEdgeInsets.zero
         arrivalLocationTextView.textContainer.lineFragmentPadding = 0.0
 
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        
         //self.view.colourSubviews()
     }
     
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
         
         populateScreen(detectChanges: false, oldElement: nil)
     }
@@ -71,39 +79,33 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     }
 
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.contentSize = CGSize(width: mainStackView.frame.width, height: mainStackView.frame.height)
     }
     
+    
+    //
     // MARK: UITextViewDelegate
+    //
 
 
+    //
     // MARK: Actions
+    //
     
     
+    //
     // MARK: Functions
+    ///
     func populateScreen(detectChanges: Bool, oldElement:Flight?) {
         guard let flightElement = tripElement?.tripElement as? Flight else {
-            DispatchQueue.main.async(execute: {
-                let alert = UIAlertController(
-                    title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                    message: NSLocalizedString(Constant.msg.unableToDisplayElement, comment: Constant.dummyLocalisationComment),
-                    preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(Constant.alert.actionOK)
-                self.present(alert, animated: true, completion: { })
-            })
+            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
             
             self.navigationController?.popViewController(animated: true)
             return
         }
-        
+
         flightNoTextField.setText(flightElement.flightNo, detectChanges: detectChanges)
         airlineTextField.setText(flightElement.companyName, detectChanges: detectChanges)
         departureTimeTextField.setText(flightElement.startTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
@@ -135,6 +137,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         }
     }
     
+    
     func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
         var locationInfo = stopName ?? location ?? ""
         if let terminal = terminalName {
@@ -146,6 +149,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         return locationInfo
     }
 
+    
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
             if let flightElement = self.tripElement?.tripElement as? Flight {
@@ -163,6 +167,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         })
     }
     
+    
     override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false
@@ -173,7 +178,10 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         }
     }
     
+    
+    //
     // MARK: ScrollViewDelegate
+    //
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return mainStackView
     }

@@ -27,8 +27,6 @@ class User : NSObject, NSCoding {
     fileprivate var srvInitials:String?
     fileprivate var srvShortName:String?
     
-    fileprivate var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    fileprivate var rsTransGetUser: RSTransaction = RSTransaction(transactionType: RSTransactionType.get, baseURL: Constant.REST.mySHiT.baseUrl, path: Constant.REST.mySHiT.Resource.user, parameters: [:] /*["userName":"dummy@default.com","password":"******"]*/)
  
     // Public properties
     var userName:String? {
@@ -57,13 +55,6 @@ class User : NSObject, NSCoding {
                 os_log("Invalid user name or password", log: OSLog.general, type: .error)
             }
         }
-    }
-    var urlsafePassword:String? {
-        let rawPassword = password ?? ""
-        let safePassword = rawPassword.replacingOccurrences(of: " ", with: "+", options: NSString.CompareOptions.literal, range: nil)
-        
-        return safePassword
-
     }
     var userId:Int? {
         return srvUserId
@@ -136,26 +127,15 @@ class User : NSObject, NSCoding {
 
 
     func getCredentials() -> (name:String?, password:String?, urlsafePassword:String?) {
-        return (name: userName, password:password, urlsafePassword:urlsafePassword)
+        return (name: userName, password:password, urlsafePassword:nil /*urlsafePassword*/)
     }
     
 
     func logon(userName: String, password: String) {
-        let urlsafePassword = password.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
-        rsTransGetUser.parameters = ["userName":userName,"password":urlsafePassword]
-        rsRequest.dictionaryFromRSTransaction(rsTransGetUser, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error    {
-                if error._domain == "HTTP" && error._code == 401 {
-                    os_log("Authentication failed", log: OSLog.network, type: .error)
-                    NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
-                }
-                os_log("Network error : %s", log: OSLog.network, type: .error, error.localizedDescription)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                os_log("Server error : ", log: OSLog.network, type: .error, errMsg)
-                NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
-            } else {
+        let userResource = SHiTResource.user(parameters: [ URLQueryItem(name: SHiTResource.Param.userName, value: userName), URLQueryItem(name: SHiTResource.Param.password, value: password) ])
+        RESTRequest.get(userResource) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+            if status.status == .ok {
                 self.srvUserName = userName
                 User.sharedUser.password = password
                 self.srvCommonName = responseDictionary?[Constant.JSON.userCommonName] as? String
@@ -164,13 +144,14 @@ class User : NSObject, NSCoding {
                 self.srvInitials = responseDictionary?[Constant.JSON.userInitials] as? String
                 self.srvShortName = responseDictionary?[Constant.JSON.userShortName] as? String
                 
-                //print("User logged on. User ID = \(String(describing: self.srvUserId)), Common name = \(String(describing:self.srvCommonName))")
                 self.registerForPushNotifications()
                 self.saveUser()
 
                 NotificationCenter.default.post(name: Constant.notification.logonSuccessful, object: self)
+            } else if status.status == .serverError {
+                NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
             }
-        })
+        }
     }
 
 
@@ -211,13 +192,12 @@ class User : NSObject, NSCoding {
     func saveUser() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)
         if !isSuccessfulSave {
-            os_log("Failed to save user...", log: OSLog.general, type: .error)
+            os_log("Failed to save user", log: OSLog.general, type: .error)
         }
     }
     
     func loadUser() {
         if try! FileManager.default.fileExists(atPath: User.ArchiveUserURL.path) && FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! Int > 0 {
-            //let fileSize = try! FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! NSNumber
             if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: User.ArchiveUserURL.path) as? User {
                 self.srvUserId     = newUser.srvUserId
                 self.srvUserName   = newUser.srvUserName

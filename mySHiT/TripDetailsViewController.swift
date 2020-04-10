@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os
 
 class TripDetailsViewController: UITableViewController, DeepLinkableViewController {
     
@@ -90,10 +91,11 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
                 destinationController.trip = trip
                 
             default:
-                print("No special preparation necessary")
+                // No special preparation necessary
+                break
             }
         } else {
-            print("Trip Details: Preparing for unidentified segue")
+            os_log("Preparing for unidentified segue", log: OSLog.general, type: .error)
         }
     }
     
@@ -118,11 +120,16 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         refreshControl!.backgroundColor = tripDetailsTable.backgroundColor
         refreshControl!.tintColor = UIColor.blue
         refreshControl!.addTarget(self, action: #selector(TripDetailsViewController.reloadTripDetailsFromServer), for: .valueChanged)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
     }
 
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             self.title = trip.trip.name
@@ -134,21 +141,16 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
                 trip.trip.loadDetails()
             }
         }
-
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
     }
+    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if isMovingToParent {
-            NotificationCenter.default.removeObserver(self)
-        }
+        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
     }
 
+    
     override func viewDidAppear(_ animated: Bool) {
         if let indexPath = elementToRefresh {
             let s = getSectionById(indexPath.section)
@@ -161,21 +163,17 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
                 imgView.image = tripElement.icon?.overlayBadge(selectedElement.modified)
             }
             
-            TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+            TripList.sharedList.saveToArchive()
             
             elementToRefresh = nil
             UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
         }
     }
 
-    
-//    override func didReceiveMemoryWarning() {
-//        super.didReceiveMemoryWarning()
-//        // Dispose of any resources that can be recreated.
-//    }
-    
-    
+
+    //
     // MARK: UITableViewDataSource methods
+    //
     override func numberOfSections(in tableView: UITableView) -> Int {
         let activeSections = sections.filter { $0.firstTripElement != nil }
         return activeSections.count
@@ -199,7 +197,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         if let s = getSectionById(section) {
             return s.section.title
         } else {
-            print("Section header not available")
+            os_log("Section header not available for section %d", log: OSLog.general, type: .error, section)
             return nil
         }
     }
@@ -285,7 +283,9 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
     
+    //
     // MARK: Section header callbacks
+    //
     @objc func sectionHeaderTapped(_ recognizer: UITapGestureRecognizer) {
         let indexPath : IndexPath = IndexPath(row: 0, section: recognizer.view!.tag)
         if let s = getSectionById(indexPath.section) {
@@ -299,12 +299,11 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
     
-    // MARK: Actions
-    
-    
+    //
     // MARK: Functions
+    //
     @objc func reloadTripDetailsFromServer() {
-        tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTripDetails, comment: Constant.dummyLocalisationComment))
+        tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.loadDetails()
@@ -319,26 +318,12 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
         // closure didn't always dismiss the refrech control)
-        DispatchQueue.main.async(execute: {
-            let alert = UIAlertController(
-                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
-                preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(Constant.alert.actionOK)
-            self.present(alert, animated: true, completion: {
-                DispatchQueue.main.async {
-                    if let refreshControl = self.refreshControl {
-                        if refreshControl.isRefreshing {
-                            refreshControl.endRefreshing()
-                        }
-                    }
-                }
-            })
-        })
+        os_log("Handling network error in TripDetails", log: OSLog.general, type:.info)
+        showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError) { self.endRefreshing() }
         
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: Constant.dummyLocalisationComment))
+                tripDetailsTable.setBackgroundMessage(Constant.msg.networkUnavailable)
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }
@@ -346,20 +331,24 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
     
-    @objc func refreshTripElements() {
-        DispatchQueue.main.async(execute: {
-            if let refreshControl = self.refreshControl {
-                if refreshControl.isRefreshing {
-                    refreshControl.endRefreshing()
-                }
-            }
-        })
+//    @objc func authenticationFailed(_ notification:Notification) {
+//        print("TripDetailsViewController: authenticationFailed")
+//        DispatchQueue.main.sync {
+//            guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
+//                os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
+//                return
+//            }
+//            navVC.popToRootViewController(animated: false)
+//        }
+//    }
 
+
+    @objc func refreshTripElements() {
+        endRefreshing()
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
-            trip.trip.refreshNotifications()
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noDetailsAvailable, comment: Constant.dummyLocalisationComment))
+                tripDetailsTable.setBackgroundMessage(Constant.msg.noDetailsAvailable)
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }

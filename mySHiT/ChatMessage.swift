@@ -39,11 +39,6 @@ class ChatMessage: NSObject, NSCoding {
                ]
     }
 
-    static let webServiceChatPath = "thread"
-    static let webServiceReadMessageVerb = "read"
-    var rsRequest: RSTransactionRequest = RSTransactionRequest()
-    var rsTransSendMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.put, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: [:])
-    //var rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: Constant.REST.mySHiT.baseURL, path: webServiceChatPath, parameters: ["userName":"dummy@default.com","password":"******"])
 
     struct PropertyKey {
         static let idKey = "id"
@@ -80,7 +75,8 @@ class ChatMessage: NSObject, NSCoding {
     // MARK: Equatable
     //
     static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
-        return lhs.localId == rhs.localId
+        let equal = lhs.localId == rhs.localId
+        return equal
     }
     
     
@@ -135,41 +131,26 @@ class ChatMessage: NSObject, NSCoding {
     //
     // MARK: Functions
     //
-    func save(tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?) -> Void) {
-        let userCred = User.sharedUser.getCredentials()
-        
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
-        
+    func save(tripId: Int!, responseHandler parentResponseHandler: @escaping ((SHiTStatus, SHiTRetry?)?, URLResponse?, NSDictionary?, Error?) -> Void) {
         //Set the parameters for the RSTransaction object
-        rsTransSendMsg.path = type(of: self).webServiceChatPath + "/" + String(tripId)
-        rsTransSendMsg.parameters = [ "userName":userCred.name!
-            , "password":userCred.urlsafePassword!
-            ]
-        rsTransSendMsg.payload = self.savePayload
+        let threadResource = SHiTResource.thread(key: String(tripId), parameters: [])
         
         //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransSendMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                os_log("Error : %s", log: OSLog.webService, type: .error, error.localizedDescription)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                os_log("Error : %s", log: OSLog.webService, type: .error, errMsg)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else {
+        RESTRequest.put(threadResource, payload: savePayload) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+            if status.status == .ok {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 if let returnedMessage = responseDictionary {
+                    //TODO: CHeck error (status = ERROR, errorCode = xxx, errorMsg = xxxx, retryMode = STOP)
                     self.id = returnedMessage["id"] as? Int
                     self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZone: Constant.timezoneUTC)
                     NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
                 } else {
-                    os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
+                    os_log("Incorrect response: %{public}s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
             }
-            parentResponseHandler(response, responseDictionary, error)
-        })
+            parentResponseHandler(status, response, responseDictionary, error)
+        }
     }
 
     
@@ -182,33 +163,19 @@ class ChatMessage: NSObject, NSCoding {
     
     
     static func read(msgId: Int!, tripId: Int!, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void ) {
-        let userCred = User.sharedUser.getCredentials()
-        assert( userCred.name != nil );
-        assert( userCred.password != nil );
-        assert( userCred.urlsafePassword != nil );
+        let msgResource = SHiTResource.message(keys: [String(tripId), SHiTResource.Verb.read, String(msgId)], parameters: [])
 
-        let rsRequest /*: RSTransactionRequest*/ = RSTransactionRequest()
-        let rsTransReadMsg: RSTransaction = RSTransaction(transactionType: RSTransactionType.post, baseURL: Constant.REST.mySHiT.baseUrl, path: webServiceChatPath, parameters: /*["userName":"dummy@default.com","password":"******"]*/ [ "userName":userCred.name!, "password":userCred.urlsafePassword!])
-
-        //Set the parameters for the RSTransaction object
-        rsTransReadMsg.path = webServiceChatPath + "/" + String(tripId) + "/" + webServiceReadMessageVerb + "/" + String(msgId)
-        
-        //Send request
-        rsRequest.dictionaryFromRSTransaction(rsTransReadMsg, completionHandler: {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-            if let error = error {
-                os_log("Error : %s", log: OSLog.webService, type: .error, error.localizedDescription)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-                let errMsg = error as! String
-                os_log("Error : %s", log: OSLog.webService, type: .error, errMsg)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-            } else if let _ /*responseDictionary*/ = responseDictionary {
-                //print("Chat message read: \(String(describing: responseDictionary))")
+        RESTRequest.post(msgResource, parameters: nil, payload: nil) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
+            let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
+            if status.status == .ok {
+                // No need to do anything, already handled
+            } else if let _ = responseDictionary {
+                // No need to do anything, no useful information in success response
             } else {
-                os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
+                os_log("Incorrect response: %{public}s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
             }
             parentResponseHandler(response, responseDictionary, error)
-        })
+        }
     }
     
     

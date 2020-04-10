@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 extension UIViewController
 {
@@ -20,13 +21,13 @@ extension UIViewController
         }
     }
 
-//  func getAttributedReferences(_ refList: [ [String:String] ], typeKey: String, refKey: String,
+    
     func getAttributedReferences(_ refList: Set<[String:String]>, typeKey: String, refKey: String, urlKey: String) -> NSDictionary {
         let refDict = NSMutableDictionary()
         for ref in refList {
             if let refType = ref[typeKey], let refNo = ref[refKey] {
                 var refText:NSAttributedString?
-                if let refUrl = ref[urlKey]/*, let url = URL(string: refUrl)*/ {
+                if let refUrl = ref[urlKey] {
                     let hyperlinkText = NSMutableAttributedString(string: refNo)
                     hyperlinkText.addLink(for: ".+") { match -> String? in
                         return refUrl
@@ -42,11 +43,16 @@ extension UIViewController
         return refDict
     }
 
-    /*
-    var isModal: Bool {
-        return self.presentingViewController?.presentedViewController == self
-            || (self.navigationController != nil && self.navigationController?.presentingViewController?.presentedViewController == self.navigationController && self.navigationController?.viewControllers[0] == self)
-            || self.tabBarController?.presentingViewController is UITabBarController
+    
+    func showAlert(title: String, message: String, completion completionHandler: ( () -> Void )?) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(
+                title: title,
+                message: message,
+                preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(Constant.alert.actionOK)
+            self.present(alert, animated: true, completion: completionHandler)
+        }
     }
-     */
+    
 }

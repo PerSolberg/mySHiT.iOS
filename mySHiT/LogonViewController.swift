@@ -9,15 +9,19 @@
 import UIKit
 
 class LogonViewController: UIViewController, UITextFieldDelegate {
-
+    //
     // MARK: Properties
+    //
     @IBOutlet weak var userNameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var logonButton: UIButton!
     
     var activeField: UITextField?
     
+    
+    //
     // MARK: Callbacks
+    //
     @IBOutlet weak var scrollView: UIScrollView!
 
     override func viewDidLoad() {
@@ -29,7 +33,7 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
                 let textView = view as! UITextView
                 let textViewName = String(format: "%@.text", textView.restorationIdentifier!)
                 let appBundle = Bundle.main
-                let localisedText = NSLocalizedString(textViewName as String, tableName: "Main", bundle: appBundle, value: "", comment: Constant.dummyLocalisationComment)
+                let localisedText = NSLocalizedString(textViewName as String, tableName: "Main", bundle: appBundle, value: "", comment: "")
                 if localisedText != "" && localisedText != textViewName {
                     textView.text = localisedText
                 }
@@ -44,7 +48,6 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(logonFailed(_:)), name: Constant.notification.logonFailed, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(connectionFailed(_:)), name: Constant.notification.networkError, object: nil)
 
         // Register for Keyboard Notifications
         NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWasShown(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -53,41 +56,63 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         controlLogonButton()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(connectionFailed(_:)), name: Constant.notification.networkError, object: nil)
     }
 
-    // MARK: Navigation
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
+    }
 
+    
+    //
+    // MARK: Navigation
+    //
+
+
+    //
     // MARK: UITextFieldDelegate
+    //
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
 
+    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         activeField = textField
     }
+    
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         activeField = nil
     }
 
+    
+    //
     // MARK: Actions
+    //
     @IBAction func userNameChanged(_ sender: UITextField) {
         controlLogonButton()
     }
+    
+    
     @IBAction func passwordChanged(_ sender: UITextField) {
         controlLogonButton()
     }
+    
+    
     @IBAction func logon(_ sender: UIButton) {
         User.sharedUser.logon(userName: self.userNameTextField.text!, password: self.passwordTextField.text!)
     }
 
     
 
+    //
     // MARK: Notifications
+    //
     // Called when the UIKeyboardDidShowNotification is sent.
     @objc func keyboardWasShown(_ notification:Notification) {
         let info = notification.userInfo
@@ -106,6 +131,7 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    
     // Called when the UIKeyboardWillHideNotification is sent
     @objc func keyboardWillBeHidden(_ notification:Notification) {
         let contentInsets = UIEdgeInsets.zero;
@@ -113,40 +139,21 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         scrollView.scrollIndicatorInsets = contentInsets;
     }
 
+    
     @objc func logonComplete(_ notification:Notification) {
-        self.dismiss(animated: true, completion: nil)
+        DispatchQueue.main.async(execute: {
+            self.dismiss(animated: true, completion: nil)
+        })
     }
     
     
     @objc func logonFailed(_ notification:Notification) {
-        DispatchQueue.main.async(execute: {
-            let alert = UIAlertController(
-                title: NSLocalizedString(Constant.msg.logonFailureTitle, comment: Constant.dummyLocalisationComment),
-                message: NSLocalizedString(Constant.msg.logonFailureText, comment: Constant.dummyLocalisationComment),
-                preferredStyle: UIAlertController.Style.alert)
-            
-            //Add alert action
-            alert.addAction(Constant.alert.actionOK)
-            
-            //Present alert
-            self.present(alert, animated: true, completion: nil)
-        })
+        showAlert(title: Constant.msg.logonFailureTitle, message: Constant.msg.logonFailureText, completion: nil)
     }
     
     
     @objc func connectionFailed(_ notification:Notification) {
-        DispatchQueue.main.async(execute: {
-            let alert = UIAlertController(
-                title: NSLocalizedString(Constant.msg.connectErrorTitle, comment: Constant.dummyLocalisationComment),
-                message: NSLocalizedString(Constant.msg.connectErrorText, comment: Constant.dummyLocalisationComment),
-                preferredStyle: UIAlertController.Style.alert)
-            
-            //Add alert action
-            alert.addAction(Constant.alert.actionOK)
-            
-            //Present alert
-            self.present(alert, animated: true, completion: nil)
-        })
+        showAlert(title: Constant.msg.connectErrorTitle, message: Constant.msg.connectErrorText, completion: nil)
     }
     
     

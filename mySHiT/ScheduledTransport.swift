@@ -77,13 +77,11 @@ class ScheduledTransport: GenericTransport {
             let departureLeadtime = Int(defaults.float(forKey: Constant.Settings.deptLeadTime))
             let legLeadtime = Int(defaults.float(forKey: Constant.Settings.legLeadTime))
             
-            let genericAlertMessage = NSLocalizedString(Constant.msg.transportAlertMessage, comment: Constant.dummyLocalisationComment)
-            
             if departureLeadtime > 0 && legNo == 1 {
-                setNotification(notificationType: Constant.Settings.deptLeadTime, leadTime: departureLeadtime, alertMessage: genericAlertMessage, userInfo: nil)
+                setNotification(notificationType: Constant.Settings.deptLeadTime, leadTime: departureLeadtime, alertMessage: Constant.msg.transportAlertMessage, userInfo: nil)
             }
             if legLeadtime > 0 {
-                setNotification(notificationType: Constant.Settings.legLeadTime, leadTime: legLeadtime, alertMessage: genericAlertMessage, userInfo: nil)
+                setNotification(notificationType: Constant.Settings.legLeadTime, leadTime: legLeadtime, alertMessage: Constant.msg.transportAlertMessage, userInfo: nil)
             }
         }
     }

@@ -184,13 +184,12 @@ class Event: TripElement {
         if (tense ?? .past) == .future {
             let defaults = UserDefaults.standard
             var eventLeadtime = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
-            let genericAlertMessage = NSLocalizedString(Constant.msg.eventAlertMessage, comment: Constant.dummyLocalisationComment)
 
             if let travelTime = travelTime {
                 eventLeadtime += travelTime;
             }
             
-            setNotification(notificationType: Constant.Settings.eventLeadTime, leadTime: eventLeadtime, alertMessage: genericAlertMessage, userInfo: nil)
+            setNotification(notificationType: Constant.Settings.eventLeadTime, leadTime: eventLeadtime, alertMessage: Constant.msg.eventAlertMessage, userInfo: nil)
         }
     }
 

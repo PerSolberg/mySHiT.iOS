@@ -23,8 +23,8 @@ enum KeychainError: Error {
     case decode
     case unknown
     
-    /// Returns the appropriate error for the status, or nil if it
-    /// was successful, or Unknown for a code that doesn't match.
+    // Returns the appropriate error for the status, or nil if it
+    // was successful, or Unknown for a code that doesn't match.
     static func errorFromOSStatus(_ rawStatus: OSStatus) ->
         KeychainError? {
             if rawStatus == errSecSuccess {
@@ -173,34 +173,6 @@ struct Keychain {
                 background: background)
     }
 
-
-    static func listAccounts() {
-        do {
-            let query = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: Constants.service,
-                kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,
-                kSecReturnAttributes as String: kCFBooleanTrue as CFTypeRef,
-                kSecMatchLimit as String: kSecMatchLimitAll
-            ] as [String : Any]
-            let accountListRaw = try SecItemWrapper.matching(query as [String : AnyObject])
-            
-            if let accountList = accountListRaw as? [NSMutableDictionary] {
-                print("Found \(accountList.count) accounts in Keychain: ", terminator: "")
-                var sep = ""
-                for account in accountList {
-                    let userName = account[kSecAttrAccount as NSString] ?? "<Unknown>"
-                    print("\(sep)\(userName)", terminator: "")
-                    sep = ", "
-                }
-                print("")
-            }
-        } catch KeychainError.itemNotFound {
-            // Ignore this error, simply return nil.
-        } catch let error {
-            NSLog("listAccounts error: \(error)")
-        }
-    }
 
     static func deleteAllAccounts() {
         do {

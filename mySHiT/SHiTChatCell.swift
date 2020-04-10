@@ -11,6 +11,7 @@ import UIKit
 class SHiTChatCell: UITableViewCell {
     static let speechBubbleLayerName = "speechBubble"
     static let colourOwnMessage = UIColor.init(red: 0.8, green: 1.0, blue: 0.8, alpha: 1.0).cgColor
+    static let colourUnsavedMessage = UIColor.init(red: 1.0, green: 1.0, blue: 0.8, alpha: 1.0).cgColor
     static let colourOtherMessage = UIColor.init(red: 0.8, green: 1.0, blue: 1.0, alpha: 1.0).cgColor
     static let colourUnsavedMessageBorder = UIColor.init(red: 0.6, green: 0.8, blue: 0.6, alpha: 1.0).cgColor
     static let dashUnsavedMessageBorder:[NSNumber] = [2, 2]
@@ -49,17 +50,18 @@ class SHiTChatCell: UITableViewCell {
         
         if message.userId == User.sharedUser.userId {
             bubbleLayer.path = messageText.bubblePath(borderWidth: SHiTChatCell.borderWidth, radius: SHiTChatCell.radius, triangleHeight: SHiTChatCell.triangleHeight, triangleEdge: .right, trianglePosition: .top).cgPath
-            bubbleLayer.fillColor = SHiTChatCell.colourOwnMessage
+            if message.isStored {
+                bubbleLayer.fillColor = SHiTChatCell.colourOwnMessage
+            } else {
+                bubbleLayer.fillColor = SHiTChatCell.colourUnsavedMessage
+                bubbleLayer.strokeColor = SHiTChatCell.colourUnsavedMessageBorder
+                bubbleLayer.lineDashPattern = SHiTChatCell.dashUnsavedMessageBorder
+            }
         } else {
             bubbleLayer.path = messageText.bubblePath(borderWidth: SHiTChatCell.borderWidth, radius: SHiTChatCell.radius, triangleHeight: SHiTChatCell.triangleHeight, triangleEdge: .left, trianglePosition: .top).cgPath
             bubbleLayer.fillColor = SHiTChatCell.colourOtherMessage
         }
-        if message.isStored {
-            bubbleLayer.strokeColor = nil
-        } else {
-            bubbleLayer.strokeColor = SHiTChatCell.colourUnsavedMessageBorder
-            bubbleLayer.lineDashPattern = SHiTChatCell.dashUnsavedMessageBorder
-        }
+
         bubbleLayer.lineWidth = SHiTChatCell.borderWidth
         bubbleLayer.position = CGPoint(x: messageText.frame.minX - SHiTChatCell.radius, y: messageText.frame.minY - SHiTChatCell.radius) // CGPoint.zero
         

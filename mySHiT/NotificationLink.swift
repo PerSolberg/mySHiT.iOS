@@ -29,7 +29,7 @@ class NotificationLink : DeepLink {
                 fatalError("TripId missing or invalid")
             }
             
-            print("Change type = \(changeType)")
+            os_log("Recevied notification for change type '%{public}s'", log: OSLog.general, type: .debug, changeType)
             
             switch (changeType, changeOperation) {
             case (Constant.changeType.chatMessage, Constant.changeOperation.insert):

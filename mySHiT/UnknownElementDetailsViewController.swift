@@ -24,17 +24,14 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
     // DeepLinkableViewController
     var wasDeepLinked = false
     
-    // MARK: Navigation
-    
-    
-    // MARK: Constructors
-    
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
         automaticallyAdjustsScrollViewInsets = false
-        messageTextView.text = NSLocalizedString(Constant.msg.unknownElement, comment: Constant.dummyLocalisationComment)
+        messageTextView.text = Constant.msg.unknownElement
 
         if let serverElements = tripElement?.tripElement.serverData {
             topView.addDictionaryAsGrid(serverElements, horisontalHuggingForLabel: UILayoutPriority(rawValue: 251.0), verticalHuggingForLabel: UILayoutPriority(rawValue: 251.0), horisontalHuggingForValue: UILayoutPriority(rawValue: 249.0), verticalHuggingForValue: UILayoutPriority(rawValue: 249.0), constrainValueFieldWidthToView: nil)
@@ -43,6 +40,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
         }
     }
     
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if let size = serverDataContentSize {
@@ -50,6 +48,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
         }
     }
 
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -58,12 +57,6 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
         }
     }
 
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     
     // MARK: UITextViewDelegate
     
@@ -71,15 +64,9 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
     // MARK: Actions
     
     
+    //
     // MARK: Functions
-    func refreshTripElements() {
-        DispatchQueue.main.async(execute: {
-            //self.title = self.trip?.trip.name
-            //self.tripDetailsTable.reloadData()
-        })
-    }
-
-    
+    //
     override func isSame(_ vc:UIViewController) -> Bool {
         if type(of:vc) != type(of:self) {
             return false

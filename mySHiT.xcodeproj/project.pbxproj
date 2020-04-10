@@ -36,6 +36,11 @@
 		856D66621BD824E300C62D79 /* SecurityWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66611BD824E300C62D79 /* SecurityWrapper.swift */; };
 		8576E7C122B673CA0005B9CB /* Array+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8576E7C022B673CA0005B9CB /* Array+mySHiT.swift */; };
 		8576E7C322B67CD50005B9CB /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8576E7C222B67CD50005B9CB /* ModelError.swift */; };
+		857A6B0B242D5C8800AEE36E /* GlobalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857A6B0A242D5C8800AEE36E /* GlobalFunctions.swift */; };
+		857A6B0D242F8FB200AEE36E /* UITableViewController+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857A6B0C242F8FB200AEE36E /* UITableViewController+mySHiT.swift */; };
+		857A6B0F243D240B00AEE36E /* RESTResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857A6B0E243D240B00AEE36E /* RESTResource.swift */; };
+		857A6B11243D265B00AEE36E /* SHiTResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857A6B10243D265B00AEE36E /* SHiTResource.swift */; };
+		857A6B13243D336500AEE36E /* RESTRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857A6B12243D336500AEE36E /* RESTRequest.swift */; };
 		85916FA11E8595C000FF9B19 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85916FA01E8595C000FF9B19 /* ChatViewController.swift */; };
 		859D44171BD4EC7E0068E5B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859D44161BD4EC7E0068E5B3 /* User.swift */; };
 		859F903B1E3620EF0006AEC4 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F903A1E3620EF0006AEC4 /* Event.swift */; };
@@ -74,12 +79,7 @@
 		85FEFC541BC7FCF900D8E38E /* mySHiTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC531BC7FCF900D8E38E /* mySHiTTests.swift */; };
 		85FEFC5F1BC7FCF900D8E38E /* mySHiTUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC5E1BC7FCF900D8E38E /* mySHiTUITests.swift */; };
 		85FEFC6D1BC818FA00D8E38E /* LogonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC6C1BC818FA00D8E38E /* LogonViewController.swift */; };
-		85FEFC7B1BCA7F4000D8E38E /* RSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC751BCA7F4000D8E38E /* RSTransaction.swift */; };
-		85FEFC7C1BCA7F4000D8E38E /* RSTransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC761BCA7F4000D8E38E /* RSTransactionRequest.swift */; };
-		85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC771BCA7F4000D8E38E /* RSURLRequest.swift */; };
 		85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC781BCA7F4000D8E38E /* RSUtilities.swift */; };
-		85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */; };
-		85FEFC801BCA7F4000D8E38E /* UIImageView+RSNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */; };
 		85FEFC841BCBFA6B00D8E38E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 85FEFC831BCBFA6B00D8E38E /* Settings.bundle */; };
 		85FFD37B1C5000840083C72B /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FFD37A1C5000840083C72B /* Constant.swift */; };
 		D26BB67AF010DFD2262B6976 /* Pods_mySHiTUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BF50E66EEEC1A208D1F4FF3 /* Pods_mySHiTUITests.framework */; };
@@ -154,6 +154,11 @@
 		856D66611BD824E300C62D79 /* SecurityWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecurityWrapper.swift; sourceTree = "<group>"; };
 		8576E7C022B673CA0005B9CB /* Array+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+mySHiT.swift"; sourceTree = "<group>"; };
 		8576E7C222B67CD50005B9CB /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
+		857A6B0A242D5C8800AEE36E /* GlobalFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalFunctions.swift; sourceTree = "<group>"; };
+		857A6B0C242F8FB200AEE36E /* UITableViewController+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewController+mySHiT.swift"; sourceTree = "<group>"; };
+		857A6B0E243D240B00AEE36E /* RESTResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RESTResource.swift; sourceTree = "<group>"; };
+		857A6B10243D265B00AEE36E /* SHiTResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHiTResource.swift; sourceTree = "<group>"; };
+		857A6B12243D336500AEE36E /* RESTRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RESTRequest.swift; sourceTree = "<group>"; };
 		85916FA01E8595C000FF9B19 /* ChatViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		859D44161BD4EC7E0068E5B3 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		859F903A1E3620EF0006AEC4 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -203,12 +208,7 @@
 		85FEFC5E1BC7FCF900D8E38E /* mySHiTUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mySHiTUITests.swift; sourceTree = "<group>"; };
 		85FEFC601BC7FCF900D8E38E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		85FEFC6C1BC818FA00D8E38E /* LogonViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogonViewController.swift; sourceTree = "<group>"; };
-		85FEFC751BCA7F4000D8E38E /* RSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTransaction.swift; sourceTree = "<group>"; };
-		85FEFC761BCA7F4000D8E38E /* RSTransactionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTransactionRequest.swift; sourceTree = "<group>"; };
-		85FEFC771BCA7F4000D8E38E /* RSURLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSURLRequest.swift; sourceTree = "<group>"; };
 		85FEFC781BCA7F4000D8E38E /* RSUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSUtilities.swift; sourceTree = "<group>"; };
-		85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+RSNetworking.swift"; sourceTree = "<group>"; };
-		85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+RSNetworking.swift"; sourceTree = "<group>"; };
 		85FEFC831BCBFA6B00D8E38E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		85FFD37A1C5000840083C72B /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		8DBE46CB37994FBAC48C72EB /* Pods-mySHiTTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mySHiTTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-mySHiTTests/Pods-mySHiTTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -270,6 +270,7 @@
 				856D66531BD671A300C62D79 /* Flight.swift */,
 				856D66551BD673C100C62D79 /* GenericTransport.swift */,
 				856D66591BD6F73100C62D79 /* Hotel.swift */,
+				857A6B0A242D5C8800AEE36E /* GlobalFunctions.swift */,
 				85EA06F7200E290200C61D48 /* DeepLink.swift */,
 				85BF602E1E6453E900E5D785 /* NotificationInfo.swift */,
 				85BF60301E66FCA500E5D785 /* ScheduledTransport.swift */,
@@ -306,6 +307,7 @@
 				853ADF501C32996D0092832C /* UITableView+mySHiT.swift */,
 				8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */,
 				85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */,
+				857A6B0C242F8FB200AEE36E /* UITableViewController+mySHiT.swift */,
 				8519D67B1E97B6410077FB52 /* UIChatMessage.swift */,
 				85EF19E522B99FE7002FA60B /* OSLog+mySHiT.swift */,
 				85595BE922CC0D2200A51E4E /* String+mySHiT.swift */,
@@ -418,12 +420,10 @@
 		85FEFC741BCA7F4000D8E38E /* RSNetworking */ = {
 			isa = PBXGroup;
 			children = (
-				85FEFC751BCA7F4000D8E38E /* RSTransaction.swift */,
-				85FEFC761BCA7F4000D8E38E /* RSTransactionRequest.swift */,
-				85FEFC771BCA7F4000D8E38E /* RSURLRequest.swift */,
+				857A6B0E243D240B00AEE36E /* RESTResource.swift */,
+				857A6B10243D265B00AEE36E /* SHiTResource.swift */,
+				857A6B12243D336500AEE36E /* RESTRequest.swift */,
 				85FEFC781BCA7F4000D8E38E /* RSUtilities.swift */,
-				85FEFC791BCA7F4000D8E38E /* UIButton+RSNetworking.swift */,
-				85FEFC7A1BCA7F4000D8E38E /* UIImageView+RSNetworking.swift */,
 			);
 			path = RSNetworking;
 			sourceTree = "<group>";
@@ -637,13 +637,15 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-mySHiT/Pods-mySHiT-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
+				"${BUILT_PRODUCTS_DIR}/Protobuf/protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -676,22 +678,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85FEFC7F1BCA7F4000D8E38E /* UIButton+RSNetworking.swift in Sources */,
 				8520FB3F2292BC9E002E7CF2 /* UITextView+mySHiT.swift in Sources */,
 				85EA06F8200E290200C61D48 /* DeepLink.swift in Sources */,
 				853ADF511C32996D0092832C /* UITableView+mySHiT.swift in Sources */,
 				8520FB412293105C002E7CF2 /* Phone.swift in Sources */,
 				85FEFC7E1BCA7F4000D8E38E /* RSUtilities.swift in Sources */,
-				85FEFC7D1BCA7F4000D8E38E /* RSURLRequest.swift in Sources */,
 				85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */,
 				85EA06FE20193D3F00C61D48 /* UIViewController+mySHiT.swift in Sources */,
 				85C52A181BD3004F00F625B5 /* AnnotatedTrip.swift in Sources */,
 				85FFD37B1C5000840083C72B /* Constant.swift in Sources */,
 				859F903B1E3620EF0006AEC4 /* Event.swift in Sources */,
+				857A6B0B242D5C8800AEE36E /* GlobalFunctions.swift in Sources */,
 				856D665C1BD7025400C62D79 /* Trip.swift in Sources */,
 				85C52A201BD44E1A00F625B5 /* UpcomingTrips.swift in Sources */,
 				85EF19E622B99FE7002FA60B /* OSLog+mySHiT.swift in Sources */,
 				85ABD35C1BD58EA100B26F07 /* TripDetailsViewController.swift in Sources */,
+				857A6B13243D336500AEE36E /* RESTRequest.swift in Sources */,
 				85FEFC411BC7FCF800D8E38E /* TripListViewController.swift in Sources */,
 				856D66561BD673C100C62D79 /* GenericTransport.swift in Sources */,
 				8519D67E1E9FBB810077FB52 /* ChatThread.swift in Sources */,
@@ -702,8 +704,8 @@
 				8507431D1BEA60FC006E96A0 /* ScheduledTransportDetailsViewController.swift in Sources */,
 				859F903D1E3699450006AEC4 /* EventDetailsViewController.swift in Sources */,
 				859D44171BD4EC7E0068E5B3 /* User.swift in Sources */,
-				85FEFC7B1BCA7F4000D8E38E /* RSTransaction.swift in Sources */,
 				853126D7242105AB00D99A6D /* ServerTimestamp.swift in Sources */,
+				857A6B0D242F8FB200AEE36E /* UITableViewController+mySHiT.swift in Sources */,
 				85DBE0E422E61293002382EB /* Address.swift in Sources */,
 				85BF60311E66FCA500E5D785 /* ScheduledTransport.swift in Sources */,
 				85EA06F6200CDFC800C61D48 /* DeepLinkManager.swift in Sources */,
@@ -713,8 +715,6 @@
 				8576E7C122B673CA0005B9CB /* Array+mySHiT.swift in Sources */,
 				856D665A1BD6F73100C62D79 /* Hotel.swift in Sources */,
 				856D66521BD66A3900C62D79 /* TripElement.swift in Sources */,
-				85FEFC801BCA7F4000D8E38E /* UIImageView+RSNetworking.swift in Sources */,
-				85FEFC7C1BCA7F4000D8E38E /* RSTransactionRequest.swift in Sources */,
 				8519D67C1E97B6410077FB52 /* UIChatMessage.swift in Sources */,
 				855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */,
 				8576E7C322B67CD50005B9CB /* ModelError.swift in Sources */,
@@ -725,7 +725,9 @@
 				85EBF78922A7CE5900D4389B /* UserInfoDictionary.swift in Sources */,
 				856D665E1BD7933E00C62D79 /* Tenses.swift in Sources */,
 				8507431B1BE95DC1006E96A0 /* UnknownElementDetailsViewController.swift in Sources */,
+				857A6B0F243D240B00AEE36E /* RESTResource.swift in Sources */,
 				85D73AEE1C29398E00998461 /* ChangeState.swift in Sources */,
+				857A6B11243D265B00AEE36E /* SHiTResource.swift in Sources */,
 				85EA06FC2019307D00C61D48 /* AlertLink.swift in Sources */,
 				856D66541BD671A300C62D79 /* Flight.swift in Sources */,
 				85DBE0E222E48B7E002382EB /* NSMutableAttributedString+mySHiT.swift in Sources */,

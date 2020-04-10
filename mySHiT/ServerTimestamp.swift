@@ -22,7 +22,7 @@ class ServerTimestamp:NSObject, NSCoding, Comparable {
 
     required init?(fromDictionary elementData: NSDictionary!) {
         guard let inFormatted = elementData[Constant.JSON.srvTSFormatted] as? String, let epoch = elementData[Constant.JSON.srvTSEpoch] as? NSDictionary, let inSec = epoch[Constant.JSON.srvTSEpochSec] as? Int, let inMicro = epoch[Constant.JSON.srvTSEpochMicrosec] as? Int else {
-            os_log("Unable to parse server timestamp", log: OSLog.general, type: .error)
+            os_log("Unable to parse server timestamp: %{public}s", log: OSLog.general, type: .error, String(describing: elementData))
             return nil
         }
         formattedTS = inFormatted

@@ -11,9 +11,6 @@ import os
 //import Security
 
 class TripListViewController: UITableViewController {
-    // MARK: Constants
-
-
     //
     // MARK: Properties
     //
@@ -21,15 +18,9 @@ class TripListViewController: UITableViewController {
 
     var sections = [TripListSectionInfo]()
     var tripToRefresh: IndexPath?
-    var isLoggingIn = false
     var activeSections:[(offset:Int, element:TripListSectionInfo)] {
         return sections.enumerated().filter { return $0.element.firstTrip != nil }
     }
-
-    // Archiving paths
-    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let ArchiveTripsURL = DocumentsDirectory.appendingPathComponent("trips")
-    static let ArchiveSectionsURL = DocumentsDirectory.appendingPathComponent("sections")
 
     
     //
@@ -37,7 +28,7 @@ class TripListViewController: UITableViewController {
     //
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
+        tripListTable.setBackgroundMessage(Constant.msg.retrievingTrips)
         TripList.sharedList.getFromServer()
         return
     }
@@ -115,66 +106,66 @@ class TripListViewController: UITableViewController {
         refreshControl!.backgroundColor = tripListTable.backgroundColor
         refreshControl!.tintColor = UIColor.blue
         refreshControl!.addTarget(self, action: #selector(reloadTripsFromServer), for: .valueChanged)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.refreshTripList, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(authenticationFailed(_:)), name: Constant.notification.logonFailed, object: nil)
     }
 
     
     func showLogonScreen(animated: Bool) {
-        isLoggingIn = true
-        let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
-        let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
-        view.window!.makeKeyAndVisible()
-        view.window!.rootViewController?.present(logonVC, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            // Get login screen from storyboard and present it
+            let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
+            let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
+            
+            guard let rootVC = UIApplication.shared.keyWindow?.rootViewController else {
+                os_log("Unable to get root view controller", log: OSLog.general, type: .error)
+                return
+            }
+            rootVC.present(logonVC, animated: true, completion: nil)
+        }
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        os_log("TripList viewWillAppear", log: OSLog.general, type:.debug)
+
         // Load data & check if section list is complete (if not, add missing elements)
-        // TODO: No need to reload every time, only when launching
+        // No need to reload every time, only when launching
         if TripList.sharedList.count == 0 {
-            print("Loading trips")
             loadTrips()
-            updateSections()
         }
 
         tripListTable.estimatedRowHeight = 40
         tripListTable.rowHeight = UITableView.automaticDimension
-        DispatchQueue.main.async(execute: {
-            self.tripListTable.reloadData()
-        })
+        refreshTripList()
 
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.refreshTripList, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripList), name: Constant.notification.dataRefreshed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
     }
  
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        if isMovingToParent || isLoggingIn {
-            NotificationCenter.default.removeObserver(self)
-        }
+        
+        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
     }
 
     
     override func viewDidAppear(_ animated: Bool) {
         if !User.sharedUser.hasCredentials() {
             showLogonScreen(animated: false)
+            tripToRefresh = nil
         }
 
-        if let indexPath = tripToRefresh {
-            let s = getSectionById(indexPath.section)
-            let selectedTrip = TripList.sharedList[s!.section.firstTrip! + indexPath.row]!
+        if let indexPath = tripToRefresh, let s = getSectionById(indexPath.section) {
+            let selectedTrip = TripList.sharedList[s.section.firstTrip! + indexPath.row]!
             
             let prevModStatus = selectedTrip.modified
             selectedTrip.modified = selectedTrip.trip.changes() > 0 ? .Changed : .Unchanged
-//            if selectedTrip.trip.changes() > 0 {
-//                selectedTrip.modified = .Changed
-//            }
             
             UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
             
@@ -184,22 +175,16 @@ class TripListViewController: UITableViewController {
 
             tripToRefresh = nil
             if (selectedTrip.modified != prevModStatus) {
-                TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+                TripList.sharedList.saveToArchive()
             }
         }
     }
     
     
     @objc func refreshTripList() {
-        DispatchQueue.main.async(execute: {
-            if let refreshControl = self.refreshControl {
-                if refreshControl.isRefreshing {
-                    refreshControl.endRefreshing()
-                }
-            }
-        })
+        endRefreshing()
         if (TripList.sharedList.count == 0) {
-            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.noTrips, comment: Constant.dummyLocalisationComment))
+            tripListTable.setBackgroundMessage(Constant.msg.noTrips)
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
@@ -208,7 +193,7 @@ class TripListViewController: UITableViewController {
         DispatchQueue.main.async(execute: {
             self.tripListTable.reloadData()
         })
-        saveTrips()
+        saveSections()
     }
 
     
@@ -220,39 +205,45 @@ class TripListViewController: UITableViewController {
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
         // closure didn't always dismiss the refrech control)
         os_log("Handling network error in TripList", log: OSLog.general, type:.info)
-        DispatchQueue.main.async(execute: {
-            let alert = UIAlertController(
-                title: NSLocalizedString(Constant.msg.alertBoxTitle, comment: Constant.dummyLocalisationComment),
-                message: NSLocalizedString(Constant.msg.connectError, comment: Constant.dummyLocalisationComment),
-                preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(Constant.alert.actionOK)
-            self.present(alert, animated: true, completion: {
-                DispatchQueue.main.async {
-                    if let refreshControl = self.refreshControl {
-                        if refreshControl.isRefreshing {
-                            refreshControl.endRefreshing()
-                        }
-                    }
-                }
-            })
-        })
+        showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError) { self.endRefreshing() }
 
         if (TripList.sharedList.count == 0) {
-            tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.networkUnavailable, comment: Constant.dummyLocalisationComment))
+            tripListTable.setBackgroundMessage(Constant.msg.networkUnavailable)
         } else {
             tripListTable.setBackgroundMessage(nil)
         }
     }
     
     
+    @objc func authenticationFailed(_ notification:Notification) {
+        os_log("Handling authentication failure", log: OSLog.general, type: .debug)
+        logout()
+        endRefreshing()
+        var poppedVCs:[UIViewController]?
+        DispatchQueue.main.sync {
+            guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
+                os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
+                return
+            }
+            poppedVCs = navVC.popToRootViewController(animated: false)
+        }
+        NotificationCenter.default.removeObserver(self, name: Constant.notification.logonFailed, object: nil)
+        if poppedVCs == nil || poppedVCs?.count == 0 {
+            // If not view controllers were popped, we were already on Trip List, so we need to show the logon screen
+            // Otherwise, viewWillAppear will take care of it.
+            showLogonScreen(animated: false)
+        }
+    }
+
+
     @objc func reloadTripsFromServer() {
-        tripListTable.setBackgroundMessage(NSLocalizedString(Constant.msg.retrievingTrips, comment: Constant.dummyLocalisationComment))
+        tripListTable.setBackgroundMessage(Constant.msg.retrievingTrips)
         TripList.sharedList.getFromServer()
     }
 
     
     @objc func logonComplete(_ notification:Notification) {
-        isLoggingIn = false
+        NotificationCenter.default.addObserver(self, selector: #selector(authenticationFailed(_:)), name: Constant.notification.logonFailed, object: nil)
         reloadTripsFromServer()
     }
 
@@ -296,7 +287,6 @@ class TripListViewController: UITableViewController {
         var cell : UITableViewCell?
         cell = tableView.dequeueReusableCell(withIdentifier: kCellIdentifier)
 
-        //print("RowIndex: section = \(indexPath.section), row = \(indexPath.row)")
         if let s = getSectionById(indexPath.section) {
             let rowIdx = s.section.firstTrip! + indexPath.row
             let trip = TripList.sharedList[rowIdx]!.trip
@@ -313,7 +303,7 @@ class TripListViewController: UITableViewController {
             imgView.image = trip.icon?.overlayBadge(TripList.sharedList[rowIdx]!.modified)
             //cell!.colourSubviews()
         } else {
-            // ERROR!!!
+            os_log("Section not found", log: OSLog.general, type: .error)
         }
         
         return cell!
@@ -362,13 +352,13 @@ class TripListViewController: UITableViewController {
     // MARK: NSCoding
     //
     func saveTrips() {
-        TripList.sharedList.saveToArchive(TripListViewController.ArchiveTripsURL.path)
+        TripList.sharedList.saveToArchive()
         saveSections()
     }
 
     
     func saveSections() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections, toFile: TripListViewController.ArchiveSectionsURL.path)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections, toFile:  Constant.archive.sectionsURL.path)
         if !isSuccessfulSave {
             os_log("Failed to save sections", log: OSLog.general, type: .error)
         }
@@ -376,8 +366,8 @@ class TripListViewController: UITableViewController {
     
     
     func loadTrips() {
-        TripList.sharedList.loadFromArchive(TripListViewController.ArchiveTripsURL.path)
-        sections = NSKeyedUnarchiver.unarchiveObject(withFile: TripListViewController.ArchiveSectionsURL.path) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
+        TripList.sharedList.loadFromArchive()
+        sections = NSKeyedUnarchiver.unarchiveObject(withFile: Constant.archive.sectionsURL.path ) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
     }
     
 
@@ -447,6 +437,7 @@ class TripListViewController: UITableViewController {
         // Empty memory structures, clear notification (part of clear) and update keyed archive
         TripList.sharedList.clear()
         sections = [TripListSectionInfo]()
+        tripToRefresh = nil
         saveTrips()
         
         // Refresh list to avoid previous user's trips "flashing" while loading trips for new user
@@ -458,4 +449,3 @@ class TripListViewController: UITableViewController {
         User.sharedUser.logout()
     }
 }
-
