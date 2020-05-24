@@ -56,7 +56,7 @@ class AlertListViewController: UITableViewController {
     // MARK: UITableViewDataSource methods
     //
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let notifications = notifications /*UIApplication.shared.scheduledLocalNotifications*/ {
+        if let notifications = notifications {
             return notifications.count
         } else {
             return 0
@@ -87,7 +87,7 @@ class AlertListViewController: UITableViewController {
                 let notification = notifications[indexPath.row]
                 let userInfo = UserInfo(notification.content.userInfo)
 
-                let timeZoneName = userInfo[.timeZone /*"TimeZone"*/] as? String ?? "UTC"
+                let timeZoneName = userInfo[.timeZone] as? String ?? "UTC"
                 dateFormatter.timeZone = TimeZone(identifier: timeZoneName )
                 if let ntfTrigger = notification.trigger as? UNCalendarNotificationTrigger, let ntfTime = ntfTrigger.nextTriggerDate() {
                     var notificationTime: String = dateFormatter.string(from: ntfTime)

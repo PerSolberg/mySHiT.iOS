@@ -224,9 +224,6 @@ class GenericTransport: TripElement {
         companyName = elementData[Constant.JSON.transportCompany] as? String
         companyPhone = elementData[Constant.JSON.transportCompanyPhone] as? String
 
-        if self.isMember(of: GenericTransport.self) && changed {
-            setNotification()
-        }
         return changed
     }
 

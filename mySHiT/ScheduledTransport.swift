@@ -57,16 +57,6 @@ class ScheduledTransport: GenericTransport {
     //
     // MARK: Methods
     //
-    override func update(fromDictionary elementData: NSDictionary!) -> Bool {
-        changed = super.update(fromDictionary: elementData)
-        
-        if self.isMember(of: ScheduledTransport.self) && changed {
-            setNotification()
-        }
-        return changed
-    }
-
-    
     override func setNotification() {
         // First delete any existing notifications for this trip element (either one or two)
         cancelNotifications()

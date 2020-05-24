@@ -140,7 +140,7 @@ class ChatMessage: NSObject, NSCoding {
             let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
             if status.status == .ok {
                 //Set the tableData NSArray to the results returned from www.shitt.no
-                if let returnedMessage = responseDictionary {
+                if let returnedMessage = responseDictionary?[Constant.JSON.queryMessage] as? NSDictionary {
                     //TODO: CHeck error (status = ERROR, errorCode = xxx, errorMsg = xxxx, retryMode = STOP)
                     self.id = returnedMessage["id"] as? Int
                     self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZone: Constant.timezoneUTC)

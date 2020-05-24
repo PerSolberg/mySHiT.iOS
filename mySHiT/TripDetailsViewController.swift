@@ -138,7 +138,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             } else {
                 tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
 
-                trip.trip.loadDetails()
+                trip.trip.loadDetails(parentCompletionHandler: nil)
             }
         }
     }
@@ -306,7 +306,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
-            trip.trip.loadDetails()
+            trip.trip.loadDetails(parentCompletionHandler: nil)
         }
     }
     
@@ -331,18 +331,6 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
     
-//    @objc func authenticationFailed(_ notification:Notification) {
-//        print("TripDetailsViewController: authenticationFailed")
-//        DispatchQueue.main.sync {
-//            guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
-//                os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
-//                return
-//            }
-//            navVC.popToRootViewController(animated: false)
-//        }
-//    }
-
-
     @objc func refreshTripElements() {
         endRefreshing()
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {

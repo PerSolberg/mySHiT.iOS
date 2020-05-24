@@ -19,6 +19,8 @@ struct Constant {
     
     struct archive {
         fileprivate static let archiveDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+
+        static let userURL = archiveDirectory.appendingPathComponent("user")
         static let tripsURL = archiveDirectory.appendingPathComponent("trips")
         static let sectionsURL = archiveDirectory.appendingPathComponent("sections")
     }
@@ -36,7 +38,9 @@ struct Constant {
 
         static let queryCount = "count"
         static let queryTripList = "trips"
+        static let queryUser = "user"
         static let queryContent = "content"
+        static let queryMessage = "message"
         
         static let userFullName = "fullName"
         static let userCommonName = "commonName"

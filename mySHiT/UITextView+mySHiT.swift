@@ -40,7 +40,6 @@ extension UITextView
     func bubblePath(borderWidth: CGFloat, radius: CGFloat, triangleHeight:CGFloat, triangleEdge: Edge, trianglePosition:Position) -> UIBezierPath {
         self.sizeToFit()
         let contentSize = textContainer.size
-//        let textContainerSize = textContainer.size
 
         let rect = CGRect(x: 0, y:0, width: contentSize.width, height: contentSize.height).offsetBy(dx: radius, dy: radius )
         let path = UIBezierPath();

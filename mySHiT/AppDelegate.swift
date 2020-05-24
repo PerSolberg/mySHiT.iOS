@@ -14,6 +14,7 @@ import AVFoundation
 import UserNotifications
 import os
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
@@ -21,9 +22,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let gcmMessageIDKey = "gcm.message_id"
     var appSettings = Dictionary<AnyHashable, Any>()
     var avPlayer:AVAudioPlayer?
-
+//    var pushRegistry: PKPushRegistry
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {        
+        os_log("application didFinishLaunchingWithOptions", log: OSLog.general, type: .debug)
         // First save current app settings, so we can avoid refreshing when Firebase settings change
         let defaults = UserDefaults.standard
         appSettings[Constant.Settings.tripLeadTime] = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
@@ -37,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.InstanceIDTokenRefresh, object: nil)
 
+            
         //
         // Set up notification categories
         //
@@ -50,12 +53,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                      actions: [chatReplyAction, chatIgnoreAction],
                                                      intentIdentifiers: [],
                                                      options: UNNotificationCategoryOptions(rawValue: 0))
-        
+
         UNUserNotificationCenter.current().setNotificationCategories([newChatMsgCategory])
         UNUserNotificationCenter.current().delegate = self
        
         // Register with APNs
-        UIApplication.shared.registerForRemoteNotifications()
+        application.registerForRemoteNotifications()
         
         // Initialise Firebase
         FirebaseApp.configure();
@@ -73,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
 
-    
+
     @objc func refreshShortcuts() {
         DispatchQueue.main.async {
             self.configureShortCuts(UIApplication.shared)
@@ -159,14 +162,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        // The token is not currently available.
         os_log("Remote notification support is unavailable due to error: %{public}s", log: OSLog.notification, type: .error, error.localizedDescription)
     }
 
     
     func application(_ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+      var readableToken: String = ""
+      for i in 0..<deviceToken.count {
+        readableToken += String(format: "%02.2hhx", deviceToken[i] as CVarArg)
+      }
+      os_log("Received an APNs device token: %{public}s", log: OSLog.notification, type: .debug, readableToken)
+    }
+
+
+    func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        os_log("application didReceiveRemoteNotification", log: OSLog.general, type: .debug)
+
         let userInfo = UserInfo(userInfo)
         handleRemoteNotification(userInfo: userInfo) {_ in
             completionHandler(UIBackgroundFetchResult.newData);
@@ -176,25 +190,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func handleRemoteNotification(userInfo: UserInfo, parentCompletionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         guard let changeType = userInfo[.changeType] as? String, let changeOperation = userInfo[.changeOperation] as? String else {
+            parentCompletionHandler([])
             fatalError("Invalid remote notification, no changeType or changeOperation element")
         }
 
         switch (changeType, changeOperation) {
         case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
             guard let apsInfo = userInfo[.aps] as? NSDictionary, let ntfFromUserId = userInfo[.fromUserId] as? String, let fromUserId = Int(ntfFromUserId), let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId) else {
+                parentCompletionHandler([])
                 fatalError("Invalid remote notification, chat message without aps data, trip ID or sending user ID.")
             }
             guard let currentUserId = User.sharedUser.userId else {
+                parentCompletionHandler([])
                 fatalError("Unable to get logged on user ID.")
             }
-            if let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId), trip.id == tripId {
+            if let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
                 trip.chatThread.refresh(mode: .incremental)
             }
             var handlerOptions:UNNotificationPresentationOptions = [.alert, .sound]
 
             if fromUserId == currentUserId {
                 handlerOptions = []
-            } else if let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
+            } else if let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
                 // Message for current chat - refresh but don't notify
                 trip.chatThread.refresh(mode: .incremental)
                 let soundName:String? = apsInfo["sound"] as? String
@@ -209,23 +226,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             })
             
         case (Constant.changeType.chatMessage, _):
+            parentCompletionHandler([])
             fatalError("Unknown change type/operation: \(changeType), \(changeOperation)")
             
         default:
-            // Update from server (should take place in background)
-            TripList.sharedList.getFromServer(parentCompletionHandler: {
-                parentCompletionHandler([.alert, .sound]);
-            } )
+            // Update from server in background
+            let tripIdStr = userInfo[.tripId] as? String
+            if let tripIdStr = tripIdStr, let tripId = Int(tripIdStr), let trip = TripList.sharedList.trip(byId: tripId) {
+                os_log("Updating trip ID %{public}s", log: OSLog.general, type: .debug, tripIdStr)
+                trip.trip.loadDetails(parentCompletionHandler: {
+                    parentCompletionHandler([.alert, .sound]);
+                } )
+            } else {
+                os_log("Updating trip list", log: OSLog.general, type: .debug)
+                TripList.sharedList.getFromServer(parentCompletionHandler: {
+                    parentCompletionHandler([.alert, .sound]);
+                } )
+            }
         }
     }
     
-
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
     {
+        os_log("userNotificationCenter willPresent", log: OSLog.general, type: .debug)
         if let _ = notification.request.trigger as? UNPushNotificationTrigger {
-            //let userInfo = notification.request.content.userInfo
             let userInfo = UserInfo(notification.request.content.userInfo)
             handleRemoteNotification(userInfo: userInfo) {handlerOptions in
                 completionHandler(handlerOptions)
@@ -240,13 +267,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
+        os_log("userNotificationCenter didReceive", log: OSLog.general, type: .debug)
+
         let category = response.notification.request.content.categoryIdentifier
         let action = response.actionIdentifier
         let userInfo = UserInfo(response.notification.request.content.userInfo)
         
         switch (category, action) {
         case (_, UNNotificationDismissActionIdentifier):
-            //User dismissed notification, no need to do anything - or maybe flag it as read"
+            // User dismissed notification, no need to do anything
             break
             
         case (_, UNNotificationDefaultActionIdentifier):
@@ -344,22 +373,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Release shared resources, save user data, invalidate timers, and store enough
-        // application state information to restore your application to its current state
-        // in case it is terminated later.
-        // If the application supports background execution, this method is called instead
-        // of applicationWillTerminate: when the user quits.
 //        TripList.sharedList.saveToArchive()
     }
 
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application
-        // was inactive. If the application was previously in the background, optionally
-        // refresh the user interface.
-        os_log("Application did become active", log: OSLog.general, type: .debug)
-        if RSUtilities.isNetworkAvailable( SHiTResource.host /*Constant.REST.mySHiT.baseUrl*/) {
-            os_log("Retrieving trip list from server", log: OSLog.general, type: .debug)
+        if RSUtilities.isNetworkAvailable( SHiTResource.host ) {
             if User.sharedUser.hasCredentials() {
                 TripList.sharedList.getFromServer()
             }
@@ -372,8 +391,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
 
     func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate.
-        // See also applicationDidEnterBackground:.
         TripList.sharedList.saveToArchive()
     }
 
@@ -450,7 +467,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         guard let path = Bundle.main.path(forResource: name, ofType:type) else {
-            os_log("Sound file '%s' not found.", log: OSLog.general, type: .error, name)
+            os_log("Sound file '%{public}s' not found.", log: OSLog.general, type: .error, name)
             return
         }
         let url = URL(fileURLWithPath: path)
@@ -458,7 +475,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             avPlayer = try AVAudioPlayer(contentsOf: url)
             avPlayer?.play()
         } catch {
-            os_log("Playing sound file '%s' failed", log: OSLog.general, type: .error, name)
+            os_log("Playing sound file '%{public}s' failed", log: OSLog.general, type: .error, name)
         }
     }
 

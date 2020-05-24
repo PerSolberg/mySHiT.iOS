@@ -36,7 +36,6 @@ class SHiTChatCell: UITableViewCell {
         self.contentView.layoutSubviews()
         super.layoutSubviews()
 
-        // Add speech bubble
         addSpeechBubble()
     }
 

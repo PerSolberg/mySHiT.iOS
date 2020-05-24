@@ -30,7 +30,8 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        automaticallyAdjustsScrollViewInsets = false
+//        automaticallyAdjustsScrollViewInsets = false
+        topView.contentInsetAdjustmentBehavior = .never
         messageTextView.text = Constant.msg.unknownElement
 
         if let serverElements = tripElement?.tripElement.serverData {

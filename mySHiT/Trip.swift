@@ -213,6 +213,7 @@ class Trip: NSObject, NSCoding {
                 }
             }
         }
+        setNotification()
     }
     
 
@@ -269,7 +270,6 @@ class Trip: NSObject, NSCoding {
         }
 
         var elementIDs:[Int] = []
-        var added = false
         var changed = false
         
         // Add or update trips received from server
@@ -278,13 +278,17 @@ class Trip: NSObject, NSCoding {
                 elementIDs.append(elementId)
                 if let aElement = tripElement(byId: elementId) {
                     let elementChanged = aElement.tripElement.update(fromDictionary: elementDict)
-                    aElement.modified = elementChanged ? .Changed : aElement.modified
-                    changed = changed || elementChanged
+                    if elementChanged {
+                        aElement.tripElement.setNotification()
+                        aElement.modified = .Changed
+                        changed = true
+                    }
                 } else {
                     if let newElement = TripElement.createFromDictionary(elementDict) {
+                        newElement.setNotification()
                         elements!.append( AnnotatedTripElement(tripElement: newElement, modified: detailsAlreadyLoaded ? .New : .Unchanged)! )
                     }
-                    added = true
+                    changed = true
                 }
             } else {
                 os_log("Element data is not dictionary or doesn't have ID", log: OSLog.general, type: .error)
@@ -299,10 +303,9 @@ class Trip: NSObject, NSCoding {
             }
         }
         
-        // If new elements were added, sort the list in same order as the server list
-        if added {
+        // If elements were changed, sort the list in same order as the server list
+        if changed {
             elements!.sort(by:{ elementIDs.firstIndex(of: $0.tripElement.id)! < elementIDs.firstIndex(of: $1.tripElement.id)! })
-            changed = true
         }
         
         return changed
@@ -398,7 +401,6 @@ class Trip: NSObject, NSCoding {
                     let newInfo = NotificationInfo(baseDate: tripStart, leadTime: tripLeadtime * 60)
 
                     if (oldInfo == nil || oldInfo!.needsRefresh(newNotification: newInfo!)) {
-                        os_log("Setting notification for trip %d at %s", log: OSLog.notification, type: .debug, id, String(describing: newInfo?.notificationDate))
                         userInfo[.leadTimeType] = Constant.Settings.tripLeadTime as NSObject?
                         
                         let actualLeadTime = tripStart.timeIntervalSince((newInfo?.notificationDate)!)
@@ -441,7 +443,7 @@ class Trip: NSObject, NSCoding {
     }
     
     
-    func loadDetails() {
+    func loadDetails(parentCompletionHandler: (() -> Void)?) {
         let tripResource = SHiTResource.trip(key: code!, parameters: [])
         //Send request
         RESTRequest.get(tripResource) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
@@ -453,11 +455,13 @@ class Trip: NSObject, NSCoding {
                         os_log("More than one trip (%d) found for code '%{public}s'", log: OSLog.webService, type: .error, tripsFound, (self.code ?? "<Unknown>") )
                     } else {
                         TripList.sharedList.update(fromDictionary: responseDictionary)
-//                        NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
                     }
                 } else {
                     os_log("Didn't find expected elements in dictionary: '%{public}s'", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
+            }
+            if let parentCompletionHandler = parentCompletionHandler {
+                parentCompletionHandler()
             }
         }
     }

@@ -75,12 +75,6 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     //
     // MARK: UITextFieldDelegate
     //
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-
-    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         activeField = textField
     }
@@ -109,7 +103,19 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     }
 
     
+    @IBAction func enterKeyPassword(_ sender: Any) {
+        if logonButton.isEnabled {
+            passwordTextField.resignFirstResponder()
+            logon(logonButton)
+        }
+    }
+    
+    
+    @IBAction func enterKeyUserName(_ sender: Any) {
+        passwordTextField.becomeFirstResponder()
+    }
 
+    
     //
     // MARK: Notifications
     //

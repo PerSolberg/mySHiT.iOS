@@ -111,7 +111,7 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
             let references = NSMutableString()
             var separator = ""
             for ref in refList {
-                if /*let refType = ref["type"], */let refNo   = ref["refNo"] {
+                if let refNo   = ref["refNo"] {
                     references.append(separator + refNo)
                     separator = ", "
                 }

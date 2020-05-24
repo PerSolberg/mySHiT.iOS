@@ -151,9 +151,6 @@ class Event: TripElement {
         venuePhone = elementData[Constant.JSON.eventVenuePhone] as? String
         accessInfo = elementData[Constant.JSON.eventAccessInfo] as? String
         
-        if self.isMember(of: Event.self) && changed {
-            setNotification()
-        }
         return changed
     }
 

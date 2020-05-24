@@ -33,7 +33,7 @@ class NotificationLink : DeepLink {
             
             switch (changeType, changeOperation) {
             case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
-                guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
+                guard let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController else {
                     os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
                     return
                 }
@@ -67,7 +67,7 @@ class NotificationLink : DeepLink {
                 fallthrough
                 
             case (_, Constant.changeOperation.update):
-                guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
+                guard let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController else {
                     os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
                     return
                 }

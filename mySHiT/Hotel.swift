@@ -149,9 +149,6 @@ class Hotel: TripElement {
         phone = elementData[Constant.JSON.hotelPhone] as? String
         transferInfo = elementData[Constant.JSON.hotelTransferInfo] as? String
 
-        if self.isMember(of: Hotel.self) && changed {
-            setNotification()
-        }
         return changed
     }
 

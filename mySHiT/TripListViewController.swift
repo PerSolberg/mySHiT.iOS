@@ -120,7 +120,7 @@ class TripListViewController: UITableViewController {
             let storyboard: UIStoryboard = UIStoryboard(name:"Main", bundle: nil)
             let logonVC = storyboard.instantiateViewController(withIdentifier: "logonScreen") as! LogonViewController
             
-            guard let rootVC = UIApplication.shared.keyWindow?.rootViewController else {
+            guard let rootVC = UIWindow.key?.rootViewController else {
                 os_log("Unable to get root view controller", log: OSLog.general, type: .error)
                 return
             }
@@ -221,7 +221,7 @@ class TripListViewController: UITableViewController {
         endRefreshing()
         var poppedVCs:[UIViewController]?
         DispatchQueue.main.sync {
-            guard let rootVC = UIApplication.shared.keyWindow?.rootViewController, let navVC = rootVC as? UINavigationController else {
+            guard let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController else {
                 os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
                 return
             }
@@ -358,16 +358,25 @@ class TripListViewController: UITableViewController {
 
     
     func saveSections() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(sections, toFile:  Constant.archive.sectionsURL.path)
-        if !isSuccessfulSave {
-            os_log("Failed to save sections", log: OSLog.general, type: .error)
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: sections, requiringSecureCoding: false)
+            try data.write(to: Constant.archive.sectionsURL)
+        } catch {
+            os_log("Failed to save sections: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
         }
     }
     
     
     func loadTrips() {
         TripList.sharedList.loadFromArchive()
-        sections = NSKeyedUnarchiver.unarchiveObject(withFile: Constant.archive.sectionsURL.path ) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
+//        sections = NSKeyedUnarchiver.unarchiveObject(withFile: Constant.archive.sectionsURL.path ) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
+        
+        do {
+            let fileData = try Data(contentsOf: Constant.archive.sectionsURL)
+            sections = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
+        } catch {
+            os_log("Failed to load sections: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
+        }
     }
     
 
@@ -409,11 +418,14 @@ class TripListViewController: UITableViewController {
                     aTrip.section = .Future
                 }
             }
-            if prevSection != aTrip.section || ix == 0 {
-                let section = sections.first { return $0.type == aTrip.section }
-                section!.firstTrip = ix
+            if prevSection != aTrip.section {
+                let section = sections.first { return $0.type == prevSection }
+                section!.firstTrip = ix + 1
             }
             prevSection = aTrip.section
+        }
+        if let firstSection = sections.first(where: { return $0.type == TripList.sharedList[0]?.section }) {
+            firstSection.firstTrip = 0
         }
     }
 

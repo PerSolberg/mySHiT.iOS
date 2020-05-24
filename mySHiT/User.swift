@@ -13,10 +13,6 @@ import os
 class User : NSObject, NSCoding {
     static let sharedUser = User()
     
-    // Keyed archiver configuration
-    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let ArchiveUserURL = DocumentsDirectory.appendingPathComponent("user")
-
     //
     // MARK: Properties
     //
@@ -100,13 +96,13 @@ class User : NSObject, NSCoding {
         aCoder.encode(srvUserName, forKey: PropertyKey.userNameKey)
         aCoder.encode(srvFullName, forKey: PropertyKey.fullNameKey)
         aCoder.encode(srvCommonName, forKey: PropertyKey.commonNameKey)
+        aCoder.encode(srvShortName, forKey: PropertyKey.shortNameKey)
+        aCoder.encode(srvInitials, forKey: PropertyKey.initialsKey)
     }
     
     
     required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
-        //id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
-        srvUserId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
+        srvUserId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int
         srvUserName = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String
         srvFullName  = aDecoder.decodeObject(forKey: PropertyKey.fullNameKey) as? String
         srvCommonName  = aDecoder.decodeObject(forKey: PropertyKey.commonNameKey) as? String
@@ -136,18 +132,22 @@ class User : NSObject, NSCoding {
         RESTRequest.get(userResource) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
             let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
             if status.status == .ok {
-                self.srvUserName = userName
-                User.sharedUser.password = password
-                self.srvCommonName = responseDictionary?[Constant.JSON.userCommonName] as? String
-                self.srvFullName = responseDictionary?[Constant.JSON.userFullName] as? String
-                self.srvUserId = responseDictionary?[Constant.JSON.userId] as? Int
-                self.srvInitials = responseDictionary?[Constant.JSON.userInitials] as? String
-                self.srvShortName = responseDictionary?[Constant.JSON.userShortName] as? String
-                
-                self.registerForPushNotifications()
-                self.saveUser()
+                if let userJSON =  responseDictionary?[Constant.JSON.queryUser] as? NSDictionary {
+                    self.srvUserName = userName
+                    User.sharedUser.password = password
+                    self.srvCommonName = userJSON[Constant.JSON.userCommonName] as? String
+                    self.srvFullName = userJSON[Constant.JSON.userFullName] as? String
+                    self.srvUserId = userJSON[Constant.JSON.userId] as? Int
+                    self.srvInitials = userJSON[Constant.JSON.userInitials] as? String
+                    self.srvShortName = userJSON[Constant.JSON.userShortName] as? String
+                    
+                    self.registerForPushNotifications()
+                    self.saveUser()
 
-                NotificationCenter.default.post(name: Constant.notification.logonSuccessful, object: self)
+                    NotificationCenter.default.post(name: Constant.notification.logonSuccessful, object: self)
+                } else {
+                    os_log("Incorrect web service response, element '%{public}s' not found", log: OSLog.webService, type: .error, Constant.JSON.queryUser)
+                }
             } else if status.status == .serverError {
                 NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
             }
@@ -190,21 +190,37 @@ class User : NSObject, NSCoding {
 
     
     func saveUser() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: User.ArchiveUserURL.path)
-        if !isSuccessfulSave {
-            os_log("Failed to save user", log: OSLog.general, type: .error)
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
+            try data.write(to: Constant.archive.userURL)
+        } catch {
+            os_log("Failed to save user: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
         }
     }
     
     func loadUser() {
-        if try! FileManager.default.fileExists(atPath: User.ArchiveUserURL.path) && FileManager.default.attributesOfItem(atPath: User.ArchiveUserURL.path)[FileAttributeKey.size] as! Int > 0 {
-            if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: User.ArchiveUserURL.path) as? User {
-                self.srvUserId     = newUser.srvUserId
-                self.srvUserName   = newUser.srvUserName
-                self.srvFullName   = newUser.fullName
-                self.srvCommonName = newUser.commonName
+        if try! FileManager.default.fileExists(atPath: Constant.archive.userURL.path) && FileManager.default.attributesOfItem(atPath: Constant.archive.userURL.path)[FileAttributeKey.size] as! Int > 0 {
+//            if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: Constant.archive.userURL.path) as? User {
+//                self.srvUserId     = newUser.srvUserId
+//                self.srvUserName   = newUser.srvUserName
+//                self.srvFullName   = newUser.fullName
+//                self.srvCommonName = newUser.commonName
+//                self.srvInitials   = newUser.srvInitials
+//                self.srvShortName  = newUser.srvShortName
+//            }
+            do {
+                let fileData = try Data(contentsOf: Constant.archive.userURL)
+                if let newUser = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? User {
+                    self.srvUserId     = newUser.srvUserId
+                    self.srvUserName   = newUser.srvUserName
+                    self.srvFullName   = newUser.fullName
+                    self.srvCommonName = newUser.commonName
+                    self.srvInitials   = newUser.srvInitials
+                    self.srvShortName  = newUser.srvShortName
+                }
+            } catch {
+                os_log("Failed to load user: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
             }
         }
     }
-
 }

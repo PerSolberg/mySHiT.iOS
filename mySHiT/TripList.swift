@@ -13,7 +13,7 @@ import UserNotifications
 import os
 
 
-class TripList:NSObject, Sequence, NSCoding {
+public class TripList:NSObject, Sequence, NSCoding {
     typealias Index = Int
     
     static let sharedList = TripList()
@@ -44,13 +44,13 @@ class TripList:NSObject, Sequence, NSCoding {
     //
     // MARK: NSCoding
     //
-    func encode(with aCoder: NSCoder) {
+    public func encode(with aCoder: NSCoder) {
         aCoder.encode(lastUpdateTS, forKey: PropertyKey.lastUpdateTSKey)
         aCoder.encode(trips, forKey: PropertyKey.tripsKey)
     }
 
     
-    required init?( coder aDecoder: NSCoder) {
+    required public init?( coder aDecoder: NSCoder) {
         super.init()
         // NB: use conditional cast (as?) for any optional properties
         lastUpdateTS = aDecoder.decodeObject(forKey: PropertyKey.lastUpdateTSKey) as? ServerTimestamp
@@ -61,7 +61,7 @@ class TripList:NSObject, Sequence, NSCoding {
     //
     // MARK: SequenceType
     //
-    func makeIterator() -> AnyIterator<AnnotatedTrip> {
+    public func makeIterator() -> AnyIterator<AnnotatedTrip> {
         // keep the index of the next trip in the iteration
         var nextIndex = 0
         
@@ -134,16 +134,7 @@ class TripList:NSObject, Sequence, NSCoding {
 
         let tripListResource = SHiTResource.tripList(parameters: [])
         RESTRequest.get(tripListResource) {(response : URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> Void in
-//            if let error = error {
-//                //If there was an error, log it
-//                os_log("Communication error : %{public}s", log: OSLog.webService, type: .error,  error.localizedDescription)
-//                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
-//            } else if let error = responseDictionary?[Constant.JSON.queryError] {
-//                let errMsg = error as! String
-//                os_log("Server error : %{public}s", log: OSLog.webService, type: .error,  errMsg)
-//                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
             let status = SHiTResource.checkStatus(response: response, responseDictionary: responseDictionary, error: error)
-//            if !SHiTResource.handleStandardError(response: response, responseDictionary: responseDictionary, error: error).handled {
             if status.status == .ok {
                 self.update(fromDictionary: responseDictionary)
             }
@@ -189,7 +180,6 @@ class TripList:NSObject, Sequence, NSCoding {
         // Add or update trips received from server
         var changed = false
         var tripIDs = Set<Int>()
-        var added = false
         for tripObj in newTrips {
             if let tripDict = tripObj as? NSDictionary, let tripId = tripDict[Constant.JSON.tripId] as? Int {
                 tripIDs.insert(tripId)
@@ -207,7 +197,12 @@ class TripList:NSObject, Sequence, NSCoding {
                     if let newTrip = Trip(fromDictionary: tripDict, updateTS: serverTS) {
                         newTrip.registerForPushNotifications()
                         trips.append( AnnotatedTrip(section: .Historic, trip: newTrip, modified: initialLoad ? .Unchanged : .New)! )
-                        added = true
+                        if let tripTense = newTrip.tense, tripTense == .future || tripTense == .present {
+                            DispatchQueue.global().async {
+                                newTrip.loadDetails(parentCompletionHandler: nil)
+                            }
+                        }
+                        changed = true
                     } else {
                         os_log("Unable to create trip from dictionary", log: OSLog.general, type: .error)
                     }
@@ -228,13 +223,8 @@ class TripList:NSObject, Sequence, NSCoding {
             }
         }
         
-        // If new trips were added, sort the list
-        if added {
-            trips.sort(by:{ !($0.trip.isBefore($1.trip) ?? false) })
-            changed = true
-        }
-
         if changed {
+            trips.sort(by:{ !($0.trip.isBefore($1.trip) ?? false) })
             saveToArchive()
         }
         
@@ -247,23 +237,24 @@ class TripList:NSObject, Sequence, NSCoding {
     
     // Load from keyed archive
     func loadFromArchive() {
-        let path = Constant.archive.tripsURL.path
-        let newTripList = NSKeyedUnarchiver.unarchiveObject(withFile: path) as? [AnnotatedTrip]
-        trips = newTripList ?? [AnnotatedTrip]()
-        refreshNotifications()
+        do {
+            let fileData = try Data(contentsOf: Constant.archive.tripsURL)
+            trips = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? [AnnotatedTrip] ?? [AnnotatedTrip]()
+            refreshNotifications()
+        } catch {
+            os_log("Failed to load sections: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
+        }
+
     }
 
 
     func saveToArchive() {
-        let path = Constant.archive.tripsURL.path
-        
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(trips!, toFile: path)
-        if !isSuccessfulSave {
-            os_log("Failed to save trips", log: OSLog.general, type: .error)
-        } else {
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: trips!, requiringSecureCoding: false)
+            try data.write(to: Constant.archive.tripsURL)
             os_log("Trips saved to iOS keyed archive", log: OSLog.general, type: .info)
-//            print("Trips saved:")
-//            printStack(filterMySHiT: true)
+        } catch {
+            os_log("Failed to save trips: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
         }
     }
     

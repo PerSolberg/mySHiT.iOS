@@ -8,7 +8,7 @@
 
 import Foundation
 
-class AnnotatedTrip: NSObject, NSCoding {
+public class AnnotatedTrip: NSObject, NSCoding {
     var section: TripListSection
     var trip: Trip
     var modified: ChangeState
@@ -23,14 +23,14 @@ class AnnotatedTrip: NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
-    func encode(with aCoder: NSCoder) {
+    public func encode(with aCoder: NSCoder) {
         aCoder.encode(modified.rawValue, forKey: PropertyKey.modifiedKey)
         aCoder.encode(section.rawValue, forKey: PropertyKey.sectionKey)
         aCoder.encode(trip, forKey: PropertyKey.tripKey)
     }
     
     
-    required convenience init?(coder aDecoder: NSCoder) {
+    required public convenience init?(coder aDecoder: NSCoder) {
         let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
         var modified:ChangeState = .Unchanged
         if (_modified != nil) {

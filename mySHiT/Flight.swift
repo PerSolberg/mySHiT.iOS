@@ -70,7 +70,7 @@ class Flight: ScheduledTransport {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
         airlineCode = elementData[Constant.JSON.airlineCompanyCode] as? String
-        setNotification()
+//        setNotification()
     }
     
     
@@ -82,9 +82,6 @@ class Flight: ScheduledTransport {
 
         airlineCode = elementData[Constant.JSON.airlineCompanyCode] as? String
                 
-        if self.isMember(of: Flight.self) && changed {
-            setNotification()
-        }
         return changed
     }
 
