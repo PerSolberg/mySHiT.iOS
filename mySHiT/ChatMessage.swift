@@ -179,8 +179,7 @@ class ChatMessage: NSObject, NSCoding {
     }
     
     
-    static func read(fromUserInfo userInfo: UserInfo/*[AnyHashable:Any]*/, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
-        //super.init(fromDictionary: elementData)
+    static func read(fromUserInfo userInfo: UserInfo, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
         guard let changeType = userInfo[.changeType] as? String, let changeOp = userInfo[.changeOperation] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
             fatalError("Invalid usage, can only be used to initialise message from notification")
         }

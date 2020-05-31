@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import os
 
-class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController {
+class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController, UNUserNotificationCenterDelegate {
     //
     // MARK: Constants
     //
@@ -30,6 +30,8 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     // DeepLinkableViewController
     var wasDeepLinked = false
 
+    // UNUserNotificationCenterDelegate
+    var oldUserNotificationCenterDelegate:UNUserNotificationCenterDelegate?
     
     //
     // MARK: Actions
@@ -88,8 +90,6 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         super.viewDidLoad()
         
         if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
-//            _ = RSUtilities.networkConnectionType("www.shitt.no")
-            
             //If host is not reachable, display a UIAlertController informing the user
             showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError, completion: nil)
         }
@@ -110,12 +110,15 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        oldUserNotificationCenterDelegate = UNUserNotificationCenter.current().delegate
+        UNUserNotificationCenter.current().delegate = self
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
+        UNUserNotificationCenter.current().delegate = oldUserNotificationCenterDelegate
         super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
@@ -170,6 +173,46 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     
     
     //
+    // MARK: UNUserNotificationCenterDelegate
+    //
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
+    {
+        guard let currentUserId = User.sharedUser.userId else {
+            completionHandler([])
+            fatalError("Unable to get logged on user ID.")
+        }
+
+        if let _ = notification.request.trigger as? UNPushNotificationTrigger, let ntf = RemoteNotification(from: notification.request.content.userInfo), ntf.changeType == Constant.changeType.chatMessage && ntf.changeOperation == Constant.changeOperation.insert, let fromUserId = ntf.fromUserId {
+            if fromUserId == currentUserId {
+                completionHandler([])
+            } else {
+                completionHandler([.sound])
+            }
+        } else {
+            oldUserNotificationCenterDelegate?.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler) ?? {
+                completionHandler([.alert, .sound]) }()
+        }
+    }
+
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        oldUserNotificationCenterDelegate?.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler) ?? {
+            completionHandler() }()
+    }
+
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
+        oldUserNotificationCenterDelegate?.userNotificationCenter?(center, openSettingsFor: notification) ?? {
+            os_log("Unable to invoke old delegate _:openSettingsFor", log: OSLog.notification, type: .debug)
+            }()
+    }
+  
+    
+    //
     // MARK: Actions
     //
     @IBAction func sendMessage(_ sender: Any) {
@@ -205,4 +248,30 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         }
     }
     
+    
+    //
+    // MARK: Static functions
+    //
+    static func pushDeepLinked(for tripId:Int) {
+        guard let navVC = UIApplication.rootNavigationController else {
+            os_log("Unable to get root navigation controller", log: OSLog.general, type: .error)
+            return
+        }
+        if let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
+            os_log("Message for current chat - No need to do anything, already handled", log: OSLog.general, type: .debug)
+        } else {
+            navVC.popDeepLinkedControllers()
+            // Push correct view controller onto navigation stack
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "ChatViewController")
+            if let chatViewController = viewController as? ChatViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
+                chatViewController.wasDeepLinked = true
+                chatViewController.trip = annotatedTrip
+                navVC.pushViewController(chatViewController, animated: true)
+            } else {
+                os_log("Unable to get chat view controller or trip", log: OSLog.general, type: .error)
+            }
+        }
+
+    }
 }

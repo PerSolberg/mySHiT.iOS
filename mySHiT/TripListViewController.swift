@@ -59,7 +59,6 @@ class TripListViewController: UITableViewController {
                     let selectedTrip = TripList.sharedList[s!.section.firstTrip! + indexPath.row]!
                     tripToRefresh = indexPath
                     destinationController.tripCode = selectedTrip.trip.code
-                    destinationController.tripSection = s!.section.type
                 }
                 
             default:
@@ -131,8 +130,6 @@ class TripListViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        os_log("TripList viewWillAppear", log: OSLog.general, type:.debug)
 
         // Load data & check if section list is complete (if not, add missing elements)
         // No need to reload every time, only when launching
@@ -257,12 +254,8 @@ class TripListViewController: UITableViewController {
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let s = getSectionById(section) {
-            if s.section.visible {
-                return s.itemCount
-            } else {
-                return 0
-            }
+        if let s = getSectionById(section), s.section.visible {
+            return s.itemCount
         } else {
             return 0
         }
@@ -369,7 +362,6 @@ class TripListViewController: UITableViewController {
     
     func loadTrips() {
         TripList.sharedList.loadFromArchive()
-//        sections = NSKeyedUnarchiver.unarchiveObject(withFile: Constant.archive.sectionsURL.path ) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
         
         do {
             let fileData = try Data(contentsOf: Constant.archive.sectionsURL)

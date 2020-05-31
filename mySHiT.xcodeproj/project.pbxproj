@@ -23,6 +23,7 @@
 		853ADF511C32996D0092832C /* UITableView+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853ADF501C32996D0092832C /* UITableView+mySHiT.swift */; };
 		853F7F9224792E660046E61C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 853F7F9124792E660046E61C /* UserNotifications.framework */; };
 		853F7F9B2479DD5F0046E61C /* UIWindow+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853F7F9A2479DD5F0046E61C /* UIWindow+mySHiT.swift */; };
+		853F7FA1247BDD830046E61C /* RemoteNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853F7FA0247BDD830046E61C /* RemoteNotification.swift */; };
 		85595BEA22CC0D2200A51E4E /* String+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85595BE922CC0D2200A51E4E /* String+mySHiT.swift */; };
 		855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F33581BDEE853002CB89B /* AlertListViewController.swift */; };
 		855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F335A1BDF6C2F002CB89B /* TripList.swift */; };
@@ -72,6 +73,8 @@
 		85F490EE1E892BD4004D9A5D /* ChatTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F490ED1E892BD4004D9A5D /* ChatTableController.swift */; };
 		85F6A5241BEECA2C00141938 /* GUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85F6A5231BEECA2C00141938 /* GUI.storyboard */; };
 		85F7696E1E8540B80085151F /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F7696D1E8540B80085151F /* ChatMessage.swift */; };
+		85F9BDA72484564A003DAFF3 /* UIApplication+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F9BDA62484564A003DAFF3 /* UIApplication+mySHiT.swift */; };
+		85F9BDA9248457D0003DAFF3 /* UINavigationController+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F9BDA8248457D0003DAFF3 /* UINavigationController+mySHiT.swift */; };
 		85FE1CCA1C31C4C100BA19FA /* UIImage+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FE1CC91C31C4C100BA19FA /* UIImage+mySHiT.swift */; };
 		85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC3E1BC7FCF800D8E38E /* AppDelegate.swift */; };
 		85FEFC411BC7FCF800D8E38E /* TripListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEFC401BC7FCF800D8E38E /* TripListViewController.swift */; };
@@ -154,6 +157,7 @@
 		853ADF501C32996D0092832C /* UITableView+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+mySHiT.swift"; sourceTree = "<group>"; };
 		853F7F9124792E660046E61C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		853F7F9A2479DD5F0046E61C /* UIWindow+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+mySHiT.swift"; sourceTree = "<group>"; };
+		853F7FA0247BDD830046E61C /* RemoteNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteNotification.swift; sourceTree = "<group>"; };
 		85595BE922CC0D2200A51E4E /* String+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+mySHiT.swift"; sourceTree = "<group>"; };
 		855F33581BDEE853002CB89B /* AlertListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertListViewController.swift; sourceTree = "<group>"; };
 		855F335A1BDF6C2F002CB89B /* TripList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripList.swift; sourceTree = "<group>"; };
@@ -208,6 +212,8 @@
 		85F490ED1E892BD4004D9A5D /* ChatTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableController.swift; sourceTree = "<group>"; };
 		85F6A5231BEECA2C00141938 /* GUI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = GUI.storyboard; sourceTree = "<group>"; };
 		85F7696D1E8540B80085151F /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		85F9BDA62484564A003DAFF3 /* UIApplication+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+mySHiT.swift"; sourceTree = "<group>"; };
+		85F9BDA8248457D0003DAFF3 /* UINavigationController+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+mySHiT.swift"; sourceTree = "<group>"; };
 		85FE1CC91C31C4C100BA19FA /* UIImage+mySHiT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+mySHiT.swift"; sourceTree = "<group>"; };
 		85FEFC3B1BC7FCF800D8E38E /* mySHiT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mySHiT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85FEFC3E1BC7FCF800D8E38E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -285,6 +291,7 @@
 				85EA06F7200E290200C61D48 /* DeepLink.swift */,
 				85EA06F5200CDFC800C61D48 /* DeepLinkManager.swift */,
 				85EA06F9200E2CCA00C61D48 /* NotificationLink.swift */,
+				853F7FA0247BDD830046E61C /* RemoteNotification.swift */,
 			);
 			name = AlertsAndNotifications;
 			sourceTree = "<group>";
@@ -350,9 +357,11 @@
 				856B947522A025EB008A7E99 /* UITextField+mySHiT.swift */,
 				8520FB3E2292BC9D002E7CF2 /* UITextView+mySHiT.swift */,
 				85179B4C1BDDB09F0097F571 /* UIView+mySHiT.swift */,
+				85F9BDA62484564A003DAFF3 /* UIApplication+mySHiT.swift */,
 				85EA06FD20193D3F00C61D48 /* UIViewController+mySHiT.swift */,
 				853F7F9A2479DD5F0046E61C /* UIWindow+mySHiT.swift */,
 				85EBF78822A7CE5900D4389B /* UserInfoDictionary.swift */,
+				85F9BDA8248457D0003DAFF3 /* UINavigationController+mySHiT.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -765,6 +774,7 @@
 				856D665A1BD6F73100C62D79 /* Hotel.swift in Sources */,
 				856D66521BD66A3900C62D79 /* TripElement.swift in Sources */,
 				8519D67C1E97B6410077FB52 /* UIChatMessage.swift in Sources */,
+				85F9BDA9248457D0003DAFF3 /* UINavigationController+mySHiT.swift in Sources */,
 				855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */,
 				85FEFC3F1BC7FCF800D8E38E /* AppDelegate.swift in Sources */,
 				85ABD35E1BD5987500B26F07 /* AnnotatedTripElement.swift in Sources */,
@@ -780,11 +790,13 @@
 				856D66541BD671A300C62D79 /* Flight.swift in Sources */,
 				85DBE0E222E48B7E002382EB /* NSMutableAttributedString+mySHiT.swift in Sources */,
 				85FEFC6D1BC818FA00D8E38E /* LogonViewController.swift in Sources */,
+				85F9BDA72484564A003DAFF3 /* UIApplication+mySHiT.swift in Sources */,
 				85C52A1D1BD446C100F625B5 /* NSDate+mySHiT.swift in Sources */,
 				8511738A1BE37245008FE3BE /* HotelDetailsViewController.swift in Sources */,
 				85229DD01BFE041A000893E5 /* PrivateTransportDetailsViewController.swift in Sources */,
 				85FE1CCA1C31C4C100BA19FA /* UIImage+mySHiT.swift in Sources */,
 				85916FA11E8595C000FF9B19 /* ChatViewController.swift in Sources */,
+				853F7FA1247BDD830046E61C /* RemoteNotification.swift in Sources */,
 				85595BEA22CC0D2200A51E4E /* String+mySHiT.swift in Sources */,
 				85EBF78722A4590A00D4389B /* DeepLinkableViewController.swift in Sources */,
 				856D66581BD6845D00C62D79 /* ServerDate.swift in Sources */,

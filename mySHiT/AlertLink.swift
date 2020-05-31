@@ -21,8 +21,8 @@ class AlertLink : DeepLink {
     func handle() {
         if let tripElementId = userInfo[.tripElementId] as? Int {
             os_log("Notification link for trip element '%d'", log: OSLog.general, type: .debug, tripElementId)
-            guard let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController else {
-                os_log("Unable to get root view controller or it is not a navigation controller", log: OSLog.general, type: .error)
+            guard let navVC = UIApplication.rootNavigationController else {
+                os_log("Unable to get root navigation controller", log: OSLog.general, type: .error)
                 return
             }
             guard let (trip, tripElement) = TripList.sharedList.tripElement(byId: tripElementId) else {
@@ -30,9 +30,7 @@ class AlertLink : DeepLink {
                 return
             }
             if let vc = tripElement.tripElement.viewController(trip: trip, element: tripElement) {
-                if let visVC = navVC.visibleViewController, vc.isSame(visVC) {
-                    // Already showing correct element
-                } else {
+                if let visVC = navVC.visibleViewController, !vc.isSame(visVC) {
                     navVC.pushViewController(vc, animated: true)
                 }
             }

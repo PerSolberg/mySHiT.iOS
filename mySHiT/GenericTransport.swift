@@ -233,11 +233,8 @@ class GenericTransport: TripElement {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
-            if let timeZoneName = departureTimeZone {
-                let timezone = TimeZone(identifier: timeZoneName)
-                if timezone != nil {
-                    dateFormatter.timeZone = timezone
-                }
+            if let timeZoneName = departureTimeZone, let timezone = TimeZone(identifier: timeZoneName) {
+                dateFormatter.timeZone = timezone
             }
         
             return dateFormatter.string(from: departureTime)
@@ -251,11 +248,8 @@ class GenericTransport: TripElement {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = dateStyle
             dateFormatter.timeStyle = timeStyle
-            if let timeZoneName = arrivalTimeZone {
-                let timezone = TimeZone(identifier: timeZoneName)
-                if timezone != nil {
-                    dateFormatter.timeZone = timezone
-                }
+            if let timeZoneName = arrivalTimeZone, let timezone = TimeZone(identifier: timeZoneName) {
+                dateFormatter.timeZone = timezone
             }
 
             return dateFormatter.string(from: arrivalTime)

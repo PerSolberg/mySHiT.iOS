@@ -106,7 +106,7 @@ class RESTRequest {
             } else if let jsonResponse = jsonResponse as? [Any] {
                 resultDictionary[RESTRequest.dictKey] = jsonResponse
             }
-            handler(response, resultDictionary/*.copy() as? NSDictionary*/, error)
+            handler(response, resultDictionary, error)
         }).resume()
     }
 

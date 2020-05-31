@@ -150,6 +150,7 @@ public class TripList:NSObject, Sequence, NSCoding {
     func update(fromDictionary responseData: NSDictionary!) {
         TripList.dqAccess.async(flags: .barrier) {
             self.performUpdate(fromDictionary: responseData)
+            os_log("Updates complete, signalling refresh", log: OSLog.general, type: .debug)
             NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
         }
     }
@@ -168,7 +169,7 @@ public class TripList:NSObject, Sequence, NSCoding {
             os_log("Response does not contain valid '%{public}s' element", log: OSLog.general, type: .error, Constant.JSON.srvTS)
             return
         }
-        
+
         let initialLoad = ( lastUpdateTS == nil )
         if contentType == SHiTResource.Result.contentList {
             if let lastUpdateTS = lastUpdateTS, serverTS <= lastUpdateTS {

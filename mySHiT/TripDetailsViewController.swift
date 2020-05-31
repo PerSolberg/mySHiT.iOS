@@ -19,7 +19,6 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     
     // Passed from TripListViewController
     var tripCode:String?
-    var tripSection:TripListSection?
     
     // Retrieved based on tripCode
     var trip:AnnotatedTrip?
@@ -30,7 +29,10 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     // DeepLinkableViewController
     var wasDeepLinked: Bool
     
+    
+    //
     // MARK: Navigation
+    //
     @IBAction func openSettings(_ sender: AnyObject) {
         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
@@ -38,7 +40,6 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
         
-    // Prepare for navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         if let segueId = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
@@ -107,7 +108,9 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
     
+    //
     // MARK: Callbacks
+    //
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -121,15 +124,6 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         refreshControl!.tintColor = UIColor.blue
         refreshControl!.addTarget(self, action: #selector(TripDetailsViewController.reloadTripDetailsFromServer), for: .valueChanged)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
-    }
-
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             self.title = trip.trip.name
@@ -141,6 +135,16 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
                 trip.trip.loadDetails(parentCompletionHandler: nil)
             }
         }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+    }
+
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
     }
     
     
@@ -181,12 +185,8 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let s = getSectionById(section) {
-            if s.section.visible {
-                return s.itemCount
-            } else {
-                return 0
-            }
+        if let s = getSectionById(section), s.section.visible {
+            return s.itemCount
         } else {
             return 0
         }
@@ -227,7 +227,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             lblDesc.text = tripElement.detailInfo ?? "No details available"
             imgView.image = tripElement.icon?.overlayBadge(trip!.trip.elements![rowIdx].modified)
         } else {
-            // ERROR!!!
+            os_log("Section %d not found", log: OSLog.general, type: .error, indexPath.section)
         }
 
         return cell!
@@ -332,6 +332,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     
     
     @objc func refreshTripElements() {
+        os_log("TripDetailsViewController refreshTripElements", log: OSLog.general, type:.debug)
         endRefreshing()
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
@@ -355,12 +356,13 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         var lastElementTense = Tenses.future
         if let trip = trip, let elements = trip.trip.elements {
             for (i, element) in elements.enumerated() {
+
                 let elemStartDate = element.tripElement.startTime(dateStyle: .medium, timeStyle: .none) ?? lastSectionTitle
                 if elemStartDate != lastSectionTitle {
                     // First check if previous section should be hidden by default
                     // For active trips, past dates are collapsed by default; active and future dates are expanded
                     // For past and future trips, all sections are expanded by default
-                    if tripSection == .Current && lastElementTense == .past {
+                    if trip.trip.tense ?? .past == .present && lastElementTense == .past {
                         sections[sections.count - 1].visible = false
                     }
                     
@@ -385,6 +387,43 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
 
         return (sectionNo, sections[sectionNo], firstTripNextSection - sections[sectionNo].firstTripElement!)
     }
+    
+    
+    fileprivate func logSectionDetails() {
+        var sectionInfo = ""
+        for (i,s) in sections.enumerated() {
+            let prefix = sectionInfo == "" ? "" : ", "
+            let visibility = s.visible ? "visible" : "hidden"
+            let firstElement = s.firstTripElement?.description ?? "nil"
+            let elementInfo = s.title + ", " + visibility + ", " + firstElement
+            sectionInfo = sectionInfo + prefix + i.description + ": (" + elementInfo + ")"
+        }
+        os_log("Sections = %{public}s", log: OSLog.general, type: .debug, sectionInfo)
+    }
+    
+    //
+    // MARK: Static functions
+    //
+    static func pushDeepLinked(for tripId:Int) {
+        guard let navVC = UIApplication.rootNavigationController else {
+            os_log("Unable to get root navigation controller", log: OSLog.general, type: .error)
+            return
+        }
+        if let tripVC = navVC.visibleViewController as? TripDetailsViewController, let trip = tripVC.trip?.trip, trip.id == tripId {
+            os_log("Update for current trip - No need to do anything, already handled", log: OSLog.general, type: .debug)
+        } else {
+            navVC.popDeepLinkedControllers()
+            // Push correct view controller onto navigation stack
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "TripDetailsViewController")
+            if let tripViewController = viewController as? TripDetailsViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
+                tripViewController.wasDeepLinked = true
+                tripViewController.trip = annotatedTrip
+                tripViewController.tripCode = annotatedTrip.trip.code
+                navVC.pushViewController(tripViewController, animated: true)
+            } else {
+                os_log("Unable to get trip details view controller or trip", log: OSLog.general, type: .error)
+            }
+        }
+    }
 }
-
-

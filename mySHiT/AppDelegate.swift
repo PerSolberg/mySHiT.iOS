@@ -22,7 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let gcmMessageIDKey = "gcm.message_id"
     var appSettings = Dictionary<AnyHashable, Any>()
     var avPlayer:AVAudioPlayer?
-//    var pushRegistry: PKPushRegistry
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {        
         os_log("application didFinishLaunchingWithOptions", log: OSLog.general, type: .debug)
@@ -77,6 +76,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
 
+    //
+    // MARK: Shorcuts
+    //
     @objc func refreshShortcuts() {
         DispatchQueue.main.async {
             self.configureShortCuts(UIApplication.shared)
@@ -105,9 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         if let trip = lastTrip, let tripName = trip.trip.name {
-            let userInfo:UserInfo = [ .changeType: Constant.changeType.chatMessage,
-                                      .changeOperation: Constant.changeOperation.insert,
-                                      .tripId: String(trip.trip.id) ]
+            let userInfo:UserInfo = [ .tripId: String(trip.trip.id) ]
             let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
                 localizedTitle: tripName,
                 localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
@@ -117,7 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             shortcuts.append(shortcut)
         }
         if let trip = currentTrip, let tripName = trip.trip.name {
-            let userInfo:UserInfo = [ .changeType: Constant.changeType.chatMessage, .changeOperation: Constant.changeOperation.insert, .tripId: String(trip.trip.id) ]
+            let userInfo:UserInfo = [ .tripId: String(trip.trip.id) ]
             let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
                 localizedTitle: tripName,
                 localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
@@ -127,9 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             shortcuts.append(shortcut)
         }
         if let trip = nextTrip, let tripName = trip.trip.name {
-            let userInfo:UserInfo = [ .changeType: Constant.changeType.chatMessage,
-                                      .changeOperation: Constant.changeOperation.insert,
-                                      .tripId: String(trip.trip.id) ]
+            let userInfo:UserInfo = [ .tripId: String(trip.trip.id) ]
             let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
                 localizedTitle: tripName,
                 localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
@@ -148,9 +146,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         switch (shortcutItem.type) {
         case Constant.shortcut.chat:
             let userInfo = UserInfo(shortcutItem.userInfo)
-            let ntfLink = NotificationLink(userInfo: userInfo)
-            DeepLinkManager.current().set(linkHandler: ntfLink)
-            DeepLinkManager.current().checkAndHandle()
+            guard let tripIdStr = userInfo[.tripId] as? String, let tripId = Int(tripIdStr) else {
+                os_log("Invalid shortcut, no tripId", log: OSLog.general, type: .error)
+                return
+            }
+            ChatViewController.pushDeepLinked(for: tripId)
 
         default:
             os_log("Don't know how to handle shortcut type '%{public}s'", log: OSLog.general, type: .error, shortcutItem.type)
@@ -160,6 +160,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     
+    //
+    // MARK: Remote Notifications
+    //
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
         os_log("Remote notification support is unavailable due to error: %{public}s", log: OSLog.notification, type: .error, error.localizedDescription)
@@ -181,89 +184,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         os_log("application didReceiveRemoteNotification", log: OSLog.general, type: .debug)
 
-        let userInfo = UserInfo(userInfo)
-        handleRemoteNotification(userInfo: userInfo) {_ in
-            completionHandler(UIBackgroundFetchResult.newData);
+        guard let remoteNotification = RemoteNotification(from: userInfo) else {
+            completionHandler(.failed)
+            return
         }
+        handleRemoteNotification(notification: remoteNotification, completionHandler: completionHandler)
     }
     
     
-    func handleRemoteNotification(userInfo: UserInfo, parentCompletionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        guard let changeType = userInfo[.changeType] as? String, let changeOperation = userInfo[.changeOperation] as? String else {
-            parentCompletionHandler([])
-            fatalError("Invalid remote notification, no changeType or changeOperation element")
-        }
-
-        switch (changeType, changeOperation) {
+    func handleRemoteNotification(notification: RemoteNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        switch (notification.changeType, notification.changeOperation) {
         case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
-            guard let apsInfo = userInfo[.aps] as? NSDictionary, let ntfFromUserId = userInfo[.fromUserId] as? String, let fromUserId = Int(ntfFromUserId), let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId) else {
-                parentCompletionHandler([])
-                fatalError("Invalid remote notification, chat message without aps data, trip ID or sending user ID.")
-            }
-            guard let currentUserId = User.sharedUser.userId else {
-                parentCompletionHandler([])
-                fatalError("Unable to get logged on user ID.")
-            }
-            if let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
+            if let trip = notification.trip {
                 trip.chatThread.refresh(mode: .incremental)
             }
-            var handlerOptions:UNNotificationPresentationOptions = [.alert, .sound]
-
-            if fromUserId == currentUserId {
-                handlerOptions = []
-            } else if let rootVC = UIWindow.key?.rootViewController, let navVC = rootVC as? UINavigationController, let chatVC = navVC.visibleViewController as? ChatViewController, let trip = chatVC.trip?.trip, trip.id == tripId {
-                // Message for current chat - refresh but don't notify
-                trip.chatThread.refresh(mode: .incremental)
-                let soundName:String? = apsInfo["sound"] as? String
-                playSound(name: soundName, type: nil)
-                handlerOptions = []
-            }
-            parentCompletionHandler(handlerOptions)
+            completionHandler(.newData)
 
         case (Constant.changeType.chatMessage, Constant.changeOperation.update):
-            handleReadChatMessage(userInfo: userInfo, parentCompletionHandler: {
-                parentCompletionHandler([.alert, .sound])
-            })
-            
+            if let trip = notification.trip {
+                trip.chatThread.updateReadStatus(lastSeenByUsers: notification.lastSeenByUsers!, lastSeenVersion: notification.lastSeenVersion!)
+                completionHandler(.newData)
+            } else {
+                os_log("Updating trip list", log: OSLog.general, type: .debug)
+                TripList.sharedList.getFromServer(parentCompletionHandler: {
+                    completionHandler(.newData);
+                } )
+            }
+
         case (Constant.changeType.chatMessage, _):
-            parentCompletionHandler([])
-            fatalError("Unknown change type/operation: \(changeType), \(changeOperation)")
+            completionHandler(.failed)
+            os_log("Unknown change type/operation: %{public}s, %{public}s", log: OSLog.notification, type: .error, notification.changeType, notification.changeOperation)
             
         default:
             // Update from server in background
-            let tripIdStr = userInfo[.tripId] as? String
-            if let tripIdStr = tripIdStr, let tripId = Int(tripIdStr), let trip = TripList.sharedList.trip(byId: tripId) {
-                os_log("Updating trip ID %{public}s", log: OSLog.general, type: .debug, tripIdStr)
-                trip.trip.loadDetails(parentCompletionHandler: {
-                    parentCompletionHandler([.alert, .sound]);
+            if let trip = notification.trip {
+                os_log("Updating trip ID %d", log: OSLog.general, type: .debug, notification.tripId)
+                trip.loadDetails(parentCompletionHandler: {
+                    completionHandler(.newData);
                 } )
             } else {
                 os_log("Updating trip list", log: OSLog.general, type: .debug)
                 TripList.sharedList.getFromServer(parentCompletionHandler: {
-                    parentCompletionHandler([.alert, .sound]);
+                    completionHandler(.newData);
                 } )
             }
         }
     }
     
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
-    {
-        os_log("userNotificationCenter willPresent", log: OSLog.general, type: .debug)
-        if let _ = notification.request.trigger as? UNPushNotificationTrigger {
-            let userInfo = UserInfo(notification.request.content.userInfo)
-            handleRemoteNotification(userInfo: userInfo) {handlerOptions in
-                completionHandler(handlerOptions)
-            }
-        } else if let _ = notification.request.trigger as? UNCalendarNotificationTrigger {
-            // No need to do anything
-            completionHandler([.alert, .sound])
-        }
-    }
 
-    
+    //
+    // MARK: UNUserNotificationCenter delegate
+    //
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
@@ -333,37 +305,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     
-    func handleReadChatMessage(userInfo: UserInfo /*[AnyHashable : Any]*/, parentCompletionHandler: @escaping () -> Void) {
-        guard let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId), let strLastSeenInfo = userInfo[.lastSeenInfo] as? String else {
-            os_log("Invalid remote notification, no/invalid trip ID or no last seen info: %{public}s", log: OSLog.notification, type: .error, String(describing: userInfo))
-            parentCompletionHandler()
-            return
-        }
-        var jsonLastSeenInfo:Any?
-        do {
-            jsonLastSeenInfo = try JSONSerialization.jsonObject(with: strLastSeenInfo.data(using: .utf8)!, options: JSONSerialization.ReadingOptions.allowFragments)
-        } catch {
-            os_log("Invalid remote notification, invalid JSON: %{public}s", log: OSLog.notification, type: .error, strLastSeenInfo)
-            parentCompletionHandler()
-            return
-        }
-        guard let lastSeenInfo = jsonLastSeenInfo as? NSDictionary, let lastSeenByUsers = lastSeenInfo[ Constant.JSON.messageLastSeenByOthers] as? NSDictionary, let lastSeenVersion = lastSeenInfo[Constant.JSON.lastSeenVersion] as? Int else {
-            os_log("Invalid remote notification, invalid last seen info: %{public}s", log: OSLog.notification, type: .error, String(describing: jsonLastSeenInfo))
-            parentCompletionHandler()
-            return
-        }
-        
-        guard let aTrip = TripList.sharedList.trip(byId: tripId) else {
-            // Chat update for unknown trip, ignore
-            parentCompletionHandler()
-            return
-        }
-        
-        aTrip.trip.chatThread.updateReadStatus(lastSeenByUsers: lastSeenByUsers, lastSeenVersion: lastSeenVersion)
-        parentCompletionHandler()
-    }
-
-    
     private func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationRequest) {
         os_log("Registered with Firebase", log: OSLog.notification, type: .debug)
         Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
@@ -371,11 +312,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         TripList.sharedList.registerForPushNotifications()
     }
     
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-//        TripList.sharedList.saveToArchive()
-    }
-
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         if RSUtilities.isNetworkAvailable( SHiTResource.host ) {
@@ -459,24 +395,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func connectToFirebase() {
         Messaging.messaging().subscribe(toTopic: Constant.Firebase.topicGlobal)
         User.sharedUser.registerForPushNotifications()
-    }
-
-    
-    func playSound(name: String?, type: String?) {
-        guard let name = name else {
-            return
-        }
-        guard let path = Bundle.main.path(forResource: name, ofType:type) else {
-            os_log("Sound file '%{public}s' not found.", log: OSLog.general, type: .error, name)
-            return
-        }
-        let url = URL(fileURLWithPath: path)
-        do {
-            avPlayer = try AVAudioPlayer(contentsOf: url)
-            avPlayer?.play()
-        } catch {
-            os_log("Playing sound file '%{public}s' failed", log: OSLog.general, type: .error, name)
-        }
     }
 
 }

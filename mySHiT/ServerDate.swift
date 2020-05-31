@@ -20,7 +20,7 @@ class ServerDate {
     static var dateFormatter = DateFormatter()
     static let defaultLocale = Locale(identifier: "en_US_POSIX")
 
-    static let dqAccess = DispatchQueue(label: "no.andmore.mySHiT.serverdate.access", target: .global())
+    static let semaphore = DispatchSemaphore(value: 1)
 
     class func findFormatString (_ serverDateString: String) -> String? {
         for (pattern, format) in dateFormats {
@@ -45,7 +45,7 @@ class ServerDate {
         if let serverDateString = serverDateString {
             if let formatString = findFormatString(serverDateString) {
                 var result:Date?
-                dqAccess.sync {
+                semaphore.wait()
                     if let timeZone = timeZone {
                         dateFormatter.timeZone = timeZone
                     } else {
@@ -55,7 +55,7 @@ class ServerDate {
                     dateFormatter.dateFormat = formatString
                     dateFormatter.locale = defaultLocale
                     result = dateFormatter.date(from: serverDateString)
-                }
+                semaphore.signal()
                 return result
             } else {
                 return nil
@@ -68,22 +68,22 @@ class ServerDate {
     
     class func convertServerDate (_ localDate: Date, timeZoneName: String?) -> String {
         var result:String?
-        dqAccess.sync {
+        semaphore.wait()
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             dateFormatter.locale = defaultLocale
             result = dateFormatter.string(from: localDate)
-        }
+        semaphore.signal()
         return result!
     }
 
     
     class func convertServerDate (_ localDate: Date, timeZone: TimeZone?) -> String {
         var result:String?
-        dqAccess.sync {
+        semaphore.wait()
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             dateFormatter.locale = defaultLocale
             result = dateFormatter.string(from: localDate)
-        }
+        semaphore.signal()
         return result!
     }
 }
