@@ -10,6 +10,9 @@ import UIKit
 import os
 
 class TripDetailsViewController: UITableViewController, DeepLinkableViewController {
+    struct CellIdentifier {
+        static let tripDetails = "myTripDetailsCell"
+    }
     
     // MARK: Properties
     @IBOutlet var tripDetailsTable: UITableView!
@@ -42,52 +45,28 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        if let segueId = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
+        if let _ = segue.identifier, let selectedTripCell = sender as? UITableViewCell {
             let indexPath = tableView.indexPath(for: selectedTripCell)!
             let s = getSectionById(indexPath.section)
-            let selectedElement = trip!.trip.elements![s!.section.firstTripElement! + indexPath.row]
+            let selectedAnnotatedElement = trip!.trip.elements![s!.section.firstTripElement! + indexPath.row]
+            let selectedElement = selectedAnnotatedElement.tripElement
             
-            switch (segueId) {
-            case Constant.segue.showFlightInfo:
-                let destinationController = segue.destination as! FlightDetailsViewController
-                destinationController.tripElement = selectedElement
-                destinationController.trip = trip
-                
-            case Constant.segue.showHotelInfo:
-                let destinationController = segue.destination as! HotelDetailsViewController
-                destinationController.tripElement = selectedElement
-                destinationController.trip = trip
-                
-            case Constant.segue.showScheduledTransport:
-                let destinationController = segue.destination as! ScheduledTransportDetailsViewController
-                destinationController.tripElement = selectedElement
-                destinationController.trip = trip
-                
-            case Constant.segue.showPrivateTransport:
-                let destinationController = segue.destination as! PrivateTransportDetailsViewController
-                destinationController.tripElement = selectedElement
-                destinationController.trip = trip
-                
-            case Constant.segue.showEventInfo:
-                let destinationController = segue.destination as! EventDetailsViewController
-                destinationController.tripElement = selectedElement
-                destinationController.trip = trip
-                
-            default:
-                let destinationController = segue.destination as! UnknownElementDetailsViewController
-                destinationController.tripElement = selectedElement
-                destinationController.trip = trip
-            }
-            if selectedElement.modified == .New || selectedElement.modified == .Changed {
+            let destinationController = segue.destination as! TripElementViewController
+            destinationController.tripElement = selectedElement
+
+            if selectedAnnotatedElement.modified == .New || selectedAnnotatedElement.modified == .Changed {
                 elementToRefresh = indexPath
             }
         } else if let segueId = segue.identifier {
             switch (segueId) {
-            case Constant.segue.showChatTable:
+            case Constant.Segue.showChatTable:
+//                 Probably not used
+                os_log("Segue to ChatTableController", log:OSLog.general, type: .debug)
                 let destinationController = segue.destination as! ChatTableController
                 destinationController.trip = trip
 
-            case Constant.segue.showChatView:
+            case Constant.Segue.showChatView:
+                os_log("Segue to ChatViewController", log:OSLog.general, type: .debug)
                 let destinationController = segue.destination as! ChatViewController
                 destinationController.trip = trip
                 
@@ -130,28 +109,28 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             if let elements = trip.trip.elements, elements.count > 0 {
                 updateSections()
             } else {
-                tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
+                tripDetailsTable.setBackgroundMessage(Constant.Message.retrievingTripDetails)
 
                 trip.trip.loadDetails(parentCompletionHandler: nil)
             }
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.dataRefreshed, object: nil)
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.Notification.networkError, object: nil)
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.removeObserver(self, name: Constant.Notification.networkError, object: nil)
     }
 
     
@@ -204,33 +183,29 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let kCellIdentifier: String = "myTripDetailsCell"
-        
-        //tablecell optional to see if we can reuse cell
-        var cell : UITableViewCell?
-        cell = tableView.dequeueReusableCell(withIdentifier: kCellIdentifier)
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.tripDetails) ?? UITableViewCell(style: .default, reuseIdentifier: CellIdentifier.tripDetails)
+
         //Get data from TripList element
         if let s = getSectionById(indexPath.section) {
             let rowIdx = s.section.firstTripElement! + indexPath.row
             let tripElement = trip!.trip.elements![rowIdx].tripElement
             
-            let lblName = cell!.viewWithTag(1) as! UILabel
-            let lblStartTime = cell!.viewWithTag(2) as! UILabel
-            let lblEndTime = cell!.viewWithTag(3) as! UILabel
-            let lblDesc  = cell!.viewWithTag(4) as! UITextView
-            let imgView = cell!.viewWithTag(5) as! UIImageView
+            let lblName = cell.viewWithTag(1) as! UILabel
+            let lblStartTime = cell.viewWithTag(2) as! UILabel
+            let lblEndTime = cell.viewWithTag(3) as! UILabel
+            let lblDesc  = cell.viewWithTag(4) as! UITextView
+            let imgView = cell.viewWithTag(5) as! UIImageView
 
-            lblName.text = tripElement.title ?? "Unknown element"
-            lblStartTime.text = tripElement.startInfo ?? "Unknown start"
+            lblName.text = tripElement.title ?? Constant.Message.tripElementTitleDefault
+            lblStartTime.text = tripElement.startInfo ?? Constant.Message.tripElementStartInfoDefault
             lblEndTime.text = tripElement.endInfo
-            lblDesc.text = tripElement.detailInfo ?? "No details available"
+            lblDesc.text = tripElement.detailInfo ?? Constant.Message.tripElementDetailsDefault
             imgView.image = tripElement.icon?.overlayBadge(trip!.trip.elements![rowIdx].modified)
         } else {
             os_log("Section %d not found", log: OSLog.general, type: .error, indexPath.section)
         }
 
-        return cell!
+        return cell
     }
     
     
@@ -258,26 +233,27 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             let rowIdx = s.section.firstTripElement! + indexPath.row
             let tripElement = trip!.trip.elements![rowIdx].tripElement
             let selectedCell = tableView.cellForRow(at: indexPath)
+            
+            //TODO: Make more dynamic
             switch (tripElement.type, tripElement.subType) {
-            case ("ACM", "HTL"):
-                performSegue(withIdentifier: "showHotelInfoSegue", sender: selectedCell)
-            case ("EVT", _):
-                performSegue(withIdentifier: "showEventInfoSegue", sender: selectedCell)
-            case ("TRA", "AIR"):
-                performSegue(withIdentifier: "showFlightInfoSegue", sender: selectedCell)
-            case ("TRA", "BUS"):
-                performSegue(withIdentifier: "showScheduledTransportInfoSegue", sender: selectedCell)
-            case ("TRA", "TRN"):
-                performSegue(withIdentifier: "showScheduledTransportInfoSegue", sender: selectedCell)
-            case ("TRA", "BOAT"):
-                performSegue(withIdentifier: "showScheduledTransportInfoSegue", sender: selectedCell)
-            case ("TRA", "LIMO"):
-                performSegue(withIdentifier: "showPrivateTransportInfoSegue", sender: selectedCell)
-            case ("TRA", "PBUS"):
-                performSegue(withIdentifier: "showPrivateTransportInfoSegue", sender: selectedCell)
+            case (TripElement.MainType.Accommodation, TripElement.SubType.Hotel):
+                performSegue(.showHotelInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Event, _):
+                performSegue(.showEventInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Transport, TripElement.SubType.Airline):
+                performSegue(.showFlightInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Transport, TripElement.SubType.Bus):
+                performSegue(.showScheduledTransportInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Transport, TripElement.SubType.Train):
+                performSegue(.showScheduledTransportInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Transport, TripElement.SubType.Boat):
+                performSegue(.showScheduledTransportInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Transport, TripElement.SubType.Limo):
+                performSegue(.showPrivateTransportInfoSegue, sender: selectedCell)
+            case (TripElement.MainType.Transport, TripElement.SubType.PrivateBus):
+                performSegue(.showPrivateTransportInfoSegue, sender: selectedCell)
             default:
-                performSegue(withIdentifier: "showUnknownInfoSegue", sender: selectedCell)
-                break
+                performSegue(.showUnknownInfoSegue, sender: selectedCell)
             }
         }
     }
@@ -303,7 +279,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     // MARK: Functions
     //
     @objc func reloadTripDetailsFromServer() {
-        tripDetailsTable.setBackgroundMessage(Constant.msg.retrievingTripDetails)
+        tripDetailsTable.setBackgroundMessage(Constant.Message.retrievingTripDetails)
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             trip.trip.loadDetails(parentCompletionHandler: nil)
@@ -319,11 +295,11 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
         // closure didn't always dismiss the refrech control)
         os_log("Handling network error in TripDetails", log: OSLog.general, type:.info)
-        showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError) { self.endRefreshing() }
+        showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.connectError) { self.endRefreshing() }
         
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage(Constant.msg.networkUnavailable)
+                tripDetailsTable.setBackgroundMessage(Constant.Message.networkUnavailable)
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }
@@ -337,7 +313,7 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         if let trip = TripList.sharedList.trip(byCode: tripCode!) {
             self.trip = trip
             if trip.trip.elements == nil || trip.trip.elements!.count == 0 {
-                tripDetailsTable.setBackgroundMessage(Constant.msg.noDetailsAvailable)
+                tripDetailsTable.setBackgroundMessage(Constant.Message.noDetailsAvailable)
             } else {
                 tripDetailsTable.setBackgroundMessage(nil)
             }
@@ -389,18 +365,6 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
     }
     
     
-    fileprivate func logSectionDetails() {
-        var sectionInfo = ""
-        for (i,s) in sections.enumerated() {
-            let prefix = sectionInfo == "" ? "" : ", "
-            let visibility = s.visible ? "visible" : "hidden"
-            let firstElement = s.firstTripElement?.description ?? "nil"
-            let elementInfo = s.title + ", " + visibility + ", " + firstElement
-            sectionInfo = sectionInfo + prefix + i.description + ": (" + elementInfo + ")"
-        }
-        os_log("Sections = %{public}s", log: OSLog.general, type: .debug, sectionInfo)
-    }
-    
     //
     // MARK: Static functions
     //
@@ -414,15 +378,14 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
         } else {
             navVC.popDeepLinkedControllers()
             // Push correct view controller onto navigation stack
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "TripDetailsViewController")
-            if let tripViewController = viewController as? TripDetailsViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
-                tripViewController.wasDeepLinked = true
-                tripViewController.trip = annotatedTrip
-                tripViewController.tripCode = annotatedTrip.trip.code
-                navVC.pushViewController(tripViewController, animated: true)
+            if let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
+                let tvc = TripDetailsViewController.instantiate(fromAppStoryboard: .Main)
+                tvc.wasDeepLinked = true
+                tvc.trip = annotatedTrip
+                tvc.tripCode = annotatedTrip.trip.code
+                navVC.pushViewController(tvc, animated: true)
             } else {
-                os_log("Unable to get trip details view controller or trip", log: OSLog.general, type: .error)
+                os_log("Unable to get trip", log: OSLog.general, type: .error)
             }
         }
     }

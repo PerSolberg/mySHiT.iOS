@@ -1,9 +1,9 @@
 /* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
 
-"User Info" = "Brukerinformasjon";
-"User Name" = "Brukernavn";
+//"User Info" = "Brukerinformasjon";
+//"User Name" = "Brukernavn";
 
-"Miscellaneous" = "Diverse";
+"GROUP_MISC_TITLE" = "Diverse";
 
 "Upcoming trips" = "Forestående turer";
 "Next trip only" = "Kun neste tur";
@@ -12,8 +12,8 @@
 "Next + within 7 days" = "Neste + innen 7 dager";
 "Next + within 30 days" = "Neste + innen 30 dager";
 
-"Notifications" = "Varsler";
-"Lead time can be set for trips (only one notification per trip), departures (start of travel, e.g. outward flight and return flight) and legs (i.e., connections)" = "Ledetid for varsler kan settes for reiser (kun ett varsel pr. reise), avreiser (start på utreise, hjemreise e.l.) og avganger (flyforbindelser og tilsvarende)";
+"GROUP_NTF_TITLE" = "Varsler";
+"GROUP_NTF_FOOTER" = "Ledetid for varsler kan settes for reiser (kun ett varsel pr. reise), avreiser (start på utreise, hjemreise e.l.) og avganger (flyforbindelser og tilsvarende)";
 
 "Before trip" = "Før reisestart";
 "Off" = "Av";
@@ -37,3 +37,13 @@
 //"1 hour" = "1 time";
 
 "Before event" = "Før arrangement";
+
+"GROUP_UPD_NTF_TITLE" = "Reiseoppdateringer";
+"GROUP_UPD_NTF_FOOTER" = "Reiseoppdateringer varsles uten lyd dersom endringen er langt fram i tid";
+
+"NTF_SOUND_LABEL" = "Lydløs";
+
+"NTF_SOUND_NEVER" = "Aldri";
+"NTF_SOUND_1WEEK" = "Hvis > 1 uke fram i tid";
+"NTF_SOUND_1MONTH" = "Hvis > 1 måned fram i tid";
+"NTF_SOUND_ALWAYS" = "Alltid";

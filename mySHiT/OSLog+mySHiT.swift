@@ -17,7 +17,7 @@ extension OSLog {
     static let general = OSLog(category: "General")
 
     private convenience init(category: String, bundle: Bundle = Bundle.main) {
-        let identifier = bundle.infoDictionary?["CFBundleIdentifier"] as? String
-        self.init(subsystem: (identifier ?? ""), category: category)
+        let identifier = bundle.bundleIdentifier ?? ""
+        self.init(subsystem: identifier, category: category)
     }
 }

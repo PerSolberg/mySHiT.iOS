@@ -19,36 +19,35 @@ import os
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
-    let gcmMessageIDKey = "gcm.message_id"
     var appSettings = Dictionary<AnyHashable, Any>()
     var avPlayer:AVAudioPlayer?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {        
         os_log("application didFinishLaunchingWithOptions", log: OSLog.general, type: .debug)
+        
         // First save current app settings, so we can avoid refreshing when Firebase settings change
         let defaults = UserDefaults.standard
         appSettings[Constant.Settings.tripLeadTime] = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
         appSettings[Constant.Settings.deptLeadTime] = Int(defaults.float(forKey: Constant.Settings.deptLeadTime))
         appSettings[Constant.Settings.legLeadTime] = Int(defaults.float(forKey: Constant.Settings.legLeadTime))
         appSettings[Constant.Settings.eventLeadTime] = Int(defaults.float(forKey: Constant.Settings.eventLeadTime))
-        
+
         // Override point for customization after application launch.
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (success : Bool, err : Error?) -> Void in } )
         self.registerDefaultsFromSettingsBundle();
-        NotificationCenter.default.addObserver(self, selector: #selector(defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: UserDefaults.standard)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.InstanceIDTokenRefresh, object: nil)
 
-            
         //
         // Set up notification categories
         //
-        let chatIgnoreAction = UNNotificationAction(identifier: Constant.ntfAction.ignoreChatMessage,
-                                              title: Constant.msg.chatNtfIgnoreAction,
+        let chatIgnoreAction = UNNotificationAction(identifier: Constant.NotificationAction.ignoreChatMessage,
+                                              title: Constant.Message.chatNtfIgnoreAction,
                                               options: .foreground)
 
-        let chatReplyAction = UNTextInputNotificationAction(identifier: Constant.ntfAction.replyToChatMessage, title:  Constant.msg.chatNtfReplyAction, options: .foreground, textInputButtonTitle: Constant.msg.chatNtfReplySend, textInputPlaceholder: Constant.emptyString)
+        let chatReplyAction = UNTextInputNotificationAction(identifier: Constant.NotificationAction.replyToChatMessage, title:  Constant.Message.chatNtfReplyAction, options: .foreground, textInputButtonTitle: Constant.Message.chatNtfReplySend, textInputPlaceholder: Constant.emptyString)
         
-        let newChatMsgCategory = UNNotificationCategory(identifier: Constant.ntfCategory.newChatMessage,
+        let newChatMsgCategory = UNNotificationCategory(identifier: Constant.NotificationCategory.newChatMessage,
                                                      actions: [chatReplyAction, chatIgnoreAction],
                                                      intentIdentifiers: [],
                                                      options: UNNotificationCategoryOptions(rawValue: 0))
@@ -70,14 +69,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         configureShortCuts(application)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshShortcuts), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshShortcuts), name: Constant.Notification.dataRefreshed, object: nil)
         
         return true
     }
 
 
     //
-    // MARK: Shorcuts
+    // MARK: Shortcuts
     //
     @objc func refreshShortcuts() {
         DispatchQueue.main.async {
@@ -87,7 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     
     func configureShortCuts(_ application: UIApplication) {
-        let chatIcon = UIApplicationShortcutIcon(templateImageName: Constant.icon.chat)
+        let chatIcon = UIApplicationShortcutIcon(templateImageName: Constant.Icon.chat)
         var shortcuts:[UIApplicationShortcutItem] = []
 
         var nextTrip:AnnotatedTrip?
@@ -108,9 +107,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if let trip = lastTrip, let tripName = trip.trip.name {
             let userInfo:UserInfo = [ .tripId: String(trip.trip.id) ]
-            let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
+            let shortcut = UIMutableApplicationShortcutItem(type: Constant.Shortcut.chat,
                 localizedTitle: tripName,
-                localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
+                localizedSubtitle: Constant.Message.shortcutSendMessageSubtitle,
                 icon: chatIcon,
                 userInfo: userInfo.securePropertyList()
             )
@@ -118,9 +117,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         if let trip = currentTrip, let tripName = trip.trip.name {
             let userInfo:UserInfo = [ .tripId: String(trip.trip.id) ]
-            let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
+            let shortcut = UIMutableApplicationShortcutItem(type: Constant.Shortcut.chat,
                 localizedTitle: tripName,
-                localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
+                localizedSubtitle: Constant.Message.shortcutSendMessageSubtitle,
                 icon: chatIcon,
                 userInfo: userInfo.securePropertyList()
             )
@@ -128,9 +127,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         if let trip = nextTrip, let tripName = trip.trip.name {
             let userInfo:UserInfo = [ .tripId: String(trip.trip.id) ]
-            let shortcut = UIMutableApplicationShortcutItem(type: Constant.shortcut.chat,
+            let shortcut = UIMutableApplicationShortcutItem(type: Constant.Shortcut.chat,
                 localizedTitle: tripName,
-                localizedSubtitle: Constant.msg.shortcutSendMessageSubtitle,
+                localizedSubtitle: Constant.Message.shortcutSendMessageSubtitle,
                 icon: chatIcon,
                 userInfo: userInfo.securePropertyList()
             )
@@ -144,7 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         
         switch (shortcutItem.type) {
-        case Constant.shortcut.chat:
+        case Constant.Shortcut.chat:
             let userInfo = UserInfo(shortcutItem.userInfo)
             guard let tripIdStr = userInfo[.tripId] as? String, let tripId = Int(tripIdStr) else {
                 os_log("Invalid shortcut, no tripId", log: OSLog.general, type: .error)
@@ -195,13 +194,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleRemoteNotification(notification: RemoteNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
         switch (notification.changeType, notification.changeOperation) {
-        case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+        case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.insert):
             if let trip = notification.trip {
                 trip.chatThread.refresh(mode: .incremental)
             }
             completionHandler(.newData)
 
-        case (Constant.changeType.chatMessage, Constant.changeOperation.update):
+        case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.update):
             if let trip = notification.trip {
                 trip.chatThread.updateReadStatus(lastSeenByUsers: notification.lastSeenByUsers!, lastSeenVersion: notification.lastSeenVersion!)
                 completionHandler(.newData)
@@ -212,7 +211,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 } )
             }
 
-        case (Constant.changeType.chatMessage, _):
+        case (Constant.ChangeType.chatMessage, _):
             completionHandler(.failed)
             os_log("Unknown change type/operation: %{public}s, %{public}s", log: OSLog.notification, type: .error, notification.changeType, notification.changeOperation)
             
@@ -237,6 +236,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: UNUserNotificationCenter delegate
     //
     func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
+    {
+        os_log("AppDelegate userNotificationCenter willPresent", log: OSLog.general, type: .debug)
+        completionHandler([.alert, .sound])
+    }
+    
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         os_log("userNotificationCenter didReceive", log: OSLog.general, type: .debug)
@@ -251,21 +259,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             break
             
         case (_, UNNotificationDefaultActionIdentifier):
-            if let _ = response.notification.request.trigger as? UNPushNotificationTrigger, let changeType = userInfo[.changeType] as? String, let changeOperation = userInfo[.changeOperation] as? String {
-                switch (changeType, changeOperation) {
-                case (Constant.changeType.chatMessage, Constant.changeOperation.update):
+            if let _ = response.notification.request.trigger as? UNPushNotificationTrigger, let remoteNotification = RemoteNotification(from: userInfo) {
+                switch (remoteNotification.changeType, remoteNotification.changeOperation) {
+                case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.update):
                     // This shouldn't happen because these notifications aren't presented to the user
                     break;
                     
-                case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+                case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.insert):
                     // User opened app from notification, open chat screen
                     let ntfLink = NotificationLink(userInfo: userInfo)
                     DeepLinkManager.current().set(linkHandler: ntfLink)
                     DeepLinkManager.current().checkAndHandle()
                     
-                case (_, Constant.changeOperation.insert):
+                case (_, Constant.ChangeOperation.insert):
                     fallthrough
-                case (_, Constant.changeOperation.update):
+                case (_, Constant.ChangeOperation.update):
                     // Trip or itinerary updated
                     let ntfLink = NotificationLink(userInfo: userInfo)
                     DeepLinkManager.current().set(linkHandler: ntfLink)
@@ -281,7 +289,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 DeepLinkManager.current().checkAndHandle()
             }
             
-        case (Constant.ntfCategory.newChatMessage, Constant.ntfAction.replyToChatMessage):
+        case (Constant.NotificationCategory.newChatMessage, Constant.NotificationAction.replyToChatMessage):
             // Handle reply to chat message
             guard let textResponse = response as? UNTextInputNotificationResponse else {
                 fatalError("Response to chat message is not UNTextInputNotificationResponse")
@@ -293,7 +301,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let newMsg = ChatMessage(message: textResponse.userText)
             trip.trip.chatThread.append(newMsg)
             
-        case (Constant.ntfCategory.newChatMessage, Constant.ntfAction.ignoreChatMessage):
+        case (Constant.NotificationCategory.newChatMessage, Constant.NotificationAction.ignoreChatMessage):
             ChatMessage.read(fromUserInfo: userInfo, responseHandler: {_,_,_ in })
             
         default:
@@ -332,33 +340,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     
     func registerDefaultsFromSettingsBundle() {
-        guard let settingsBundle = Bundle.main.url(forResource: "Settings", withExtension:"bundle") else {
-            os_log("Could not find Settings.bundle", log: OSLog.general, type: .error)
+        guard let settingsURL = Constant.Settings.url, let settingsRootDict = NSDictionary(contentsOf: settingsURL),
+            let prefSpecifiers = settingsRootDict[Constant.Settings.preferencesDictionaryKey] as? [NSDictionary] else {
+            os_log("Could not get preference specifiers from Settings.bundle", log: OSLog.general, type: .error)
             return;
         }
         
-        guard let settings = NSDictionary(contentsOf: settingsBundle.appendingPathComponent("Root.plist")) else {
-            os_log("Could not find Root.plist in settings bundle", log: OSLog.general, type: .error)
-            return
+        let filteredSpecifiers = prefSpecifiers.filter { $0[Constant.Settings.preferenceIdentifier] != nil && $0[Constant.Settings.preferenceDefaultValue] != nil }
+        if let keysAndValues = filteredSpecifiers.map({ ($0[Constant.Settings.preferenceIdentifier], $0[Constant.Settings.preferenceDefaultValue]) }) as? [(String, Any)] {
+            UserDefaults.standard.register(defaults: Dictionary(uniqueKeysWithValues: keysAndValues))
+        } else {
+            os_log("Unable to get default values from Settings.bundle", log: OSLog.general, type: .error)
         }
         
-        guard let preferences = settings.object(forKey: "PreferenceSpecifiers") as? [[String: AnyObject]] else {
-            os_log("Root.plist has invalid format", log: OSLog.general, type: .error)
-            return
-        }
-        
-        var defaultsToRegister = [String: AnyObject]()
-        for p in preferences {
-            if let k = p["Key"] as? String, let v = p["DefaultValue"] {
-                defaultsToRegister[k] = v
-            }
-        }
-        
-        UserDefaults.standard.register(defaults: defaultsToRegister)
+        syncDefaults()
     }
 
+    func syncDefaults() {
+        if let sharedDefaults = UserDefaults(suiteName: Constant.Group.defaults) {
+            let muteSetting = UserDefaults.standard.string(forKey: Constant.Settings.notificationMute)
+            sharedDefaults.set(muteSetting, forKey: Constant.Settings.notificationMute)
+        } else {
+            os_log("Unable to sync defaults - couldn't access shared defaults", log: OSLog.general, type: .error)
+        }
+    }
     
-    @objc func defaultsChanged(_ notification:Notification){
+    @objc func defaultsChanged(_ notification:Notification) {
         if let defaults = notification.object as? UserDefaults {
             let newTripLeadTime = Int(defaults.float(forKey: Constant.Settings.tripLeadTime))
             let newDeptLeadTime = Int(defaults.float(forKey: Constant.Settings.deptLeadTime))
@@ -381,6 +388,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 appSettings[Constant.Settings.legLeadTime] = newLegLeadTime
                 appSettings[Constant.Settings.eventLeadTime] = newEventLeadTime
             }
+
+            syncDefaults()
         } else {
             os_log("Defaults changed, but user defaults not available", log: OSLog.general, type: .info)
         }

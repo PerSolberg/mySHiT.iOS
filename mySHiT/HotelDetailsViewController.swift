@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLinkableViewController {
+class HotelDetailsViewController: TripElementViewController, UIScrollViewDelegate {
     
     // MARK: Properties
     @IBOutlet weak var rootScrollView: UIScrollView!
@@ -21,13 +21,6 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     @IBOutlet weak var phoneLabel: UILabel!
     @IBOutlet weak var phoneTextView: UITextView!
     @IBOutlet weak var transferInfoTextView: UITextView!
-    
-    // Passed from TripDetailsViewController
-    var tripElement:AnnotatedTripElement?
-    var trip:AnnotatedTrip?
-    
-    // DeepLinkableViewController
-    var wasDeepLinked = false
     
     // MARK: Navigation
     
@@ -56,8 +49,8 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         super.viewWillAppear(animated)
 
         NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.dataRefreshed, object: nil)
         
         populateScreen(detectChanges: false)
     }
@@ -81,8 +74,8 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     // MARK: Functions
     //
     func populateScreen(detectChanges: Bool) {
-        guard let hotelElement = tripElement?.tripElement as? Hotel else {
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
+        guard let hotelElement = tripElement as? Hotel else {
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.unableToDisplayElement, completion: nil)
 
             self.navigationController?.popViewController(animated: true)
             return
@@ -93,47 +86,37 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         case ("", ""):
             break
         case ("", _):
-            fullAddress += "\n" + hotelElement.city!
+            fullAddress += Constant.lineFeed + hotelElement.city!
         case (_, ""):
-            fullAddress += "\n" + hotelElement.postCode!
+            fullAddress += Constant.lineFeed + hotelElement.postCode!
         default:
-            fullAddress += "\n" + hotelElement.postCode! + " " + hotelElement.city!
+            fullAddress += Constant.lineFeed + String.localizedStringWithFormat(Address.Format.postCodeAndCity, hotelElement.postCode!, hotelElement.city!)
+                // hotelElement.postCode! + " " + hotelElement.city!
         }
         hotelNameTextField.setText(hotelElement.hotelName, detectChanges: detectChanges)
         let attrAddress = NSMutableAttributedString(string: fullAddress)
         attrAddress.setAttributes([.font : hotelAddressTextView.font as Any])
-        attrAddress.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrAddress.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         hotelAddressTextView.setText(attrAddress, detectChanges: detectChanges)
         checkInTextField.setText(hotelElement.startTime(dateStyle: .medium, timeStyle: .none), detectChanges: detectChanges)
         checkOutTextField.setText(hotelElement.endTime(dateStyle: .medium, timeStyle: .none), detectChanges: detectChanges)
-        
-        if let refList = hotelElement.references {
-            let references = NSMutableString()
-            var separator = ""
-            for ref in refList {
-                if let refNo   = ref["refNo"] {
-                    references.append(separator + refNo)
-                    separator = ", "
-                }
-            }
-            referenceTextField.setText(references as String, detectChanges: detectChanges)
-        }
+        referenceTextField.setText(hotelElement.referenceList(separator: TripElement.Format.refListSeparator), detectChanges: detectChanges)
         phoneTextView.setText(hotelElement.phone, detectChanges: detectChanges)
-        transferInfoTextView.setText("Please see your welcome leaflet.", detectChanges: detectChanges)
+        //transferInfoTextView.setText("Please see your welcome leaflet.", detectChanges: detectChanges)
+        transferInfoTextView.setText(Constant.Message.hotelTransferInfoDefault, detectChanges: detectChanges)
     }
 
     
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            if let eventElement = self.tripElement?.tripElement as? Hotel {
-                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: eventElement.id) else {
+            if let eventElement = self.tripElement as? Hotel {
+                guard let (_, aElement) = TripList.sharedList.tripElement(byId: eventElement.id) else {
                     // Couldn't find trip element, trip or element deleted
                     self.navigationController?.popViewController(animated: true)
                     return
                 }
                 
-                self.trip = aTrip
-                self.tripElement = aElement
+                self.tripElement = aElement.tripElement
                 self.populateScreen(detectChanges: true)
             }
         })
@@ -144,7 +127,7 @@ class HotelDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? HotelDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
-            return te.tripElement.id == vcte.tripElement.id
+            return te.id == vcte.id
         } else {
             return false
         }

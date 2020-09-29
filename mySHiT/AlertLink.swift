@@ -25,11 +25,14 @@ class AlertLink : DeepLink {
                 os_log("Unable to get root navigation controller", log: OSLog.general, type: .error)
                 return
             }
-            guard let (trip, tripElement) = TripList.sharedList.tripElement(byId: tripElementId) else {
+            guard let (_, tripElement) = TripList.sharedList.tripElement(byId: tripElementId) else {
                 os_log("Unknown trip element", log: OSLog.general, type: .info)
                 return
             }
-            if let vc = tripElement.tripElement.viewController(trip: trip, element: tripElement) {
+            if let vc = tripElement.tripElement.viewController() {
+                if var dlvc = vc as? DeepLinkableViewController {
+                    dlvc.wasDeepLinked = true
+                }
                 if let visVC = navVC.visibleViewController, !vc.isSame(visVC) {
                     navVC.pushViewController(vc, animated: true)
                 }

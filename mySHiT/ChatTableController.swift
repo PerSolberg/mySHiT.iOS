@@ -11,6 +11,17 @@ import UIKit
 import os
 
 class ChatTableController: UITableViewController {
+    struct Format {
+        static let userListSeparator = NSLocalizedString("FMT.CHAT.USERLIST.SEPARATOR", comment:"")
+    }
+    
+    struct CellIdentifier {
+        static let messageOnly = "CustomChatCell"
+        static let messageWithUserInfo = "CustomChatCellWithUserInfo"
+        static let ownMessageOnly = "CustomChatCellOwn"
+        static let ownMessageWithUserInfo = "CustomChatCellOwnWithUserInfo"
+    }
+
     //
     // MARK: Properties
     //
@@ -24,7 +35,7 @@ class ChatTableController: UITableViewController {
     //
     @IBAction func unwindToMain(_ sender: UIStoryboardSegue)
     {
-        chatListTable.setBackgroundMessage(Constant.msg.retrievingTrips)
+        chatListTable.setBackgroundMessage(Constant.Message.retrievingTrips)
         TripList.sharedList.getFromServer()
         return
     }
@@ -72,7 +83,7 @@ class ChatTableController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshChat), name: Constant.notification.chatRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshChat), name: Constant.Notification.chatRefreshed, object: nil)
 
         if let trip = trip {
             if let savedPosition = trip.trip.chatThread.exactPosition {
@@ -103,7 +114,7 @@ class ChatTableController: UITableViewController {
             return
         }
         if trip.trip.chatThread.count == 0 {
-            chatListTable.setBackgroundMessage(Constant.msg.noMessages)
+            chatListTable.setBackgroundMessage(Constant.Message.noMessages)
         } else {
             chatListTable.setBackgroundMessage(nil)
         }
@@ -136,10 +147,10 @@ class ChatTableController: UITableViewController {
         // Notify user - and stop refresh in completion handler to ensure screen is properly updated
         // (ending refresh first, either in a separate DispatchQueue.main.sync call or in the alert async
         // closure didn't always dismiss the refrech control)
-        showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError) { self.endRefreshing() }
+        showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.connectError) { self.endRefreshing() }
         
         if (TripList.sharedList.count == 0) {
-            chatListTable.setBackgroundMessage(Constant.msg.networkUnavailable)
+            chatListTable.setBackgroundMessage(Constant.Message.networkUnavailable)
         } else {
             chatListTable.setBackgroundMessage(nil)
         }
@@ -147,7 +158,7 @@ class ChatTableController: UITableViewController {
     
     
     @objc func reloadChatThreadFromServer() {
-        chatListTable.setBackgroundMessage(Constant.msg.retrievingChatThread)
+        chatListTable.setBackgroundMessage(Constant.Message.retrievingChatThread)
         guard let trip = trip else {
             fatalError("Trip not configured correctly for chat thread")
         }
@@ -191,12 +202,8 @@ class ChatTableController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var kCellIdentifier: String
-        var seenByInfo:String = ""
-        let kCellIdentifierMessageOnly = "CustomChatCell"
-        let kCellIdentifierWithUserInfo = "CustomChatCellWithUserInfo"
-        let kCellIdentifierOwnMessageOnly = "CustomChatCellOwn"
-        let kCellIdentifierOwnMessageWithUserInfo = "CustomChatCellOwnWithUserInfo"
+        var cellIdentifier: String
+        var seenByInfo:String? = nil
         
         guard let trip = trip else {
             fatalError("Trip is not correctly set up for chat.")
@@ -204,26 +211,28 @@ class ChatTableController: UITableViewController {
 
         let msg = trip.trip.chatThread[indexPath.row]
         let ownMessage = (msg.userId == User.sharedUser.userId)
-        let showSeenByInfo = !(msg.lastSeenBy.contains(ChatThread.LastSeenByNone) || msg.lastSeenBy.count == 0)
-        if !showSeenByInfo {
-            kCellIdentifier = ownMessage ? kCellIdentifierOwnMessageOnly : kCellIdentifierMessageOnly
-        } else {
-            kCellIdentifier = ownMessage ? kCellIdentifierOwnMessageWithUserInfo : kCellIdentifierWithUserInfo
 
-            if msg.lastSeenBy.contains(ChatThread.LastSeenByEveryone) {
-                seenByInfo = Constant.msg.chatMsgSeenByEveryone
-//                seenByInfo = String.localizedStringWithFormat(Constant.msg.chatMsgSeenByEveryone) as String
-            } else if msg.lastSeenBy.count > 1 {
-                let finalName = msg.lastSeenBy.last!
-                let nameList = msg.lastSeenBy.prefix(msg.lastSeenBy.count - 1).joined(separator: ", ")
+        switch msg.lastSeenBy {
+        case .none:
+            cellIdentifier = ownMessage ? CellIdentifier.ownMessageOnly : CellIdentifier.messageOnly
+
+        case .everyone:
+            cellIdentifier = ownMessage ? CellIdentifier.ownMessageWithUserInfo : CellIdentifier.messageWithUserInfo
+            seenByInfo = Constant.Message.chatMsgSeenByEveryone
+
+        case let .some(userList):
+            cellIdentifier = ownMessage ? CellIdentifier.ownMessageWithUserInfo : CellIdentifier.messageWithUserInfo
+            if userList.count > 1 {
+                let finalName = userList.last!
+                let nameList = userList.prefix(userList.count - 1).joined(separator: Format.userListSeparator)
                 
-                seenByInfo = String.localizedStringWithFormat(Constant.msg.chatMsgSeenByTwoOrMore, nameList, finalName) as String
+                seenByInfo = String.localizedStringWithFormat(Constant.Message.chatMsgSeenByTwoOrMore, nameList, finalName) as String
             } else {
-                seenByInfo = String.localizedStringWithFormat(Constant.msg.chatMsgSeenByOne, msg.lastSeenBy[0]) as String
+                seenByInfo = String.localizedStringWithFormat(Constant.Message.chatMsgSeenByOne, userList[0]) as String
             }
         }
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: kCellIdentifier) as? SHiTChatCell else {
+
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as? SHiTChatCell else {
             fatalError("Cell is not correct type.")
         }
         
@@ -234,7 +243,7 @@ class ChatTableController: UITableViewController {
         if !ownMessage {
             cell.userInitialsLabel.text = msg.userInitials
         }
-        if showSeenByInfo {
+        if let seenByInfo = seenByInfo {
             cell.seenByUsersText.text = seenByInfo
             cell.seenByUsersText.backgroundColor = nil
         }
@@ -249,24 +258,9 @@ class ChatTableController: UITableViewController {
     
     
     //
-    // MARK: Section header callbacks
-    //
-    
-    
-    //
     // MARK: NSCoding
     //
     func saveTrips() {
         TripList.sharedList.saveToArchive()
     }
-    
-    
-    //
-    // MARK: Actions
-    //
-
-    
-    //
-    // MARK: Functions
-    //
 }

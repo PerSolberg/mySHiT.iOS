@@ -19,6 +19,60 @@ enum RequestType:String {
 class RESTRequest {
     static let dictKey = "results"
     
+    struct ErrorDomain {
+        static let http = "HTTP"
+    }
+    struct HTTPStatus {
+        static let httpContinue = 100          // Can't use use "continue"
+        static let switchingProtocols = 101
+        // Success
+        static let ok = 200
+        static let created = 201
+        static let accepted = 202
+        static let nonAuthoritativeInformation = 203
+        static let noContent = 204
+        static let resetContent = 205
+        static let partialContent = 206
+
+        // Redirection
+        static let multipleChoices = 300
+        static let movedPermanently = 301
+        static let found = 302
+        static let seeOther = 303
+        static let notModified = 304
+        static let useProxy = 305
+//        static let (Unused) = 306
+        static let temporaryRedirect = 307
+
+        // Client error
+        static let badRequest = 400
+        static let unauthorized = 401
+        static let paymentRequired = 402
+        static let forbidden = 403
+        static let notFound = 404
+        static let methodNotAllowed = 405
+        static let notAcceptable = 406
+        static let proxyAuthenticationRequired = 407
+        static let requestTimeout = 408
+        static let conflict = 409
+        static let gone = 410
+        static let lengthRequired = 411
+        static let preconditionFailed = 412
+        static let requestEntityTooLarge = 413
+        static let requestURITooLong = 414
+        static let unsupportedMediaType = 415
+        static let requestedRangeNotSatisfiable = 416
+        static let expectationFailed = 417
+
+        // Server error
+        static let internalServerError = 500
+        static let notImplemented = 501
+        static let badGateway = 502
+        static let serviceUnavailable = 503
+        static let gatewayTimeout = 504
+        static let httpVersionNotSupported = 505
+    }
+    
     typealias DictionaryCompletionHandler = ((URLResponse?, NSDictionary?, Error?) -> Void)
 
     static func get(_ resource: RESTResource, parameters: [URLQueryItem]?, handler: @escaping DictionaryCompletionHandler) {
@@ -84,7 +138,7 @@ class RESTRequest {
             }
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode != 200 {
-                    let httpError = NSError(domain: "HTTP", code: httpResponse.statusCode, userInfo: nil)
+                    let httpError = NSError(domain: ErrorDomain.http, code: httpResponse.statusCode, userInfo: nil)
                     handler(response, nil, httpError)
                     return
                 }
@@ -93,11 +147,9 @@ class RESTRequest {
             let resultDictionary = NSMutableDictionary()
             var jsonResponse : Any?
             do {
-//              options: JSONSerialization.ReadingOptions.allowFragments
                 jsonResponse  = try JSONSerialization.jsonObject(with: (responseData!), options: [])
             }
             catch let error as NSError {
-//                let errMsg = "A JSON parsing error occurred:\n\(error)\n\(String(describing: responseData))"
                 handler(response, nil, error)
             }
 

@@ -8,8 +8,8 @@
 
 import Foundation
 
-class RESTResource/*: NSObject*/ {
-    typealias Selector = String //(selector: String?, key: String?)
+class RESTResource {
+    typealias Selector = String
 
     static let urlSep = "/"
     static let defaultSchema = "https"

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrollViewDelegate, DeepLinkableViewController {
+class FlightDetailsViewController: TripElementViewController, UITextViewDelegate, UIScrollViewDelegate {
     //
     // MARK: Properties
     //
@@ -22,14 +22,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     @IBOutlet weak var arrivalTimeTextField: UITextField!
     @IBOutlet weak var arrivalLocationTextView: UITextView!
     @IBOutlet weak var referencesView: UIView!
-
-    // Passed from TripDetailsViewController
-    var tripElement:AnnotatedTripElement?
-    var trip:AnnotatedTrip?
-    
-    // DeepLinkableViewController
-    var wasDeepLinked = false
-    
+        
     
     //
     // MARK: Navigation
@@ -56,8 +49,8 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         arrivalLocationTextView.textContainerInset = UIEdgeInsets.zero
         arrivalLocationTextView.textContainer.lineFragmentPadding = 0.0
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.dataRefreshed, object: nil)
         
         //self.view.colourSubviews()
     }
@@ -99,27 +92,27 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     // MARK: Functions
     ///
     func populateScreen(detectChanges: Bool, oldElement:Flight?) {
-        guard let flightElement = tripElement?.tripElement as? Flight else {
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
+        guard let flightElement = tripElement as? Flight else {
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.unableToDisplayElement, completion: nil)
             
             self.navigationController?.popViewController(animated: true)
             return
         }
 
-        flightNoTextField.setText(flightElement.flightNo, detectChanges: detectChanges)
+        flightNoTextField.setText(flightElement.routeName, detectChanges: detectChanges)
         airlineTextField.setText(flightElement.companyName, detectChanges: detectChanges)
         departureTimeTextField.setText(flightElement.startTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
         let departureInfo = buildLocationInfo(stopName: flightElement.departureStop, location: flightElement.departureLocation, terminalName: flightElement.departureTerminalName, address: flightElement.departureAddress)
         let attrDepartureInfo = NSMutableAttributedString(string: departureInfo)
         attrDepartureInfo.setAttributes([.font : departureLocationTextView.font as Any])
-        attrDepartureInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrDepartureInfo.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         departureLocationTextView.setText(attrDepartureInfo, detectChanges: detectChanges)
         
         arrivalTimeTextField.setText(flightElement.endTime(dateStyle: .medium, timeStyle: .short), detectChanges: detectChanges)
         let arrivalInfo = buildLocationInfo(stopName: flightElement.arrivalStop, location: flightElement.arrivalLocation, terminalName: flightElement.arrivalTerminalName, address: flightElement.arrivalAddress)
         let attrArrivalInfo = NSMutableAttributedString(string: arrivalInfo)
         attrArrivalInfo.setAttributes([.font : arrivalLocationTextView.font as Any])
-        attrArrivalInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrArrivalInfo.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         arrivalLocationTextView.setText(attrArrivalInfo, detectChanges: detectChanges)
         
         if let refList = flightElement.references {
@@ -129,9 +122,9 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
             let verticalHuggingValue = departureLocationTextView.contentHuggingPriority(for: .vertical)
 
             var oldReferences:NSDictionary? = nil
-            let refDict = getAttributedReferences(refList, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+            let refDict = getAttributedReferences(refList, typeKey: TripElement.RefTag_Type, refKey: TripElement.RefTag_RefNo, urlKey: TripElement.RefTag_LookupURL)
             if let oldFlight = oldElement, let oldRefs = oldFlight.references {
-                oldReferences = getAttributedReferences(oldRefs, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+                oldReferences = getAttributedReferences(oldRefs, typeKey: TripElement.RefTag_Type, refKey: TripElement.RefTag_RefNo, urlKey: TripElement.RefTag_LookupURL)
             }
             referencesView.addDictionaryAsGrid(refDict, oldDictionary: oldReferences, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: flightNoTextField, highlightChanges: detectChanges)
         }
@@ -141,10 +134,10 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
         var locationInfo = stopName ?? location ?? ""
         if let terminal = terminalName {
-            locationInfo += (terminal == "" ? "" : "\n" + terminal)
+            locationInfo += (terminal == "" ? "" : Constant.lineFeed + terminal)
         }
         if let address = address {
-            locationInfo += (address == "" ? "" : "\n" + address)
+            locationInfo += (address == "" ? "" : Constant.lineFeed + address)
         }
         return locationInfo
     }
@@ -152,16 +145,14 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
     
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            if let flightElement = self.tripElement?.tripElement as? Flight {
-                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: flightElement.id) else {
+            if let flightElement = self.tripElement as? Flight {
+                guard let (_, aElement) = TripList.sharedList.tripElement(byId: flightElement.id) else {
                     // Couldn't find trip element, trip or element deleted
                     self.navigationController?.popViewController(animated: true)
                     return
                 }
                 
-                //let oldElement = flightElement
-                self.trip = aTrip
-                self.tripElement = aElement
+                self.tripElement = aElement.tripElement
                 self.populateScreen(detectChanges: true, oldElement: flightElement)
             }
         })
@@ -172,7 +163,7 @@ class FlightDetailsViewController: UIViewController, UITextViewDelegate, UIScrol
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? FlightDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
-            return te.tripElement.id == vcte.tripElement.id
+            return te.id == vcte.id
         } else {
             return false
         }

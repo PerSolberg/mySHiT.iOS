@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-
+import os
 
 class Event: TripElement {
     let defaultDuration = ( hour: 4, minute: 0 )
@@ -59,14 +59,7 @@ class Event: TripElement {
     }
     
     override var detailInfo: String? {
-        if let references = references {
-            var refList: String = ""
-            for ref in references {
-                refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_RefNo]!
-            }
-            return refList
-        }
-        return nil
+        return referenceList(separator: TripElement.Format.refListSeparator)
     }
     
     
@@ -186,22 +179,15 @@ class Event: TripElement {
                 eventLeadtime += travelTime;
             }
             
-            setNotification(notificationType: Constant.Settings.eventLeadTime, leadTime: eventLeadtime, alertMessage: Constant.msg.eventAlertMessage, userInfo: nil)
+            setNotification(notificationType: Constant.Settings.eventLeadTime, leadTime: eventLeadtime, alertMessage: Constant.Message.eventAlertMessage, userInfo: nil)
         }
     }
 
     
-    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
-        guard element.tripElement == self else {
-            fatalError("Inconsistent trip element and annotated trip element")
-        }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "EventDetailsViewController")
-        if let evc = vc as? EventDetailsViewController {
-            evc.tripElement = element
-            evc.trip = trip
-            return evc
-        }
-        return nil
+    override func viewController() -> UIViewController? {
+        let evc = EventDetailsViewController.instantiate(fromAppStoryboard: .Main)
+        evc.tripElement = self
+        return evc
     }
+
 }

@@ -12,13 +12,37 @@ import UserNotifications
 import os
 
 class TripElement: NSObject, NSCoding {
-    typealias ChangedAttribute = (attr:String, old:String, new:String)
-    
     static let RefTag_Type      = "type"
     static let RefTag_RefNo     = "refNo"
     static let RefTag_LookupURL = "urlLookup"
     
+    struct Format {
+        static let taggedReference = NSLocalizedString("FMT.BOOKINGREF.TAGGED", comment: "")
+        static let refListSeparator = NSLocalizedString("FMT.BOOKINGREF.LIST.SEPARATOR", comment: "")
+    }
+
     static let MinimumNotificationSeparation : TimeInterval = 10 * 60  // Minutes between notifications for same trip element
+    
+    struct MainType {
+        static let Transport = "TRA"
+        static let Accommodation = "ACM"
+        static let Event = "EVT"
+    }
+    struct SubType {
+        static let Airline = "AIR"
+        static let Bus = "BUS"
+        static let Train = "TRN"
+        static let Boat = "BOAT"
+        static let Hotel = "HTL"
+        static let Limo = "LIMO"
+        static let PrivateBus = "PBUS"
+    }
+    struct IconPath {
+        static let Separator = "/"
+        static let Base = "tripelement" + Separator
+        static let TenseNames:[Tenses?:String] = [ Tenses.past : "historic", Tenses.present : "active" ]
+        static let DefaultName = "default"
+    }
     
     var type: String { willSet { checkChange(type, newValue) } }
     var subType: String { willSet { checkChange(subType, newValue) } }
@@ -26,7 +50,6 @@ class TripElement: NSObject, NSCoding {
     var references: Set<[String:String]>? { willSet { checkChange(references, newValue) } }
     var serverData: NSDictionary?
     
-    var changedAttributes:[(attr:String, old:String, new:String)] = []
     var changed = false
     
     // Notifications created for this element (used to avoid recreating notifications after they have been triggered)
@@ -74,33 +97,20 @@ class TripElement: NSObject, NSCoding {
         }
     }
     var icon: UIImage? {
-        let basePath = "tripelement/"
-        
-        var iconName: String = "default"
-        switch tense! {
-        case .past:
-            iconName = "historic"
-        case .present:
-            iconName = "active"
-        default:
-            break
-        }
-        
-        var imageName = basePath + type + "/" + subType + "/" + iconName
+        let iconName = IconPath.TenseNames[tense] ?? IconPath.DefaultName
+        let imageName = IconPath.Base + type + IconPath.Separator + subType + IconPath.Separator + iconName
         // First try exact match
         if let image = UIImage(named: imageName) {
             return image
         }
         
         // Try ignoring subtype
-        imageName = basePath + type + "/" + iconName
-        if let image = UIImage(named: imageName) {
+        if let image = UIImage(named: IconPath.Base + type + IconPath.Separator + iconName) {
             return image
         }
         
         // Try defaults
-        imageName = basePath + iconName
-        if let image = UIImage(named: imageName) {
+        if let image = UIImage(named: IconPath.Base + iconName) {
             return image
         }
         
@@ -125,21 +135,22 @@ class TripElement: NSObject, NSCoding {
         let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
         let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
 
+        // TODO: Find dynamic way of creating elements (let subclasses register which types they handle)
         var elem: TripElement?
         switch (elemType, elemSubType) {
-        case ("TRA", "AIR"):
+        case (TripElement.MainType.Transport, TripElement.SubType.Airline):
             elem = Flight(fromDictionary: elementData)
-        case ("TRA", "BUS"):
+        case (TripElement.MainType.Transport, TripElement.SubType.Bus):
             elem = ScheduledTransport(fromDictionary: elementData)
-        case ("TRA", "TRN"):
+        case (TripElement.MainType.Transport, TripElement.SubType.Train):
             elem = ScheduledTransport(fromDictionary: elementData)
-        case ("TRA", "BOAT"):
+        case (TripElement.MainType.Transport, TripElement.SubType.Boat):
             elem = ScheduledTransport(fromDictionary: elementData)
-        case ("TRA", _):
+        case (TripElement.MainType.Transport, _):
             elem = GenericTransport(fromDictionary: elementData)
-        case ("ACM", _):
+        case (TripElement.MainType.Accommodation, _):
             elem = Hotel(fromDictionary: elementData)
-        case ("EVT", _):
+        case (TripElement.MainType.Event, _):
             elem = Event(fromDictionary: elementData)
         default:
             elem = nil
@@ -245,6 +256,35 @@ class TripElement: NSObject, NSCoding {
     }
     
     
+    func referenceList(separator: String) -> String {
+        guard let references = references else {
+            return ""
+        }
+        let refList = references.compactMap{ $0[TripElement.RefTag_RefNo] }
+        return refList.joined(separator: separator)
+    }
+
+    
+    func taggedReferenceList(separator: String, excludeTypes: Set<String>) -> String {
+        guard let references = references else {
+            return ""
+        }
+        let refList = references.compactMap { (refItem) -> String? in
+            if let type = refItem[TripElement.RefTag_Type], let refNo = refItem[TripElement.RefTag_RefNo], !excludeTypes.contains(type) {
+                return String.localizedStringWithFormat(Format.taggedReference, type, refNo)
+            } else {
+                return nil
+            }
+        }
+        return refList.joined(separator: separator)
+    }
+
+    
+    func taggedReferenceList(separator: String) -> String {
+        return taggedReferenceList(separator: separator, excludeTypes: Set([]))
+    }
+
+        
     func setNotification() {
         // Generic trip element can't have notifications (start date/time not known)
         // Subclasses that support notifications must override this method (and use
@@ -291,7 +331,7 @@ class TripElement: NSObject, NSCoding {
                 ntfContent.body = String.localizedStringWithFormat(alertMessage, title!, leadTimeText!, startTimeText) as String
                 ntfContent.sound = UNNotificationSound.default
                 ntfContent.userInfo = actualUserInfo.propertyList()
-                ntfContent.categoryIdentifier = "SHiT"
+                ntfContent.categoryIdentifier = Constant.NotificationCategory.alertDefault
                 
                 let ntfDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: (newInfo?.notificationDate)!)
                 
@@ -320,18 +360,11 @@ class TripElement: NSObject, NSCoding {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Constant.Settings.deptLeadTime + String(id), Constant.Settings.legLeadTime + String(id)])
     }
 
-    
-    func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
-        guard element.tripElement == self else {
-            fatalError("Inconsistent trip element and annotated trip element")
-        }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "UnknownElementDetailsViewController")
-        if let uevc = vc as? UnknownElementDetailsViewController {
-            uevc.tripElement = element
-            uevc.trip = trip
-            return uevc
-        }
-        return nil
+
+    func viewController() -> UIViewController? {
+        let uevc = UnknownElementDetailsViewController.instantiate(fromAppStoryboard: .Main)
+        uevc.tripElement = self
+        return uevc
     }
+
 }

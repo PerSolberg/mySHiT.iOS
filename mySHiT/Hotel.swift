@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import os
 
 class Hotel: TripElement {
     let defaultCheckInTime = ( hour: 16, minute: 0 )
@@ -16,15 +17,15 @@ class Hotel: TripElement {
     //
     // MARK: Properties
     //
-    var checkInDate: Date?
-    var checkOutDate: Date?
-    var hotelName: String?
-    var address: String?
-    var postCode: String?
-    var city: String?
-    var phone: String?
-    var transferInfo: String?
-    var timezone: String?
+    var checkInDate: Date? { willSet { checkChange(checkInDate, newValue) } }
+    var checkOutDate: Date? { willSet { checkChange(checkOutDate, newValue) } }
+    var hotelName: String? { willSet { checkChange(hotelName, newValue) } }
+    var address: String? { willSet { checkChange(address, newValue) } }
+    var postCode: String? { willSet { checkChange(postCode, newValue) } }
+    var city: String? { willSet { checkChange(city, newValue) } }
+    var phone: String? { willSet { checkChange(phone, newValue) } }
+    var transferInfo: String? { willSet { checkChange(transferInfo, newValue) } }
+    var timezone: String? { willSet { checkChange(timezone, newValue) } }
     
     override var startTime:Date? {
         if let checkInDate = checkInDate {
@@ -42,29 +43,16 @@ class Hotel: TripElement {
         return hotelName
     }
     override var startInfo: String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = DateFormatter.Style.medium
-        dateFormatter.timeStyle = DateFormatter.Style.none
-
-        return dateFormatter.string(from: checkInDate!) + " - " + dateFormatter.string(from: checkOutDate!)
+        let formatter = DateIntervalFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter.string(from: checkInDate!, to: checkOutDate!)
     }
     override var endInfo: String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = DateFormatter.Style.medium
-        dateFormatter.timeStyle = DateFormatter.Style.none
-        
         return nil
-        //return dateFormatter.stringFromDate(checkOutTime!)
     }
     override var detailInfo: String? {
-        if let references = references {
-            var refList: String = ""
-            for ref in references {
-                refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_RefNo]!
-            }
-            return refList
-        }
-        return nil
+        return referenceList(separator: TripElement.Format.refListSeparator)
     }
     
     
@@ -189,18 +177,11 @@ class Hotel: TripElement {
     }
     
     
-    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
-        guard element.tripElement == self else {
-            fatalError("Inconsistent trip element and annotated trip element")
-        }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HotelDetailsViewController")
-        if let hvc = vc as? HotelDetailsViewController {
-            hvc.tripElement = element
-            hvc.trip = trip
-            return hvc
-        }
-        return nil
+    override func viewController() -> UIViewController? {
+        let hvc = HotelDetailsViewController.instantiate(fromAppStoryboard: .Main)
+        hvc.tripElement = self
+        return hvc
     }
+
 }
 

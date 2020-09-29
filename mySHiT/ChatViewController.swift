@@ -57,7 +57,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         // Get the new view controller using segue.destinationViewController.
         if let segueId = segue.identifier {
             switch (segueId) {
-            case Constant.segue.embedChatTable:
+            case Constant.Segue.embedChatTable:
                 chatTableController = segue.destination as? ChatTableController
                 if let chatTableController = chatTableController {
                     chatTableController.trip = trip
@@ -89,9 +89,9 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (!RSUtilities.isNetworkAvailable("www.shitt.no")) {
+        if (!RSUtilities.isNetworkAvailable(SHiTResource.host)) {
             //If host is not reachable, display a UIAlertController informing the user
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError, completion: nil)
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.connectError, completion: nil)
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(manageKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -113,7 +113,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         oldUserNotificationCenterDelegate = UNUserNotificationCenter.current().delegate
         UNUserNotificationCenter.current().delegate = self
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkError), name: Constant.Notification.networkError, object: nil)
     }
     
     
@@ -121,7 +121,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         UNUserNotificationCenter.current().delegate = oldUserNotificationCenterDelegate
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.removeObserver(self, name: Constant.Notification.networkError, object: nil)
         if let trip = trip {
             trip.trip.chatThread.messageBeingEntered = messageTextView.text
         }
@@ -159,7 +159,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         if let chatTableController = chatTableController {
             chatTableController.handleNetworkError()
         } else {
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.connectError, completion: nil)
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.connectError, completion: nil)
         }
     }
     
@@ -184,7 +184,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
             fatalError("Unable to get logged on user ID.")
         }
 
-        if let _ = notification.request.trigger as? UNPushNotificationTrigger, let ntf = RemoteNotification(from: notification.request.content.userInfo), ntf.changeType == Constant.changeType.chatMessage && ntf.changeOperation == Constant.changeOperation.insert, let fromUserId = ntf.fromUserId {
+        if let _ = notification.request.trigger as? UNPushNotificationTrigger, let ntf = RemoteNotification(from: notification.request.content.userInfo), ntf.changeType == Constant.ChangeType.chatMessage && ntf.changeOperation == Constant.ChangeOperation.insert, let fromUserId = ntf.fromUserId {
             if fromUserId == currentUserId {
                 completionHandler([])
             } else {
@@ -224,7 +224,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         let msg = ChatMessage(message: messageTextView.text)
         
         trip.trip.chatThread.append(msg)
-        NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
+        NotificationCenter.default.post(name: Constant.Notification.chatRefreshed, object: self)
         messageTextView.text = ""
         controlSendButton()
         messageTextView.resignFirstResponder()
@@ -241,11 +241,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
     // MARK: Functions
     //
     func controlSendButton() {
-        if messageTextView.hasText {
-            sendButton.isEnabled = true
-        } else {
-            sendButton.isEnabled = false
-        }
+        sendButton.isEnabled = messageTextView.hasText
     }
     
     
@@ -262,14 +258,13 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
         } else {
             navVC.popDeepLinkedControllers()
             // Push correct view controller onto navigation stack
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "ChatViewController")
-            if let chatViewController = viewController as? ChatViewController, let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
-                chatViewController.wasDeepLinked = true
-                chatViewController.trip = annotatedTrip
-                navVC.pushViewController(chatViewController, animated: true)
+            if let annotatedTrip = TripList.sharedList.trip(byId: tripId) {
+                let cvc = ChatViewController.instantiate(fromAppStoryboard: .Main)
+                cvc.wasDeepLinked = true
+                cvc.trip = annotatedTrip
+                navVC.pushViewController(cvc, animated: true)
             } else {
-                os_log("Unable to get chat view controller or trip", log: OSLog.general, type: .error)
+                os_log("Unable to get trip", log: OSLog.general, type: .error)
             }
         }
 

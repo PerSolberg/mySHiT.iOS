@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ScheduledTransportDetailsViewController: UIViewController, UITextViewDelegate, UIScrollViewDelegate, DeepLinkableViewController {
+class ScheduledTransportDetailsViewController: TripElementViewController, UITextViewDelegate, UIScrollViewDelegate {
     
     // MARK: Properties
     @IBOutlet weak var rootScrollView: UIScrollView!
@@ -21,13 +21,6 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     @IBOutlet weak var arrivalInfoTextView: UITextView!
     @IBOutlet weak var referenceView: UIView!
 
-    // Passed from TripDetailsViewController
-    var tripElement:AnnotatedTripElement?
-    var trip:AnnotatedTrip?
-    
-    // DeepLinkableViewController
-    var wasDeepLinked = false
-    
     // MARK: Navigation
     
     // MARK: Constructors
@@ -46,8 +39,8 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         arrivalInfoTextView.textContainerInset = UIEdgeInsets.zero
         arrivalInfoTextView.textContainer.lineFragmentPadding = 0.0
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.dataRefreshed, object: nil)        
     }
     
     
@@ -90,8 +83,8 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
     // MARK: Functions
     //
     func populateScreen(detectChanges: Bool, oldElement: ScheduledTransport?) {
-        guard let transportElement = tripElement?.tripElement as? ScheduledTransport else {
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
+        guard let transportElement = tripElement as? ScheduledTransport else {
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.unableToDisplayElement, completion: nil)
             
             self.navigationController?.popViewController(animated: true)
             return
@@ -104,29 +97,28 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         let departureInfo = buildLocationInfo(stopName: transportElement.departureStop, location: transportElement.departureLocation, terminalName: transportElement.departureTerminalName, address: transportElement.departureAddress)
         let attrDepartureInfo = NSMutableAttributedString(string: departureInfo)
         attrDepartureInfo.setAttributes([.font : departureInfoTextView.font as Any])
-        attrDepartureInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrDepartureInfo.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         departureInfoTextView.setText(attrDepartureInfo, detectChanges: detectChanges)
         
         arrivalTimeTextField.text = transportElement.endTime(dateStyle: .medium, timeStyle: .short)
         let arrivalInfo = buildLocationInfo(stopName: transportElement.arrivalStop, location: transportElement.arrivalLocation, terminalName: transportElement.arrivalTerminalName, address: transportElement.arrivalAddress)
         let attrArrivalInfo = NSMutableAttributedString(string: arrivalInfo)
         attrArrivalInfo.setAttributes([.font : arrivalInfoTextView.font as Any])
-        attrArrivalInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrArrivalInfo.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         arrivalInfoTextView.setText(attrArrivalInfo, detectChanges: detectChanges)
-        //referenceTextView.text = "references go here"
     }
 
     
     func buildLocationInfo(stopName: String?, location: String?, terminalName: String?, address: String?) -> String {
         var locationInfo = stopName ?? location ?? ""
         if let terminal = terminalName, terminal != "" {
-            locationInfo += ("\n" + terminal)
+            locationInfo += (Constant.lineFeed + terminal)
         }
         if let address = address, address != "" {
-            locationInfo += ("\n" + address)
+            locationInfo += (Constant.lineFeed + address)
         }
         if let _ = stopName, let location = location {
-            locationInfo += ("\n" + location)
+            locationInfo += (Constant.lineFeed + location)
         }
 
         return locationInfo
@@ -135,15 +127,14 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
 
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            if let transportElement = self.tripElement?.tripElement as? ScheduledTransport {
-                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {
+            if let transportElement = self.tripElement as? ScheduledTransport {
+                guard let (_, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {
                     // Couldn't find trip element, trip or element deleted
                     self.navigationController?.popViewController(animated: true)
                     return
                 }
                 
-                self.trip = aTrip
-                self.tripElement = aElement
+                self.tripElement = aElement.tripElement
                 self.populateScreen(detectChanges: true, oldElement: transportElement)
             }
         })
@@ -154,7 +145,7 @@ class ScheduledTransportDetailsViewController: UIViewController, UITextViewDeleg
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? ScheduledTransportDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
-            return te.tripElement.id == vcte.tripElement.id
+            return te.id == vcte.id
         } else {
             return false
         }

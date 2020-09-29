@@ -127,11 +127,9 @@ extension UIView
                 valueWrapper.backgroundColor = UIColor.yellow
             }
 
-//            if (value as AnyObject).isKind(of: NSArray) {
             if (value is NSArray) {
                 // Handle arrays
                 valueWrapper.addArrayAsVerticalStack(value as! NSArray, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)
-            //} else if (value as AnyObject).isKind(of: NSDictionary) {
             } else if (value is NSDictionary) {
                 // Handle dictionary
                 valueWrapper.addDictionaryAsGrid(value as! NSDictionary, horisontalHuggingForLabel: horisontalHuggingForLabel, verticalHuggingForLabel: verticalHuggingForLabel, horisontalHuggingForValue: horisontalHuggingForValue, verticalHuggingForValue: verticalHuggingForValue, constrainValueFieldWidthToView: nil)

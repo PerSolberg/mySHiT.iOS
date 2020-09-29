@@ -151,7 +151,7 @@ public class TripList:NSObject, Sequence, NSCoding {
         TripList.dqAccess.async(flags: .barrier) {
             self.performUpdate(fromDictionary: responseData)
             os_log("Updates complete, signalling refresh", log: OSLog.general, type: .debug)
-            NotificationCenter.default.post(name: Constant.notification.dataRefreshed, object: self)
+            NotificationCenter.default.post(name: Constant.Notification.dataRefreshed, object: self)
         }
     }
 
@@ -190,7 +190,6 @@ public class TripList:NSObject, Sequence, NSCoding {
                     if tripChanged {
                         changed = true
                         aTrip.modified = .Changed
-//                        aTrip.trip.refreshNotifications()
                     } else if detailsAlreadyLoaded != aTrip.trip.detailsLoaded {
                         changed = true
                     }
@@ -239,7 +238,7 @@ public class TripList:NSObject, Sequence, NSCoding {
     // Load from keyed archive
     func loadFromArchive() {
         do {
-            let fileData = try Data(contentsOf: Constant.archive.tripsURL)
+            let fileData = try Data(contentsOf: Constant.Archive.tripsURL)
             trips = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? [AnnotatedTrip] ?? [AnnotatedTrip]()
             refreshNotifications()
         } catch {
@@ -252,7 +251,7 @@ public class TripList:NSObject, Sequence, NSCoding {
     func saveToArchive() {
         do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: trips!, requiringSecureCoding: false)
-            try data.write(to: Constant.archive.tripsURL)
+            try data.write(to: Constant.Archive.tripsURL)
             os_log("Trips saved to iOS keyed archive", log: OSLog.general, type: .info)
         } catch {
             os_log("Failed to save trips: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)

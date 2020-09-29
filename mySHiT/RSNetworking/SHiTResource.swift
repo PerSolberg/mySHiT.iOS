@@ -28,12 +28,18 @@ typealias SHiTHandledStatus = (status:SHiTStatus, retry: SHiTRetry?)
 class SHiTResource: RESTResource {
     
     static let host = "www.shitt.no"
-    fileprivate static let basePath = "/mySHiT/v2"
+    fileprivate struct Path {
+        static let Base = "/mySHiT/v2"
+        static let Thread = SHiTResource.Path.Base + RESTResource.urlSep + "thread"
+        static let User = SHiTResource.Path.Base + RESTResource.urlSep + "user"
+        static let Trip = SHiTResource.Path.Base + RESTResource.urlSep + "trip"
+    }
     
     // REST service
     struct Param {
         static let userName = "userName"
         static let password = "password"
+        static let lastMessageId = "lastMessageId"
     }
     struct Verb {
         static let read = "read"
@@ -44,46 +50,46 @@ class SHiTResource: RESTResource {
     }
 
     static func tripList(parameters: [URLQueryItem]) -> RESTResource {
-        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.basePath + RESTResource.urlSep + "trip", parameters: credentials()! + parameters)
+        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.Path.Trip, parameters: credentials()! + parameters)
     }
 
 
     static func trip(key: String, parameters: [URLQueryItem]) -> RESTResource {
-        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.basePath + RESTResource.urlSep + "trip", selectors: [key], parameters: credentials()! + parameters )
+        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.Path.Trip, selectors: [key], parameters: credentials()! + parameters )
     }
 
 
     static func thread(key: String, parameters: [URLQueryItem]) -> RESTResource {
-        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.basePath + RESTResource.urlSep + "thread", selectors: [key], parameters: credentials()! + parameters )
+        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.Path.Thread, selectors: [key], parameters: credentials()! + parameters )
     }
 
 
     static func message(keys: [String], parameters: [URLQueryItem]) -> RESTResource {
-        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.basePath + RESTResource.urlSep + "thread", selectors: keys, parameters: credentials()! + parameters )
+        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.Path.Thread, selectors: keys, parameters: credentials()! + parameters )
     }
 
 
     static func user(parameters: [URLQueryItem]) -> RESTResource {
-        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.basePath + RESTResource.urlSep + "user", parameters: parameters)
+        return RESTResource(host: SHiTResource.host, basePath: SHiTResource.Path.User, parameters: parameters)
     }
 
     
     static func checkStatus(response: URLResponse?, responseDictionary: NSDictionary?, error: Error?) -> SHiTHandledStatus {
         if let error = error {
-            if error._domain == "HTTP" && error._code == 401 {
+            if error._domain == RESTRequest.ErrorDomain.http && error._code == RESTRequest.HTTPStatus.unauthorized {
                 os_log("Authentication failed", log: OSLog.webService, type: .error)
-                NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
+                NotificationCenter.default.post(name: Constant.Notification.logonFailed, object: self)
                 return (.authenticationFailed, .stop)
             } else {
                 //If there was an error, log it
                 os_log("Communication error : %{public}s", log: OSLog.webService, type: .error,  error.localizedDescription)
-                NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
+                NotificationCenter.default.post(name: Constant.Notification.networkError, object: self)
                 return (.communicationError, nil)
             }
         } else if let responseDictionary = responseDictionary, let error = responseDictionary[Constant.JSON.errorMsg] {
-            let errMsg = error as? String ?? "Unable to retrieve server error message"
+            let errMsg = error as? String ?? Constant.Message.requestServerErrorUnavailable
             os_log("Server error : %{public}s", log: OSLog.webService, type: .error,  errMsg)
-            NotificationCenter.default.post(name: Constant.notification.networkError, object: self)
+            NotificationCenter.default.post(name: Constant.Notification.networkError, object: self)
             if let retryModeString = responseDictionary[Constant.JSON.retryMode] as? String {
                 return (.serverError, SHiTRetry(rawValue: retryModeString))
             } else {
@@ -96,10 +102,7 @@ class SHiTResource: RESTResource {
     
     fileprivate static func credentials() -> [URLQueryItem]? {
         let userCred = User.sharedUser.getCredentials()
-        guard let userName = userCred.name else {
-            return nil
-        }
-        guard let userPassword = userCred.password else {
+        guard let userName = userCred.name, let userPassword = userCred.password else {
             return nil
         }
         

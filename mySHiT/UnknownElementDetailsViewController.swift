@@ -8,21 +8,14 @@
 
 import UIKit
 
-class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate, DeepLinkableViewController {
+class UnknownElementDetailsViewController: TripElementViewController, UITextViewDelegate {
     
     // MARK: Properties
     @IBOutlet weak var topView: UIScrollView!
     @IBOutlet weak var messageTextView: UITextView!
     
-    // Passed from TripDetailsViewController
-    var tripElement:AnnotatedTripElement?
-    var trip:AnnotatedTrip?
-    
     // Internal data
     var serverDataContentSize: CGSize? = nil
-    
-    // DeepLinkableViewController
-    var wasDeepLinked = false
     
     //
     // MARK: Callbacks
@@ -30,11 +23,10 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
     
-//        automaticallyAdjustsScrollViewInsets = false
         topView.contentInsetAdjustmentBehavior = .never
-        messageTextView.text = Constant.msg.unknownElement
+        messageTextView.text = Constant.Message.unknownElement
 
-        if let serverElements = tripElement?.tripElement.serverData {
+        if let serverElements = tripElement?.serverData {
             topView.addDictionaryAsGrid(serverElements, horisontalHuggingForLabel: UILayoutPriority(rawValue: 251.0), verticalHuggingForLabel: UILayoutPriority(rawValue: 251.0), horisontalHuggingForValue: UILayoutPriority(rawValue: 249.0), verticalHuggingForValue: UILayoutPriority(rawValue: 249.0), constrainValueFieldWidthToView: nil)
             //self.view.colourSubviews()
             serverDataContentSize = topView.contentSize
@@ -72,7 +64,7 @@ class UnknownElementDetailsViewController: UIViewController, UITextViewDelegate,
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? UnknownElementDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
-            return te.tripElement.id == vcte.tripElement.id
+            return te.id == vcte.id
         } else {
             return false
         }

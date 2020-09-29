@@ -26,15 +26,11 @@ extension UIViewController
         let refDict = NSMutableDictionary()
         for ref in refList {
             if let refType = ref[typeKey], let refNo = ref[refKey] {
-                var refText:NSAttributedString?
+                let refText = NSMutableAttributedString(string: refNo)
                 if let refUrl = ref[urlKey] {
-                    let hyperlinkText = NSMutableAttributedString(string: refNo)
-                    hyperlinkText.addLink(for: ".+") { match -> String? in
+                    refText.addLink(for: Constant.RegEx.matchFirstLine) { match -> String? in
                         return refUrl
                     }
-                    refText = hyperlinkText
-                } else {
-                    refText = NSAttributedString(string:refNo)
                 }
                 refDict[refType] = refText
             }
@@ -50,9 +46,20 @@ extension UIViewController
                 title: title,
                 message: message,
                 preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(Constant.alert.actionOK)
+            alert.addAction(Constant.Alert.actionOK)
             self.present(alert, animated: true, completion: completionHandler)
         }
     }
     
+    static func instantiate(fromAppStoryboard appStoryboard: AppStoryboard) -> Self {
+        return appStoryboard.viewController(ofClass:self)
+    }
+    
+    class var storyboardID:String {
+        return String(describing: self)
+    }
+    
+    func performSegue(_ segue:AppStoryboardSegue, sender: Any?) {
+        performSegue(withIdentifier: segue.rawValue, sender: sender)
+    }
 }

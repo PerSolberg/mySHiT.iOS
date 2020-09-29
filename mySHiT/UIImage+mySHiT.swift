@@ -16,9 +16,9 @@ extension UIImage
         var watermark : UIImage? = nil
         
         if modified == .Changed {
-            watermark = UIImage(named: "changed")
+            watermark = Constant.Icon.watermarkChanged
         } else if modified == .New {
-            watermark = UIImage(named: "new")
+            watermark = Constant.Icon.watermarkNew
         }
 
         if let watermark = watermark {

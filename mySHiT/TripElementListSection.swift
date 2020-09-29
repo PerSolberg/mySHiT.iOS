@@ -36,6 +36,7 @@ class TripElementListSectionInfo: NSObject, NSCoding {
 
     //
     // MARK: NSCoding
+    // TODO: Check if needed (or implement ways of saving)
     //
     func encode(with aCoder: NSCoder) {
         aCoder.encode(visible, forKey: PropertyKey.visibleKey)

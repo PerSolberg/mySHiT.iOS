@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDelegate, UITextViewDelegate, DeepLinkableViewController {
+class PrivateTransportDetailsViewController: TripElementViewController, UIScrollViewDelegate, UITextViewDelegate {
     
     @IBOutlet weak var rootScrollView: UIScrollView!
     @IBOutlet weak var contentView: UIStackView!
@@ -24,13 +24,6 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
     @IBOutlet weak var referencesView: UIView!
     
     // MARK: Properties
-    
-    // Passed from TripDetailsViewController
-    var tripElement:AnnotatedTripElement?
-    var trip:AnnotatedTrip?
-    
-    // DeepLinkableViewController
-    var wasDeepLinked = false
     
     // MARK: Navigation
     
@@ -53,8 +46,8 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         phoneText.isScrollEnabled = false
         phoneText.textContainer.lineFragmentPadding = 0.0
         
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.dataRefreshed, object: nil)
 
         //self.view.colourSubviews()
     }
@@ -96,25 +89,25 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
     // MARK: Functions
     //
     func populateScreen(detectChanges: Bool, oldElement: GenericTransport?) {
-        guard let transportElement = tripElement?.tripElement as? GenericTransport else {
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
+        guard let transportElement = tripElement as? GenericTransport else {
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.unableToDisplayElement, completion: nil)
             
             self.navigationController?.popViewController(animated: true)
             return
         }
         
-        companyTextField.setText(transportElement.companyName ?? "<Unknown company>", detectChanges: detectChanges)
+        companyTextField.setText(transportElement.companyName ?? Constant.Message.transportCompanyNameDefault, detectChanges: detectChanges)
 
         let departureInfo = buildLocationInfo(stopName: transportElement.departureStop, location: transportElement.departureLocation, terminalName: transportElement.departureTerminalName, address: transportElement.departureAddress)
         let attrDepartureInfo = NSMutableAttributedString(string: departureInfo)
         attrDepartureInfo.setAttributes([.font : departureTextView.font as Any])
-        attrDepartureInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrDepartureInfo.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         departureTextView.setText(attrDepartureInfo, detectChanges: detectChanges)
         
         let arrivalInfo = buildLocationInfo(stopName: transportElement.arrivalStop, location: transportElement.arrivalLocation, terminalName: transportElement.arrivalTerminalName, address: transportElement.arrivalAddress)
         let attrArrivalInfo = NSMutableAttributedString(string: arrivalInfo)
         attrArrivalInfo.setAttributes([.font : arrivalTextView.font as Any])
-        attrArrivalInfo.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+        attrArrivalInfo.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
         arrivalTextView.setText(attrArrivalInfo, detectChanges: detectChanges)
 
         phoneText.setText(transportElement.companyPhone, detectChanges: detectChanges)
@@ -127,9 +120,9 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
             let verticalHuggingValue = companyTextField.contentHuggingPriority(for: .vertical)
 
             var oldReferences:NSDictionary? = nil
-            let refDict = getAttributedReferences(refList, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+            let refDict = getAttributedReferences(refList, typeKey: TripElement.RefTag_Type, refKey: TripElement.RefTag_RefNo, urlKey: TripElement.RefTag_LookupURL)
             if let oldTransport = oldElement, let oldRefs = oldTransport.references {
-                oldReferences = getAttributedReferences(oldRefs, typeKey: "type", refKey: "refNo", urlKey: "urlLookup")
+                oldReferences = getAttributedReferences(oldRefs, typeKey: TripElement.RefTag_Type, refKey: TripElement.RefTag_RefNo, urlKey: TripElement.RefTag_LookupURL)
             }
             referencesView.addDictionaryAsGrid(refDict, oldDictionary: oldReferences, horisontalHuggingForLabel: horisontalHuggingLabel, verticalHuggingForLabel: verticalHuggingLabel, horisontalHuggingForValue: horisontalHuggingValue, verticalHuggingForValue: verticalHuggingValue, constrainValueFieldWidthToView: nil, highlightChanges: detectChanges)
 
@@ -141,13 +134,13 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         var locationInfo = stopName ?? ""
 
         if let terminal = terminalName {
-            locationInfo += (terminal == "" ? "" : "\n" + terminal)
+            locationInfo += (terminal == "" ? "" : Constant.lineFeed + terminal)
         }
         if let address = address {
-            locationInfo += (address == "" ? "" : "\n" + address)
+            locationInfo += (address == "" ? "" : Constant.lineFeed + address)
         }
         if let location = location {
-            locationInfo += (location == "" ? "" : "\n" + location)
+            locationInfo += (location == "" ? "" : Constant.lineFeed + location)
         }
         return locationInfo
     }
@@ -155,15 +148,14 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
     
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            if let transportElement = self.tripElement?.tripElement as? GenericTransport {
-                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {
+            if let transportElement = self.tripElement as? GenericTransport {
+                guard let (_, aElement) = TripList.sharedList.tripElement(byId: transportElement.id) else {
                     // Couldn't find trip element, trip or element deleted
                     self.navigationController?.popViewController(animated: true)
                     return
                 }
                 
-                self.trip = aTrip
-                self.tripElement = aElement
+                self.tripElement = aElement.tripElement
                 self.populateScreen(detectChanges: true, oldElement: transportElement)
             }
         })
@@ -174,7 +166,7 @@ class PrivateTransportDetailsViewController: UIViewController, UIScrollViewDeleg
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? PrivateTransportDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
-            return te.tripElement.id == vcte.tripElement.id
+            return te.id == vcte.id
         } else {
             return false
         }

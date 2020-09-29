@@ -8,39 +8,60 @@
 
 import Foundation
 import UIKit
+import os
 
 class ScheduledTransport: GenericTransport {
+    struct Format {
+        static let TitleRouteOnly = NSLocalizedString("FMT.TRANSPORT.TITLE.ROUTE", comment:"")
+        static let TitleLocationOnly = NSLocalizedString("FMT.TRANSPORT.TITLE.LOCATION", comment:"")
+        static let TitleRouteAndLocation = NSLocalizedString("FMT.TRANSPORT.TITLE.ROUTE_AND_LOCATION", comment:"")
+
+        static let StopTimeOnly = NSLocalizedString("FMT.TRANSPORT.STOP.TIME", comment:"")
+        static let StopNameOnly = NSLocalizedString("FMT.TRANSPORT.STOP.NAME", comment:"")
+        static let StopTimeAndName = NSLocalizedString("FMT.TRANSPORT.STOP.TIME_AND_NAME", comment:"")
+    }
+    
     //
     // MARK: Properties
     //
     override var title: String? {
-        let company = companyName ?? "XX"
-        let route = routeNo ?? "***"
-        let deptLocation = departureLocation ?? "<Departure>"
-        let arrLocation = arrivalLocation ?? "<Arrival>"
-        return company + " " + route + ": " + deptLocation + " - " + arrLocation
+        switch (routeName, locationInfo) {
+        case (nil, nil):
+            return nil
+        case (nil, let locationInfo?):
+            return String.localizedStringWithFormat(Format.TitleLocationOnly, locationInfo)
+        case (let routeName?, nil):
+            return String.localizedStringWithFormat(Format.TitleRouteOnly, routeName)
+        case (let routeName?, let locationInfo?):
+            return String.localizedStringWithFormat(Format.TitleRouteAndLocation, routeName, locationInfo)
+        }
     }
     override var startInfo: String? {
-        let timeInfo = startTime(dateStyle: .none, timeStyle: .short)
-        let airportName = departureStop ?? "<Departure Station>"
-        let terminalInfo = (departureTerminalCode != nil && departureTerminalCode != "" ? " [" + departureTerminalCode! + "]" : "")
-        return (timeInfo != nil ? timeInfo! + ": " : "") + airportName + terminalInfo
+        switch (startTime(dateStyle: .none, timeStyle: .short), departureStopInfo) {
+        case (nil, nil):
+            return nil
+        case (nil, let stopInfo?):
+            return String.localizedStringWithFormat(Format.StopNameOnly, stopInfo)
+        case (let timeInfo?, nil):
+            return String.localizedStringWithFormat(Format.StopTimeOnly, timeInfo)
+        case (let timeInfo?, let stopInfo?):
+            return String.localizedStringWithFormat(Format.StopTimeAndName, timeInfo, stopInfo)
+        }
     }
     override var endInfo: String? {
-        let timeInfo = endTime(dateStyle: .none, timeStyle: .short)
-        let airportName = arrivalStop ?? "<Arrival Station>"
-        let terminalInfo = (arrivalTerminalCode != nil && arrivalTerminalCode != "" ? " [" + arrivalTerminalCode! + "]" : "")
-        return (timeInfo != nil ? timeInfo! + ": " : "") + airportName + terminalInfo
+        switch (endTime(dateStyle: .none, timeStyle: .short), arrivalStopInfo) {
+        case (nil, nil):
+            return nil
+        case (nil, let stopInfo?):
+            return String.localizedStringWithFormat(Format.StopNameOnly, stopInfo)
+        case (let timeInfo?, nil):
+            return String.localizedStringWithFormat(Format.StopTimeOnly, timeInfo)
+        case (let timeInfo?, let stopInfo?):
+            return String.localizedStringWithFormat(Format.StopTimeAndName, timeInfo, stopInfo)
+        }
     }
     override var detailInfo: String? {
-        if let references = references {
-            var refList: String = ""
-            for ref in references {
-                refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_Type]! + ": " + ref[TripElement.RefTag_RefNo]!
-            }
-            return refList
-        }
-        return nil
+        return taggedReferenceList(separator: TripElement.Format.refListSeparator)
     }
     
     
@@ -68,26 +89,19 @@ class ScheduledTransport: GenericTransport {
             let legLeadtime = Int(defaults.float(forKey: Constant.Settings.legLeadTime))
             
             if departureLeadtime > 0 && legNo == 1 {
-                setNotification(notificationType: Constant.Settings.deptLeadTime, leadTime: departureLeadtime, alertMessage: Constant.msg.transportAlertMessage, userInfo: nil)
+                setNotification(notificationType: Constant.Settings.deptLeadTime, leadTime: departureLeadtime, alertMessage: Constant.Message.transportAlertMessage, userInfo: nil)
             }
             if legLeadtime > 0 {
-                setNotification(notificationType: Constant.Settings.legLeadTime, leadTime: legLeadtime, alertMessage: Constant.msg.transportAlertMessage, userInfo: nil)
+                setNotification(notificationType: Constant.Settings.legLeadTime, leadTime: legLeadtime, alertMessage: Constant.Message.transportAlertMessage, userInfo: nil)
             }
         }
     }
 
     
-    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
-        guard element.tripElement == self else {
-            fatalError("Inconsistent trip element and annotated trip element")
-        }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ScheduledTransportDetailsViewController")
-        if let stvc = vc as? ScheduledTransportDetailsViewController {
-            stvc.tripElement = element
-            stvc.trip = trip
-            return stvc
-        }
-        return nil
+    override func viewController() -> UIViewController? {
+        let stvc = ScheduledTransportDetailsViewController.instantiate(fromAppStoryboard: .Main)
+        stvc.tripElement = self
+        return stvc
     }
+
 }

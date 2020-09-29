@@ -8,11 +8,18 @@
 
 import Foundation
 import UIKit
+import os
 
 class Flight: ScheduledTransport {
     static let RefType_ETicketNo  = "ETKT"
     static let RefType_Amadeus    = "Amadeus"
     
+    struct Format {
+        static let DesignatorCodeOnly = NSLocalizedString("FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE", comment:"")
+        static let DesignatorNumberOnly = NSLocalizedString("FMT.TRANSPORT.FLIGHT_DESIGNATOR.NUMBER", comment:"")
+        static let DesignatorCodeAndNumber = NSLocalizedString("FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE_AND_NUMBER", comment:"")
+    }
+
     //
     // MARK: Properties
     //
@@ -22,29 +29,20 @@ class Flight: ScheduledTransport {
         static let airlineCodeKey = "airlineCode"
     }
     
-    override var title: String? {
-        let code = airlineCode ?? "XX"
-        let route = routeNo ?? "***"
-        let deptLocation = departureLocation ?? "<Departure>"
-        let arrLocation = arrivalLocation ?? "<Arrival>"
-        return code + " " + route + ": " + deptLocation + " - " + arrLocation
-    }
     override var detailInfo: String? {
-        if let references = references {
-            var refList: String = ""
-            for ref in references {
-                if ref[TripElement.RefTag_Type] != Flight.RefType_ETicketNo {
-                    refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_Type]! + ": " + ref[TripElement.RefTag_RefNo]!
-                }
-            }
-            return refList
-        }
-        return nil
+        return taggedReferenceList(separator: TripElement.Format.refListSeparator, excludeTypes: Set([Flight.RefType_ETicketNo]))
     }
-    var flightNo: String? {
-        let code = airlineCode ?? "XX"
-        let route = routeNo ?? "***"
-        return code + " " + route
+    override var routeName: String? {
+        switch (airlineCode, routeNo) {
+        case (nil, nil):
+            return nil
+        case (nil, let route?):
+            return String.localizedStringWithFormat(Format.DesignatorNumberOnly, route)
+        case (let code?, nil):
+            return String.localizedStringWithFormat(Format.DesignatorCodeOnly, code)
+        case (let code?, let route?):
+            return String.localizedStringWithFormat(Format.DesignatorCodeAndNumber, code, route)
+        }
     }
 
     
@@ -70,7 +68,6 @@ class Flight: ScheduledTransport {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
         airlineCode = elementData[Constant.JSON.airlineCompanyCode] as? String
-//        setNotification()
     }
     
     
@@ -86,18 +83,11 @@ class Flight: ScheduledTransport {
     }
 
     
-    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
-        guard element.tripElement == self else {
-            fatalError("Inconsistent trip element and annotated trip element")
-        }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "FlightDetailsViewController")
-        if let fvc = vc as? FlightDetailsViewController {
-            fvc.tripElement = element
-            fvc.trip = trip
-            return fvc
-        }
-        return nil
+    override func viewController() -> UIViewController? {
+        let fvc = FlightDetailsViewController.instantiate(fromAppStoryboard: .Main)
+        fvc.tripElement = self
+        return fvc
     }
+
 }
 

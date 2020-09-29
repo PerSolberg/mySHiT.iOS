@@ -32,8 +32,8 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
             if view.isKind(of: UITextView.self) && view.restorationIdentifier != nil {
                 let textView = view as! UITextView
                 let textViewName = String(format: "%@.text", textView.restorationIdentifier!)
-                let appBundle = Bundle.main
-                let localisedText = NSLocalizedString(textViewName as String, tableName: "Main", bundle: appBundle, value: "", comment: "")
+                let localisedText = AppStoryboard.Main.localizedString(textViewName)
+                
                 if localisedText != "" && localisedText != textViewName {
                     textView.text = localisedText
                 }
@@ -46,8 +46,8 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
         userNameTextField.text = User.sharedUser.userName
         passwordTextField.text = User.sharedUser.password
 
-        NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.notification.logonSuccessful, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(logonFailed(_:)), name: Constant.notification.logonFailed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(logonComplete(_:)), name: Constant.Notification.logonSuccessful, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(logonFailed(_:)), name: Constant.Notification.logonFailed, object: nil)
 
         // Register for Keyboard Notifications
         NotificationCenter.default.addObserver(self, selector: #selector(LogonViewController.keyboardWasShown(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -58,12 +58,12 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     
     
     override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.addObserver(self, selector: #selector(connectionFailed(_:)), name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(connectionFailed(_:)), name: Constant.Notification.networkError, object: nil)
     }
 
     
     override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self, name: Constant.notification.networkError, object: nil)
+        NotificationCenter.default.removeObserver(self, name: Constant.Notification.networkError, object: nil)
     }
 
     
@@ -154,12 +154,12 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
     
     
     @objc func logonFailed(_ notification:Notification) {
-        showAlert(title: Constant.msg.logonFailureTitle, message: Constant.msg.logonFailureText, completion: nil)
+        showAlert(title: Constant.Message.logonFailureTitle, message: Constant.Message.logonFailureText, completion: nil)
     }
     
     
     @objc func connectionFailed(_ notification:Notification) {
-        showAlert(title: Constant.msg.connectErrorTitle, message: Constant.msg.connectErrorText, completion: nil)
+        showAlert(title: Constant.Message.connectErrorTitle, message: Constant.Message.connectErrorText, completion: nil)
     }
     
     
@@ -171,11 +171,5 @@ class LogonViewController: UIViewController, UITextFieldDelegate {
             logonButton.isEnabled = true
         }
     }
-
-
-    func didRecieveResponse(_ results: NSDictionary) {
-        // Store the results in our table data array
-        print(results)
-    }
-    
+ 
 }

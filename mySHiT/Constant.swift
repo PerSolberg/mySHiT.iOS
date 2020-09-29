@@ -11,13 +11,17 @@ import UIKit
 
 struct Constant {
     static let deviceType = "iOS"
+    static let deviceTypeDefault = "default"
+    static let appName = "mySHiT"
     
     static let emptyString = ""
+    static let space = " "
+    static let lineFeed = "\n"
     
     static let timezoneNameUTC = "UTC"
     static let timezoneUTC = TimeZone(identifier: timezoneNameUTC)
     
-    struct archive {
+    struct Archive {
         fileprivate static let archiveDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
 
         static let userURL = archiveDirectory.appendingPathComponent("user")
@@ -25,11 +29,26 @@ struct Constant {
         static let sectionsURL = archiveDirectory.appendingPathComponent("sections")
     }
 
-    struct alert {
+    struct Alert {
         static let actionOK = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
     }
     
-    // JSON tags
+    
+    //
+    // MARK: Regular Expressions
+    //
+    struct RegExPattern {
+        static let whitespace = "\\s+"
+    }
+
+    struct RegEx {
+        static let matchAll:NSRegularExpression! = try? NSRegularExpression(pattern: ".+", options: [.dotMatchesLineSeparators])
+        static let matchFirstLine:NSRegularExpression! = try? NSRegularExpression(pattern: ".+", options: [])
+    }
+    
+    //
+    // MARK: JSON tags
+    //
     struct JSON {
         static let status = "status"
         static let errorMsg = "errorMsg"
@@ -134,8 +153,10 @@ struct Constant {
         static let srvTSEpochMicrosec = "microsec"
     }
     
-    // User interface messages
-    struct msg {
+    //
+    // MARK: User interface messages
+    //
+    struct Message {
         static let retrievingTrips = NSLocalizedString("Retrieving your trips from SHiT", comment: "")
         static let retrievingTripDetails = NSLocalizedString("Retrieving trip details from SHiT", comment: "")
         static let tripAlertMessage = NSLocalizedString("SHiT trip '%@' starts in %@ (%@)", comment: "")
@@ -161,10 +182,29 @@ struct Constant {
         static let chatNtfReplyAction = NSLocalizedString("CHAT.NTF.REPLY", comment: "")
         static let chatNtfReplySend = NSLocalizedString("CHAT.NTF.REPLY.SEND", comment: "")
         static let shortcutSendMessageSubtitle = NSLocalizedString("Send message to participants", comment: "")
+
+        static let unknownUserName = NSLocalizedString("USER.UNKNOWN.NAME", comment: "")
+        static let unknownUserInitials = NSLocalizedString("USER.UNKNOWN.INITIALS", comment: "")
+
+        static let tripElementTitleDefault = NSLocalizedString("TRIPELEMENT.TITLE.DEFAULT", comment: "")
+        static let tripElementStartInfoDefault = NSLocalizedString("TRIPELEMENT.STARTINFO.DEFAULT", comment: "")
+        static let tripElementDetailsDefault = NSLocalizedString("TRIPELEMENT.DETAILS.DEFAULT", comment: "")
+        
+        static let hotelTransferInfoDefault = NSLocalizedString("HOTEL.TRANSFERINFO.DEFAULT", comment: "")
+
+        static let transportCompanyNameDefault = NSLocalizedString("TRANSPORT.COMPANY_NAME.DEFAULT", comment: "")
+        static let transportCompanyCodeDefault = NSLocalizedString("TRANSPORT.COMPANY_CODE.DEFAULT", comment: "")
+
+        static let alertListNotificationNotFound = NSLocalizedString("ALERTLIST.NOTIFICATION.NOTFOUND", comment: "")
+        static let alertListUnknownTime = NSLocalizedString("ALERTLIST.ALERTTIME.UNKNOWN", comment: "")
+        
+        static let requestServerErrorUnavailable = NSLocalizedString("REST_REQUEST.ERROR.SERVER_MSG_UNAVAILABLE", comment: "")
     }
     
-    // Notifications
-    struct notification {
+    //
+    // MARK: Notifications
+    //
+    struct Notification {
         static let networkError = NSNotification.Name(rawValue: "networkError")
         static let dataRefreshed = NSNotification.Name(rawValue: "dataRefreshed")
         static let logonSuccessful = NSNotification.Name(rawValue: "logonSuccessful")
@@ -174,39 +214,48 @@ struct Constant {
         static let chatRefreshed = NSNotification.Name(rawValue: "chatRefreshed")
     }
 
-    struct ntfCategory {
+    struct NotificationCategory {
         static let newChatMessage = "NTF.INSERT.CHATMESSAGE"
+        static let alertDefault = "SHiT"
     }
 
-    struct ntfAction {
+    struct NotificationAction {
         static let replyToChatMessage = "REPLY.CHAT.MSG"
         static let ignoreChatMessage = "IGNORE.CHAT.MSG"
     }
     
-    struct changeType {
+    struct ChangeType {
         static let chatMessage = "CHATMESSAGE"
         static let trip = "TRIP"
         static let itinerary = "ITINERARY"
         static let user = "USER"
     }
     
-    struct changeOperation {
+    struct ChangeOperation {
         static let insert = "INSERT"
         static let update = "UPDATE"
         static let delete = "DELETE"
     }
     
-    // Shortcuts
-    struct shortcut {
+    //
+    // MARK: Shortcuts
+    //
+    struct Shortcut {
         static let chat = "Chat"
     }
 
-    // Icons
-    struct icon {
+    //
+    // MARK: Icons
+    //
+    struct Icon {
         static let chat = "Chat"
+        static let watermarkChanged = UIImage(named: "changed")
+        static let watermarkNew = UIImage(named: "new")
     }
 
-    // Firebase Cloud Messaging (FCM)
+    //
+    // MARK: Firebase Cloud Messaging (FCM)
+    //
     struct Firebase {
         // These are ready to use as is
         static let topicGlobal = "GLOBAL"
@@ -217,7 +266,7 @@ struct Constant {
         static let topicRootUser = "U-"
     }
 
-    struct segue {
+    struct Segue {
         static let showFlightInfo = "showFlightInfoSegue"
         static let showHotelInfo = "showHotelInfoSegue"
         static let showEventInfo = "showEventInfoSegue"
@@ -230,11 +279,42 @@ struct Constant {
         static let embedChatTable = "embedChatTableSegue"
     }
     
+    
+    //
+    // MARK: Settings
+    //
     struct Settings {
+        // System
+        static let url = Bundle.main.url(forResource: "Root", withExtension: "plist", subdirectory: "Settings.bundle")
+        static let preferencesDictionaryKey = "PreferenceSpecifiers"
+        static let preferenceIdentifier = "Key"
+        static let preferenceDefaultValue = "DefaultValue"
+
+        // Application
+        static let upcomingTrips = "upcoming_trips"
         static let tripLeadTime = "trip_notification_leadtime"
         static let deptLeadTime = "dept_notification_leadtime"
         static let legLeadTime = "leg_notification_leadtime"
         static let eventLeadTime = "event_notification_leadtime"
+        static let notificationMute = "mute_notification_sound"
+        struct MuteInterval {
+            static let always = "A"
+            static let never = "N"
+            static let day = "D"
+            static let week = "W"
+            static let month = "M"
+        }
+    }
+    
+    struct Group {
+        static let defaults = "group.no.andmore.mySHiT.defaults"
+    }
+    
+    //
+    // MARK: Date Formats
+    //
+    struct DateFormat {
+        static let isoYearToMinuteWithSpace = "yyyy-MM-dd HH:mm"
     }
 }
 

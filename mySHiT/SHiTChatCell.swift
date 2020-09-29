@@ -26,7 +26,6 @@ class SHiTChatCell: UITableViewCell {
  
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         messageText.textContainerInset = UIEdgeInsets.zero
     }
 

@@ -13,6 +13,13 @@ import UserNotifications
 import os
 
 class Trip: NSObject, NSCoding {
+    struct IconPath {
+        static let Separator = "/"
+        static let Base = "trip" + Separator
+        static let TenseNames:[Tenses?:String] = [ Tenses.past : "historic" + Separator, Tenses.present : "active" + Separator, Tenses.future : "" ]
+        static let DefaultName = "UNKNOWN"
+    }
+
     var id: Int { willSet { checkChange(id, newValue) } }
     var itineraryId: Int? { willSet { checkChange(itineraryId, newValue) } }
     var startDate: Date? { willSet { checkChange(startDate, newValue) } }
@@ -34,6 +41,7 @@ class Trip: NSObject, NSCoding {
         return startDate
     }
     var startTimeZone: String? {
+        //TODO: Use timezone for trip instead of timezone for first element (which is usually correct, but still)
         if let elements = elements, elements.count > 0 {
             return elements[0].tripElement.startTimeZone
         }
@@ -46,11 +54,11 @@ class Trip: NSObject, NSCoding {
         return name
     }
     var dateInfo: String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = DateFormatter.Style.medium
-        dateFormatter.timeStyle = DateFormatter.Style.none
-        
-        return dateFormatter.string(from: startDate!) + " - " + dateFormatter.string(from: endDate!)
+        let formatter = DateIntervalFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+
+        return formatter.string(from: startDate!, to: endDate!)
     }
     var detailInfo: String? {
         return tripDescription
@@ -73,18 +81,8 @@ class Trip: NSObject, NSCoding {
         }
     }
     var icon: UIImage? {
-        let basePath = "trip/"
-        
-        var path: String! = basePath
-        switch tense! {
-        case .past:
-            path = basePath + "historic/"
-        case .present:
-            path = basePath + "active/"
-        case .future:
-            path = basePath
-        }
-        var imageName = path + type!
+        let path = IconPath.Base + (IconPath.TenseNames[tense] ?? "")
+        let imageName = path + type!
         
         // First try exact match
         if let image = UIImage(named: imageName) {
@@ -92,14 +90,12 @@ class Trip: NSObject, NSCoding {
         }
         
         // Try default variant for trip type
-        imageName = basePath + type!
-        if let image = UIImage(named: imageName) {
+        if let image = UIImage(named: IconPath.Base + type!) {
             return image
         }
         
         // Try dummy image
-        imageName = basePath + "UNKNOWN"
-        if let image = UIImage(named: imageName) {
+        if let image = UIImage(named: IconPath.Base + IconPath.DefaultName) {
             return image
         }
 
@@ -296,7 +292,7 @@ class Trip: NSObject, NSCoding {
         }
         
         // Remove elements no longer in list
-        for (ix, element) in elements!.reversed().enumerated() {
+        for (ix, element) in elements!.enumerated().reversed() {
             if !elementIDs.contains(element.tripElement.id) {
                 changed = true
                 elements!.remove(at: ix)
@@ -407,10 +403,10 @@ class Trip: NSObject, NSCoding {
                         let leadTimeText = dcf.string(from: actualLeadTime)
                         
                         let ntfContent = UNMutableNotificationContent()
-                        ntfContent.body = String.localizedStringWithFormat(Constant.msg.tripAlertMessage, title!, leadTimeText!, startTimeText!) as String
+                        ntfContent.body = String.localizedStringWithFormat(Constant.Message.tripAlertMessage, title!, leadTimeText!, startTimeText!) as String
                         ntfContent.sound = UNNotificationSound.default
                         ntfContent.userInfo = userInfo.securePropertyList()
-                        ntfContent.categoryIdentifier = "SHiT"
+                        ntfContent.categoryIdentifier = Constant.NotificationCategory.alertDefault
                         
                         let ntfDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: (newInfo?.notificationDate)!)
                         
@@ -454,15 +450,14 @@ class Trip: NSObject, NSCoding {
                     if tripsFound != 1 {
                         os_log("More than one trip (%d) found for code '%{public}s'", log: OSLog.webService, type: .error, tripsFound, (self.code ?? "<Unknown>") )
                     } else {
+                        os_log("Trip details received for code '%{public}s', updating", log: OSLog.webService, type: .debug, (self.code ?? "<Unknown>") )
                         TripList.sharedList.update(fromDictionary: responseDictionary)
                     }
                 } else {
                     os_log("Didn't find expected elements in dictionary: '%{public}s'", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
             }
-            if let parentCompletionHandler = parentCompletionHandler {
-                parentCompletionHandler()
-            }
+            parentCompletionHandler?()
         }
     }
 

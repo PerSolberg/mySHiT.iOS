@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 
 class Phone:NSObject {
+    static let LinkPrefix = "tel:"
+    static let Separator = "/"
+
     class func annotate(_ phoneNo:String?) -> NSAttributedString? {
         guard let phoneNo = phoneNo else {
             return nil
@@ -17,10 +20,10 @@ class Phone:NSObject {
         
         let phoneString = NSMutableAttributedString(string: phoneNo)
         var startPos = 0
-        for pn in phoneNo.components(separatedBy: "/") {
+        for pn in phoneNo.components(separatedBy: Separator) {
             let pnTrim = pn.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             if pnTrim != "" {
-                let pnLink = "tel:" + pnTrim
+                let pnLink = LinkPrefix + pnTrim
                 phoneString.addAttribute(NSAttributedString.Key.link, value: pnLink, range: NSMakeRange(startPos, pn.count))
             }
             startPos += 1 + pn.count

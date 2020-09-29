@@ -122,8 +122,8 @@ class User : NSObject, NSCoding {
     }
 
 
-    func getCredentials() -> (name:String?, password:String?, urlsafePassword:String?) {
-        return (name: userName, password:password, urlsafePassword:nil /*urlsafePassword*/)
+    func getCredentials() -> (name:String?, password:String?) {
+        return (name: userName, password:password)
     }
     
 
@@ -144,12 +144,12 @@ class User : NSObject, NSCoding {
                     self.registerForPushNotifications()
                     self.saveUser()
 
-                    NotificationCenter.default.post(name: Constant.notification.logonSuccessful, object: self)
+                    NotificationCenter.default.post(name: Constant.Notification.logonSuccessful, object: self)
                 } else {
                     os_log("Incorrect web service response, element '%{public}s' not found", log: OSLog.webService, type: .error, Constant.JSON.queryUser)
                 }
             } else if status.status == .serverError {
-                NotificationCenter.default.post(name: Constant.notification.logonFailed, object: self)
+                NotificationCenter.default.post(name: Constant.Notification.logonFailed, object: self)
             }
         }
     }
@@ -192,24 +192,16 @@ class User : NSObject, NSCoding {
     func saveUser() {
         do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
-            try data.write(to: Constant.archive.userURL)
+            try data.write(to: Constant.Archive.userURL)
         } catch {
             os_log("Failed to save user: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
         }
     }
     
     func loadUser() {
-        if try! FileManager.default.fileExists(atPath: Constant.archive.userURL.path) && FileManager.default.attributesOfItem(atPath: Constant.archive.userURL.path)[FileAttributeKey.size] as! Int > 0 {
-//            if let newUser = NSKeyedUnarchiver.unarchiveObject(withFile: Constant.archive.userURL.path) as? User {
-//                self.srvUserId     = newUser.srvUserId
-//                self.srvUserName   = newUser.srvUserName
-//                self.srvFullName   = newUser.fullName
-//                self.srvCommonName = newUser.commonName
-//                self.srvInitials   = newUser.srvInitials
-//                self.srvShortName  = newUser.srvShortName
-//            }
+        if try! FileManager.default.fileExists(atPath: Constant.Archive.userURL.path) && FileManager.default.attributesOfItem(atPath: Constant.Archive.userURL.path)[FileAttributeKey.size] as! Int > 0 {
             do {
-                let fileData = try Data(contentsOf: Constant.archive.userURL)
+                let fileData = try Data(contentsOf: Constant.Archive.userURL)
                 if let newUser = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? User {
                     self.srvUserId     = newUser.srvUserId
                     self.srvUserName   = newUser.srvUserName

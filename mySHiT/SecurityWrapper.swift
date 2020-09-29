@@ -10,6 +10,7 @@
 //import Foundation
 import Security
 import UIKit
+import os
 
 enum KeychainError: Error {
     case unimplemented
@@ -101,7 +102,7 @@ struct Keychain {
         } catch KeychainError.itemNotFound {
             // Ignore this error.
         } catch let error {
-            NSLog("deleteAccount error: \(error)")
+            os_log("deleteAccount error: %{public}s", log: OSLog.general , type: .error, error.localizedDescription)
         }
     }
     
@@ -120,7 +121,7 @@ struct Keychain {
             // Ignore this error, simply return nil.
             return nil
         } catch let error {
-            NSLog("dataForAccount error: \(error)")
+            os_log("dataForAccount error: %{public}s", log: OSLog.general , type: .error, error.localizedDescription)
             return nil
         }
     }
@@ -157,7 +158,7 @@ struct Keychain {
                     kSecAttrAccessibleWhenUnlocked,
                     ])
             } catch let error {
-                NSLog("setData error: \(error)")
+                os_log("setData error: %{public}s", log: OSLog.general , type: .error, error.localizedDescription)
             }
     }
 
@@ -185,7 +186,7 @@ struct Keychain {
         } catch KeychainError.itemNotFound {
             // Ignore this error.
         } catch let error {
-            NSLog("deleteAllAccounts error: \(error)")
+            os_log("deleteAllAccounts error: %{public}s", log: OSLog.general , type: .error, error.localizedDescription)
         }
     }
     

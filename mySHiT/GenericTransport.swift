@@ -8,8 +8,21 @@
 
 import Foundation
 import UIKit
+import os
 
 class GenericTransport: TripElement {
+    struct Format {
+        static let TerminalOnly = NSLocalizedString("FMT.TRANSPORT.TERMINAL", comment:"")
+        static let StopNameOnly = NSLocalizedString("FMT.TRANSPORT.STOP", comment:"")
+        static let StopAndTerminal = NSLocalizedString("FMT.TRANSPORT.STOP_AND_TERMINAL", comment:"")
+
+        static let RouteName = NSLocalizedString("FMT.TRANSPORT.ROUTE_NAME", comment:"")
+
+        static let DepartureOnly = NSLocalizedString("FMT.TRANSPORT.DEPARTURE", comment:"")
+        static let ArrivalOnly = NSLocalizedString("FMT.TRANSPORT.ARRIVAL", comment:"")
+        static let DepartureAndArrival = NSLocalizedString("FMT.TRANSPORT.DEPT_AND_ARRIVAL", comment:"")
+    }
+    
     //
     // MARK: Properties
     //
@@ -58,16 +71,40 @@ class GenericTransport: TripElement {
         return arrivalLocation
     }
     override var detailInfo: String? {
-        if let references = references {
-            var refList: String = ""
-            for ref in references {
-                refList = refList + (refList == "" ? "" : ", ") + ref[TripElement.RefTag_RefNo]!
-            }
-            return refList
-        }
-        return nil
+        return referenceList(separator: TripElement.Format.refListSeparator)
     }
-
+    var routeName: String? {
+        switch (companyName, routeNo) {
+        case (nil, nil):
+            return nil
+        case (nil, let route?):
+            return route
+        case (let company?, nil):
+            return company
+        case (let company?, let route?):
+            return String.localizedStringWithFormat(Format.RouteName, company, route)
+        }
+    }
+    var locationInfo: String? {
+        switch (departureLocation, arrivalLocation) {
+        case (nil, nil):
+            return nil
+        case (nil, let arrLoc?):
+            return String.localizedStringWithFormat(Format.ArrivalOnly, arrLoc)
+        case (let depLoc?, nil):
+            return String.localizedStringWithFormat(Format.DepartureOnly, depLoc)
+        case (let depLoc?, let arrLoc?) where depLoc == arrLoc:
+            return String.localizedStringWithFormat(Format.DepartureOnly, depLoc)
+        case (let depLoc?, let arrLoc?) :
+            return String.localizedStringWithFormat(Format.DepartureAndArrival, depLoc, arrLoc)
+        }
+    }
+    var departureStopInfo:String? {
+        return stopInfo(stop: departureStop, terminal: departureTerminalCode)
+    }
+    var arrivalStopInfo:String? {
+        return stopInfo(stop: arrivalStop, terminal: arrivalTerminalCode)
+    }
 
     struct PropertyKey {
         static let segmentIdKey = "segmentId"
@@ -258,21 +295,24 @@ class GenericTransport: TripElement {
     }
 
     
-    override func viewController(trip:AnnotatedTrip, element:AnnotatedTripElement) -> UIViewController? {
-        guard element.tripElement == self else {
-            fatalError("Inconsistent trip element and annotated trip element")
-        }
-        if subType == "LIMO" || subType == "PBUS" {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "PrivateTransportDetailsViewController")
-            if let ptvc = vc as? PrivateTransportDetailsViewController {
-                ptvc.tripElement = element
-                ptvc.trip = trip
-                return ptvc
-            }
+    override func viewController() -> UIViewController? {
+        let ptvc = PrivateTransportDetailsViewController.instantiate(fromAppStoryboard: .Main)
+        ptvc.tripElement = self
+        return ptvc
+    }
+
+
+    func stopInfo(stop:String?, terminal:String?) -> String? {
+        switch (stop, terminal) {
+        case (nil, nil):
             return nil
-        } else {
-            return super.viewController(trip: trip, element: element)
+        case (nil, let terminal?):
+            return String.localizedStringWithFormat(Format.TerminalOnly, terminal)
+        case (let stop?, nil):
+            return String.localizedStringWithFormat(Format.StopNameOnly, stop)
+        case (let stop?, let terminal?):
+            return String.localizedStringWithFormat(Format.StopAndTerminal, stop, terminal)
         }
     }
+
 }

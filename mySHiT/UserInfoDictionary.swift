@@ -23,6 +23,8 @@ enum UserInfoKeys:String, CaseIterable {
     case tableName
     case tripName
     case message
+    case startTimestamp
+    case startTimezone
     
     // Firebase keys - not used by app itself
     case gcmMessageId = "gcm.message_id"

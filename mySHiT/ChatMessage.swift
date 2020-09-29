@@ -10,6 +10,12 @@ import Foundation
 import UIKit
 import os
 
+enum LastSeenBy {
+    case none
+    case everyone
+    case some([String])
+}
+
 class ChatMessage: NSObject, NSCoding {
     typealias LocalId = (deviceType: String, deviceId: String, localId: String)
     static let missingLocalId:LocalId = ("", "", "")
@@ -25,17 +31,17 @@ class ChatMessage: NSObject, NSCoding {
     var storedTimestamp: Date?
     var createdTimestamp: Date!
 
-    var lastSeenBy: [String] = []
+    var lastSeenBy: LastSeenBy = .none
     
     var isStored:Bool {
         return (id != nil)
     }
     var savePayload:[String:String] {
-        return [ "deviceType": localId.deviceType,
-                 "deviceId": localId.deviceId,
-                 "localId": localId.localId,
-                 "message": messageText,
-                 "createdTS": ServerDate.convertServerDate(createdTimestamp, timeZone: Constant.timezoneUTC)
+        return [ Constant.JSON.msgDeviceType: localId.deviceType,
+                 Constant.JSON.msgDeviceId: localId.deviceId,
+                 Constant.JSON.msgLocalId: localId.localId,
+                 Constant.JSON.msgText: messageText,
+                 Constant.JSON.msgCreatedTS: ServerDate.convertServerDate(createdTimestamp, timeZone: Constant.timezoneUTC)
                ]
     }
 
@@ -84,11 +90,11 @@ class ChatMessage: NSObject, NSCoding {
     // MARK: Initialisers
     //
     required init?(coder aDecoder: NSCoder) {
-        id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int
         userId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
 
-        userName  = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String ?? "Unknown"
-        userInitials = aDecoder.decodeObject(forKey: PropertyKey.userInitialsKey) as? String ?? "XXX"
+        userName  = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String ?? Constant.Message.unknownUserName
+        userInitials = aDecoder.decodeObject(forKey: PropertyKey.userInitialsKey) as? String ?? Constant.Message.unknownUserInitials
         
         let savedDeviceType = aDecoder.decodeObject(forKey: PropertyKey.deviceTypeKey) as! String
         let savedDeviceId = aDecoder.decodeObject(forKey: PropertyKey.deviceIdKey) as! String
@@ -111,7 +117,7 @@ class ChatMessage: NSObject, NSCoding {
                     elementData[Constant.JSON.msgDeviceId] as! String,
                     elementData[Constant.JSON.msgLocalId] as! String )
         messageText = elementData[Constant.JSON.msgText] as? String
-        storedTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgStoredTS] as? String ?? "", timeZone: Constant.timezoneUTC)
+        storedTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgStoredTS] as? String, timeZone: Constant.timezoneUTC)
         createdTimestamp = ServerDate.convertServerDate(elementData[Constant.JSON.msgCreatedTS] as? String, timeZone: Constant.timezoneUTC)
     }
     
@@ -142,9 +148,9 @@ class ChatMessage: NSObject, NSCoding {
                 //Set the tableData NSArray to the results returned from www.shitt.no
                 if let returnedMessage = responseDictionary?[Constant.JSON.queryMessage] as? NSDictionary {
                     //TODO: CHeck error (status = ERROR, errorCode = xxx, errorMsg = xxxx, retryMode = STOP)
-                    self.id = returnedMessage["id"] as? Int
-                    self.storedTimestamp = ServerDate.convertServerDate(returnedMessage["storedTS"] as? String ?? "", timeZone: Constant.timezoneUTC)
-                    NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
+                    self.id = returnedMessage[Constant.JSON.msgId] as? Int
+                    self.storedTimestamp = ServerDate.convertServerDate(returnedMessage[Constant.JSON.msgStoredTS] as? String, timeZone: Constant.timezoneUTC)
+                    NotificationCenter.default.post(name: Constant.Notification.chatRefreshed, object: self)
                 } else {
                     os_log("Incorrect response: %{public}s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
                 }
@@ -180,7 +186,7 @@ class ChatMessage: NSObject, NSCoding {
     
     
     static func read(fromUserInfo userInfo: UserInfo, responseHandler parentResponseHandler: @escaping (URLResponse?, NSDictionary?, Error?)  -> Void) {
-        guard let changeType = userInfo[.changeType] as? String, let changeOp = userInfo[.changeOperation] as? String, changeType == "CHATMESSAGE" && changeOp == "INSERT" else {
+        guard let changeType = userInfo[.changeType] as? String, let changeOp = userInfo[.changeOperation] as? String, changeType == Constant.ChangeType.chatMessage && changeOp == Constant.ChangeOperation.insert else {
             fatalError("Invalid usage, can only be used to initialise message from notification")
         }
         guard let ntfMsgId = userInfo[.id] as? String, let msgId = Int(ntfMsgId), let ntfTripId = userInfo[.tripId] as? String, let tripId = Int(ntfTripId) else {

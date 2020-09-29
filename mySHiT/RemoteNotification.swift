@@ -33,7 +33,7 @@ class RemoteNotification {
         self.tripId = tripId
 
         switch (changeType, changeOperation) {
-        case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+        case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.insert):
             guard let ntfFromUserId = userInfo[.fromUserId] as? String, let fromUserId = Int(ntfFromUserId) else {
                 os_log("Invalid remote notification, chat message without aps data or sending user ID", log: OSLog.notification, type: .error)
                 return nil
@@ -42,7 +42,7 @@ class RemoteNotification {
             self.lastSeenByUsers = nil
             self.lastSeenVersion = nil
 
-        case (Constant.changeType.chatMessage, Constant.changeOperation.update):
+        case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.update):
             self.fromUserId = nil
 
             guard let strLastSeenInfo = userInfo[.lastSeenInfo] as? String else {
@@ -63,7 +63,7 @@ class RemoteNotification {
             self.lastSeenByUsers = lastSeenByUsers
             self.lastSeenVersion = lastSeenVersion
             
-        case (Constant.changeType.chatMessage, _):
+        case (Constant.ChangeType.chatMessage, _):
             os_log("Unknown change type/operation: %{public}s, %{public}s", log: OSLog.notification, type: .error, changeType, changeOperation)
             return nil
 
@@ -73,11 +73,12 @@ class RemoteNotification {
             self.lastSeenVersion = nil
         }
 
-        if let trip = TripList.sharedList.trip(byId: tripId) {
-            self.trip = trip.trip
-        } else {
-            self.trip = nil
-        }
+        self.trip = TripList.sharedList.trip(byId: tripId)?.trip
+//        if let trip = TripList.sharedList.trip(byId: tripId) {
+//            self.trip = trip.trip
+//        } else {
+//            self.trip = nil
+//        }
     }
 
     

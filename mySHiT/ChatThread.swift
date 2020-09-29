@@ -30,9 +30,6 @@ class ChatThread:NSObject, NSCoding {
     
     private var savedPosition:(ChatMessage.LocalId, UITableView.ScrollPosition)?
     private var retryCount:Int = 0
-
-    static let LastSeenByNone = "(NONE)"
-    static let LastSeenByEveryone = "(ALL)"
     
     static let dqServerComm = DispatchQueue(label: "no.andmore.mySHiT.chat.server", target: .global())
     static let dqAccess = DispatchQueue(label: "no.andmore.mySHiT.chat.access", attributes: .concurrent, target: .global())
@@ -165,16 +162,18 @@ class ChatThread:NSObject, NSCoding {
                 }
                 
                 if lastSeenByOthers.count == 1, let _ = lastSeenByOthers[String(msgId)] {
-                    message.lastSeenBy = [ ChatThread.LastSeenByEveryone ]
+                    message.lastSeenBy = .everyone
                 } else if let lastSeenUsers = lastSeenByOthers[String(msgId)] as? NSArray {
-                    message.lastSeenBy = []
-                    for userInfo in lastSeenUsers {
-                        if let userInfo = userInfo as? NSDictionary, let userName = userInfo["name"] as? String {
-                            message.lastSeenBy.append( userName )
+                    var lastSeenByUsers:[String] = []
+
+                    for userReadInfo in lastSeenUsers {
+                        if let readInfo = MessageReadByInfo(userReadInfo as? [AnyHashable:Any]), let userName = readInfo[.name] as? String {
+                            lastSeenByUsers.append(userName)
                         }
                     }
+                    message.lastSeenBy = .some(lastSeenByUsers)
                 } else {
-                    message.lastSeenBy = [ ChatThread.LastSeenByNone ]
+                    message.lastSeenBy = .none
                 }
             }
         
@@ -375,7 +374,7 @@ class ChatThread:NSObject, NSCoding {
                     if lastSeenByUser > (self.lastSeenByUserServer ?? 0) {
                         self.lastSeenByUserServer = lastSeenByUser
                         self.lastSeenByOthers = lastSeenByOthers
-                        NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
+                        NotificationCenter.default.post(name: Constant.Notification.chatRefreshed, object: self)
                     }
                 }
             } else {
@@ -405,7 +404,7 @@ class ChatThread:NSObject, NSCoding {
         //Set the parameters for the RSTransaction object
         var extraParams:[URLQueryItem] = []
         if let lastMessageId = messageVersion, mode == .incremental {
-            extraParams += [ URLQueryItem(name: "lastMessageId", value: String(lastMessageId)) ]
+            extraParams += [ URLQueryItem(name: SHiTResource.Param.lastMessageId, value: String(lastMessageId)) ]
         }
         let chatThreadResource = SHiTResource.thread(key: String(tripId), parameters: extraParams)
 
@@ -443,7 +442,7 @@ class ChatThread:NSObject, NSCoding {
                         os_log("INFO: Didn't find any messages in dictionary: %s", log: OSLog.webService, String(describing: responseDictionary))
                     }
                     ChatThread.dqAccess.async {
-                        NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
+                        NotificationCenter.default.post(name: Constant.Notification.chatRefreshed, object: self)
                     }
                 } else {
                     os_log("ERROR: Incorrect response: %s", log: OSLog.webService, type: .error, String(describing: responseDictionary))
@@ -464,15 +463,15 @@ class ChatThread:NSObject, NSCoding {
                 guard let userArray = msgInfo as? NSArray, let msgId = msgId as? String else {
                     fatalError("Last seen info is not array or message ID not string")
                 }
-                let otherUsers = userArray.filter({ (ui:Any) -> Bool in
-                    guard let userInfo = ui as? NSDictionary, let userId = userInfo["id"] as? Int else {
-                        fatalError("Invalid user info: \(String(describing:ui))")
+                let otherUsers = userArray.filter({ (userReadInfo:Any) -> Bool in
+                    guard let readBy = MessageReadByInfo(userReadInfo as? [AnyHashable:Any]), let userId = readBy[.id] as? Int else {
+                        fatalError("Invalid user info: \(String(describing:userReadInfo))")
                     }
                     return userId != User.sharedUser.userId ?? -1
                 })
-                let mySeenInfo = userArray.filter({ (ui:Any) -> Bool in
-                    guard let userInfo = ui as? NSDictionary, let userId = userInfo["id"] as? Int else {
-                        fatalError("Incorrect user info: \(String(describing:ui))")
+                let mySeenInfo = userArray.filter({ (userReadInfo:Any) -> Bool in
+                    guard let readBy = MessageReadByInfo(userReadInfo as? [AnyHashable:Any]), let userId = readBy[.id] as? Int else {
+                        fatalError("Incorrect user info: \(String(describing:userReadInfo))")
                     }
                     return userId == User.sharedUser.userId ?? -1
                 })
@@ -487,7 +486,7 @@ class ChatThread:NSObject, NSCoding {
             self.lastSeenByOthers = newLastSeenInfo
         }
         ChatThread.dqAccess.async {
-            NotificationCenter.default.post(name: Constant.notification.chatRefreshed, object: self)
+            NotificationCenter.default.post(name: Constant.Notification.chatRefreshed, object: self)
         }
     }
     

@@ -71,7 +71,7 @@
 "NTF.DELETE.ADDRESS" = "%@: Adresseinformasjon oppdatert";
 "NTF.DELETE.BOOKING" = "%@: Booking fjernet";
 "NTF.DELETE.BOOKINGREF" = "%@: Booking-referanse fjernet";
-"NTF.DELETE.EVENT" = "%@: Arrangement fjernet";
+"NTF.DELETE.EVENT" = "%@: Arrangement avlyst";
 "NTF.DELETE.HOTEL" = "%@: Hotellreservasjon fjernet";
 "NTF.DELETE.ITINERARY" = "%@: Reiserute oppdatert";
 "NTF.DELETE.TRIP" = "%@: Reise oppdatert";
@@ -89,3 +89,48 @@
 "CHAT.NTF.REPLY" = "Svar";
 "CHAT.NTF.IGNORE" = "Ignorer";
 "CHAT.NTF.REPLY.SEND" = "Send";
+
+// Formatting
+"FMT.TRANSPORT.TERMINAL" = "[%@]";
+"FMT.TRANSPORT.STOP" = "%@";
+"FMT.TRANSPORT.STOP_AND_TERMINAL" = "%@ [%@]";
+"FMT.TRANSPORT.ROUTE_NAME" = "%@ %@";
+"FMT.TRANSPORT.DEPARTURE" = "%@";
+"FMT.TRANSPORT.ARRIVAL" = "%@";
+"FMT.TRANSPORT.DEPT_AND_ARRIVAL" = "%@ - %@";
+
+"FMT.TRANSPORT.TITLE.ROUTE" = "%@";
+"FMT.TRANSPORT.TITLE.LOCATION" = "%@";
+"FMT.TRANSPORT.TITLE.ROUTE_AND_LOCATION" = "%@: %@";
+
+"FMT.TRANSPORT.STOP.TIME" = "%@";
+"FMT.TRANSPORT.STOP.NAME" = "%@";
+"FMT.TRANSPORT.STOP.TIME_AND_NAME" = "%@: %@";
+
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE" = "%@";
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.NUMBER" = "%@";
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE_AND_NUMBER" = "%@ %@";
+
+"USER.UNKNOWN.NAME" = "Ukjent deltager";
+"USER.UNKNOWN.INITIALS" = "??";
+
+"TRIPELEMENT.TITLE.DEFAULT" = "Ukjent element";
+"TRIPELEMENT.STARTINFO.DEFAULT" = "Starttid ukjent";
+"TRIPELEMENT.DETAILS.DEFAULT" = "Ingen detaljer tilgjengelig";
+
+"TRANSPORT.COMPANY_NAME.DEFAULT" = "Ukjent selskap";
+"TRANSPORT.COMPANY_CODE.DEFAULT" = "??";
+
+"HOTEL.TRANSFERINFO.DEFAULT" = "Vennligst sjekk informasjonsheftet fra SHiT.";
+
+"ALERTLIST.NOTIFICATION.NOTFOUND" = "Alarm ikke funnet, trolig utløpt nylig";
+"ALERTLIST.ALERTTIME.UNKNOWN" = "Ukjent";
+
+"FMT.CHAT.USERLIST.SEPARATOR" = ", ";
+
+"FMT.BOOKINGREF.TAGGED" = "%@: %@";
+"FMT.BOOKINGREF.LIST.SEPARATOR" = ", ";
+
+"FMT.ADDRESS.POSTCODE_AND_CITY" = "%@ %@";
+
+"REST_REQUEST.ERROR.SERVER_MSG_UNAVAILABLE" = "Unable to retrieve server error message";

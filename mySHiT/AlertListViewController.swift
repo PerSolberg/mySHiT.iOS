@@ -10,6 +10,14 @@ import UIKit
 import UserNotifications
 
 class AlertListViewController: UITableViewController {
+    struct CellIdentifier {
+        static let alertCell = "MyAlertCell"
+    }
+    struct Format {
+        static let localTimeOnly = NSLocalizedString("FMT.ALERTLIST.LOCAL_TIME_ONLY", comment: "")
+        static let localTimeAndUTC = NSLocalizedString("FMT.ALERTLIST.LOCAL_TIME_AND_UTC", comment: "")
+    }
+
     //
     // MARK: Properties
     //
@@ -41,8 +49,6 @@ class AlertListViewController: UITableViewController {
     //
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        // Load data & check if section list is complete (if not, add missing elements)
         getNotifications()
     }
     
@@ -65,46 +71,42 @@ class AlertListViewController: UITableViewController {
     
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let kCellIdentifier: String = "MyAlertCell"
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .short
         
-        //tablecell optional to see if we can reuse cell
-        var cell : UITableViewCell?
-        cell = tableView.dequeueReusableCell(withIdentifier: kCellIdentifier)
-        
-        //If we did not get a reuseable cell, then create a new one
-        if cell == nil {
-            cell = UITableViewCell(style: UITableViewCell.CellStyle.subtitle, reuseIdentifier: kCellIdentifier)
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.alertCell) ?? UITableViewCell(style: UITableViewCell.CellStyle.subtitle, reuseIdentifier: CellIdentifier.alertCell)
 
         if let notifications = notifications {
             if indexPath.row >= notifications.count {
-                cell!.textLabel!.text = "Unknown notification! Deleted?"  // TODO: LOCALISE
-                cell!.detailTextLabel!.text = ""
+                cell.textLabel!.text = Constant.Message.alertListNotificationNotFound
+                cell.detailTextLabel!.text = ""
             } else {
                 let notification = notifications[indexPath.row]
                 let userInfo = UserInfo(notification.content.userInfo)
 
-                let timeZoneName = userInfo[.timeZone] as? String ?? "UTC"
+                let timeZoneName = userInfo[.timeZone] as? String ?? Constant.timezoneNameUTC
                 dateFormatter.timeZone = TimeZone(identifier: timeZoneName )
                 if let ntfTrigger = notification.trigger as? UNCalendarNotificationTrigger, let ntfTime = ntfTrigger.nextTriggerDate() {
-                    var notificationTime: String = dateFormatter.string(from: ntfTime)
-                    if timeZoneName != "UTC" {
-                        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                        dateFormatter.timeZone = TimeZone(identifier: "UTC")
-                        notificationTime += " (" + dateFormatter.string(from: ntfTime) + " UTC)"
+                    let localTime = dateFormatter.string(from: ntfTime)
+                    var notificationTime: String
+                    if timeZoneName != Constant.timezoneNameUTC {
+                        dateFormatter.dateFormat = Constant.DateFormat.isoYearToMinuteWithSpace
+                        dateFormatter.timeZone = TimeZone(identifier: Constant.timezoneNameUTC)
+                        let utcTime = dateFormatter.string(from: ntfTime)
+                        notificationTime = String.localizedStringWithFormat(Format.localTimeAndUTC, localTime, utcTime)
+                    } else {
+                        notificationTime = String.localizedStringWithFormat(Format.localTimeOnly, localTime)
                     }
-                    cell!.textLabel!.text = notificationTime
+                    cell.textLabel!.text = notificationTime
                 } else {
-                    cell!.textLabel!.text = "Unknown"
+                    cell.textLabel!.text = Constant.Message.alertListUnknownTime
                 }
-                cell!.detailTextLabel!.text = "\(notification.content.body)"
+                cell.detailTextLabel!.text = notification.content.body
             }
         }
         
-        return cell!
+        return cell
     }
     
     
@@ -120,10 +122,6 @@ class AlertListViewController: UITableViewController {
             })
         }
     }
-    
-    
-    //
-    // MARK: Functions
-    //
+
 }
 

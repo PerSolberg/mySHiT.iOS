@@ -67,7 +67,7 @@
 "NTF.DELETE.ADDRESS" = "%@: Adressinformation uppdaterad";
 "NTF.DELETE.BOOKING" = "%@: Bokning borttagen";
 "NTF.DELETE.BOOKINGREF" = "%@: Bokningsreferens borttagen";
-"NTF.DELETE.EVENT" = "%@: Evenemang borttagen";
+"NTF.DELETE.EVENT" = "%@: Evenemang inställt";
 "NTF.DELETE.HOTEL" = "%@: Hotellbokning borttagen";
 "NTF.DELETE.ITINERARY" = "%@: Resrutt uppdaterad";
 "NTF.DELETE.TRIP" = "%@: Resa uppdaterad";
@@ -86,3 +86,48 @@
 "CHAT.NTF.REPLY" = "Svara";
 "CHAT.NTF.IGNORE" = "Ignorera";
 "CHAT.NTF.REPLY.SEND" = "Skicka";
+
+// Formatting
+"FMT.TRANSPORT.TERMINAL" = "[%@]";
+"FMT.TRANSPORT.STOP" = "%@";
+"FMT.TRANSPORT.STOP_AND_TERMINAL" = "%@ [%@]";
+"FMT.TRANSPORT.ROUTE_NAME" = "%@ %@";
+"FMT.TRANSPORT.DEPARTURE" = "%@";
+"FMT.TRANSPORT.ARRIVAL" = "%@";
+"FMT.TRANSPORT.DEPT_AND_ARRIVAL" = "%@ - %@";
+
+"FMT.TRANSPORT.TITLE.ROUTE" = "%@";
+"FMT.TRANSPORT.TITLE.LOCATION" = "%@";
+"FMT.TRANSPORT.TITLE.ROUTE_AND_LOCATION" = "%@: %@";
+
+"FMT.TRANSPORT.STOP.TIME" = "%@";
+"FMT.TRANSPORT.STOP.NAME" = "%@";
+"FMT.TRANSPORT.STOP.TIME_AND_NAME" = "%@: %@";
+
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE" = "%@";
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.NUMBER" = "%@";
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE_AND_NUMBER" = "%@ %@";
+
+"USER.UNKNOWN.NAME" = "Okänd resenär";
+"USER.UNKNOWN.INITIALS" = "??";
+
+"TRIPELEMENT.TITLE.DEFAULT" = "Okänd element";
+"TRIPELEMENT.STARTINFO.DEFAULT" = "Starttid okänd";
+"TRIPELEMENT.DETAILS.DEFAULT" = "Inga detaljer finns";
+
+"TRANSPORT.COMPANY_NAME.DEFAULT" = "Okänd bolag";
+"TRANSPORT.COMPANY_CODE.DEFAULT" = "??";
+
+"HOTEL.TRANSFERINFO.DEFAULT" = "Var god kolla informationshäftet från SHiT.";
+
+"ALERTLIST.NOTIFICATION.NOTFOUND" = "Larm finns ej, troligen utgånget nyligen";
+"ALERTLIST.ALERTTIME.UNKNOWN" = "Okänd";
+
+"FMT.CHAT.USERLIST.SEPARATOR" = ", ";
+
+"FMT.BOOKINGREF.TAGGED" = "%@: %@";
+"FMT.BOOKINGREF.LIST.SEPARATOR" = ", ";
+
+"FMT.ADDRESS.POSTCODE_AND_CITY" = "%2$@ %1$@";
+
+"REST_REQUEST.ERROR.SERVER_MSG_UNAVAILABLE" = "Unable to retrieve server error message";

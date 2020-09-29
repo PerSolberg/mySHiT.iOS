@@ -69,7 +69,7 @@
 "NTF.DELETE.ADDRESS" = "%@: Address information updated";
 "NTF.DELETE.BOOKING" = "%@: Booking removed";
 "NTF.DELETE.BOOKINGREF" = "%@: Booking reference removed";
-"NTF.DELETE.EVENT" = "%@: Event removed";
+"NTF.DELETE.EVENT" = "%@: Event cancelled";
 "NTF.DELETE.HOTEL" = "%@: Hotel booking removed";
 "NTF.DELETE.ITINERARY" = "%@: Itinerary updated";
 "NTF.DELETE.TRIP" = "%@: Trip updated";
@@ -88,3 +88,50 @@
 "CHAT.NTF.IGNORE" = "Ignore";
 "CHAT.NTF.REPLY.SEND" = "Send";
 
+// Formatting
+"FMT.TRANSPORT.TERMINAL" = "[%@]";
+"FMT.TRANSPORT.STOP" = "%@";
+"FMT.TRANSPORT.STOP_AND_TERMINAL" = "%@ [%@]";
+"FMT.TRANSPORT.ROUTE_NAME" = "%@ %@";
+"FMT.TRANSPORT.DEPARTURE" = "%@";
+"FMT.TRANSPORT.ARRIVAL" = "%@";
+"FMT.TRANSPORT.DEPT_AND_ARRIVAL" = "%@ - %@";
+
+"FMT.TRANSPORT.TITLE.ROUTE" = "%@";
+"FMT.TRANSPORT.TITLE.LOCATION" = "%@";
+"FMT.TRANSPORT.TITLE.ROUTE_AND_LOCATION" = "%@: %@";
+
+"FMT.TRANSPORT.STOP.TIME" = "%@";
+"FMT.TRANSPORT.STOP.NAME" = "%@";
+"FMT.TRANSPORT.STOP.TIME_AND_NAME" = "%@: %@";
+
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE" = "%@";
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.NUMBER" = "%@";
+"FMT.TRANSPORT.FLIGHT_DESIGNATOR.CODE_AND_NUMBER" = "%@ %@";
+
+"USER.UNKNOWN.NAME" = "Unknown participant";
+"USER.UNKNOWN.INITIALS" = "\u{1f921}";
+
+"TRIPELEMENT.TITLE.DEFAULT" = "Unknown element";
+"TRIPELEMENT.STARTINFO.DEFAULT" = "Unknown start";
+"TRIPELEMENT.DETAILS.DEFAULT" = "No details available";
+
+"TRANSPORT.COMPANY_NAME.DEFAULT" = "Unknowm company";
+"TRANSPORT.COMPANY_CODE.DEFAULT" = "??";
+
+"HOTEL.TRANSFERINFO.DEFAULT" = "Please see your welcome leaflet.";
+
+"ALERTLIST.NOTIFICATION.NOTFOUND" = "Notification not found, probably expired recently";
+"ALERTLIST.ALERTTIME.UNKNOWN" = "Unknown";
+
+"FMT.CHAT.USERLIST.SEPARATOR" = ", ";
+
+"FMT.BOOKINGREF.TAGGED" = "%@: %@";
+"FMT.BOOKINGREF.LIST.SEPARATOR" = ", ";
+
+"FMT.ADDRESS.POSTCODE_AND_CITY" = "%@ %@";
+
+"FMT.ALERTLIST.LOCAL_TIME_ONLY" = "%@";
+"FMT.ALERTLIST.LOCAL_TIME_AND_UTC" = "%@ (%@ UTC)";
+
+"REST_REQUEST.ERROR.SERVER_MSG_UNAVAILABLE" = "Unable to retrieve server error message";

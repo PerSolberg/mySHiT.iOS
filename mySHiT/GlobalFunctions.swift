@@ -10,7 +10,7 @@ import Foundation
 
 func printStack(filterMySHiT: Bool) {
     for symbol in Thread.callStackSymbols {
-        if symbol.contains("mySHiT") || !filterMySHiT {
+        if symbol.contains(Constant.appName) || !filterMySHiT {
             print(symbol)
         }
     }

@@ -10,7 +10,7 @@
 
 import UIKit
 
-class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLinkableViewController {
+class EventDetailsViewController: TripElementViewController, UIScrollViewDelegate {
     //
     // MARK: Properties
     //
@@ -25,13 +25,7 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     @IBOutlet weak var venuePhoneText: UITextView!
     @IBOutlet weak var accessInfoTextView: UITextView!
 
-    // Passed from TripDetailsViewController
-    var tripElement:AnnotatedTripElement?
-    var trip:AnnotatedTrip?
-    
-    // DeepLinkableViewController
-    var wasDeepLinked = false
-    
+
     
     //
     // MARK: Navigation
@@ -60,8 +54,8 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         venuePhoneText.textContainer.lineFragmentPadding = 0.0
         venuePhoneText.isScrollEnabled = false
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.refreshTripElements, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.notification.dataRefreshed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.refreshTripElements, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTripElements), name: Constant.Notification.dataRefreshed, object: nil)
     }
     
     
@@ -90,41 +84,31 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     // MARK: Functions
     //
     func populateScreen(detectChanges: Bool) {
-        if let eventElement = tripElement?.tripElement as? Event {
+        if let eventElement = tripElement as? Event {
             var fullAddress:String = eventElement.venueAddress ?? ""
             switch (eventElement.venuePostCode ?? "", eventElement.venueCity ?? "") {
             case ("", ""):
                 break
             case ("", _):
-                fullAddress += "\n" + eventElement.venueCity!
+                fullAddress += Constant.lineFeed + eventElement.venueCity!
             case (_, ""):
-                fullAddress += "\n" + eventElement.venuePostCode!
+                fullAddress += Constant.lineFeed + eventElement.venuePostCode!
             default:
-                fullAddress += "\n" + eventElement.venuePostCode! + " " + eventElement.venueCity!
+                fullAddress += Constant.lineFeed + String.localizedStringWithFormat(Address.Format.postCodeAndCity, eventElement.venuePostCode!, eventElement.venueCity!)
             }
             venueNameTextField.setText(eventElement.venueName, detectChanges: detectChanges)
             let attrAddress = NSMutableAttributedString(string: fullAddress)
             attrAddress.setAttributes([.font : venueAddressTextView.font as Any])
-            attrAddress.addLink(for: ".+", options: [.dotMatchesLineSeparators], transform: Address.getMapLink(_:))
+            attrAddress.addLink(for: Constant.RegEx.matchAll, transform: Address.getMapLink(_:))
             venueAddressTextView.setText(attrAddress, detectChanges: detectChanges)
             startTimeTextField.setText(eventElement.startTime(dateStyle: .none, timeStyle: .short), detectChanges: detectChanges)
             travelTimeTextField.setText(eventElement.travelTimeInfo, detectChanges: detectChanges)
 
-            if let refList = eventElement.references {
-                let references = NSMutableString()
-                var separator = ""
-                for ref in refList {
-                    if let _ = ref["type"], let refNo   = ref["refNo"] {
-                        references.append(separator + refNo)
-                        separator = ", "
-                    }
-                }
-                referenceTextField.setText(references as String, detectChanges: detectChanges)
-            }
+            referenceTextField.setText(eventElement.referenceList(separator: TripElement.Format.refListSeparator), detectChanges: detectChanges)
             venuePhoneText.setText(eventElement.venuePhone, detectChanges: detectChanges)
             accessInfoTextView.setText(eventElement.accessInfo, detectChanges: detectChanges)
         } else {
-            showAlert(title: Constant.msg.alertBoxTitle, message: Constant.msg.unableToDisplayElement, completion: nil)
+            showAlert(title: Constant.Message.alertBoxTitle, message: Constant.Message.unableToDisplayElement, completion: nil)
 
             self.navigationController?.popViewController(animated: true)
         }
@@ -133,15 +117,14 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
     
     @objc func refreshTripElements() {
         DispatchQueue.main.async(execute: {
-            if let eventElement = self.tripElement?.tripElement as? Event {
-                guard let (aTrip, aElement) = TripList.sharedList.tripElement(byId: eventElement.id) else {
+            if let eventElement = self.tripElement as? Event {
+                guard let (_, aElement) = TripList.sharedList.tripElement(byId: eventElement.id) else {
                     // Couldn't find trip element, trip or element deleted
                     self.navigationController?.popViewController(animated: true)
                     return
                 }
                 
-                self.trip = aTrip
-                self.tripElement = aElement
+                self.tripElement = aElement.tripElement
                 self.populateScreen(detectChanges: true)
             }
         })
@@ -152,7 +135,7 @@ class EventDetailsViewController: UIViewController, UIScrollViewDelegate, DeepLi
         if type(of:vc) != type(of:self) {
             return false
         } else if let vc = vc as? EventDetailsViewController, let te = tripElement, let vcte = vc.tripElement {
-            return te.tripElement.id == vcte.tripElement.id
+            return te.id == vcte.id
         } else {
             return false
         }

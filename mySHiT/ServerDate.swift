@@ -18,6 +18,7 @@ class ServerDate {
         "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$": "yyyy-MM-dd'T'HH:mm:ss"
     ]
     static var dateFormatter = DateFormatter()
+    static var isoFormatter = ISO8601DateFormatter()
     static let defaultLocale = Locale(identifier: "en_US_POSIX")
 
     static let semaphore = DispatchSemaphore(value: 1)
@@ -66,24 +67,12 @@ class ServerDate {
     }
     
     
-    class func convertServerDate (_ localDate: Date, timeZoneName: String?) -> String {
-        var result:String?
-        semaphore.wait()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            dateFormatter.locale = defaultLocale
-            result = dateFormatter.string(from: localDate)
-        semaphore.signal()
-        return result!
-    }
-
-    
     class func convertServerDate (_ localDate: Date, timeZone: TimeZone?) -> String {
-        var result:String?
         semaphore.wait()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            dateFormatter.locale = defaultLocale
-            result = dateFormatter.string(from: localDate)
+            isoFormatter.formatOptions = [ .withFullDate, .withTime, .withColonSeparatorInTime, .withDashSeparatorInDate, .withSpaceBetweenDateAndTime ]
+            isoFormatter.timeZone = timeZone
+            let result = isoFormatter.string(from: localDate)
         semaphore.signal()
-        return result!
+        return result
     }
 }

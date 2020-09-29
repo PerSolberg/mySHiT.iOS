@@ -27,18 +27,18 @@ class NotificationLink : DeepLink {
         os_log("Handling notification link for change type '%{public}s'", log: OSLog.general, type: .debug, notification.changeType)
         
         switch (notification.changeType, notification.changeOperation) {
-        case (Constant.changeType.chatMessage, Constant.changeOperation.insert):
+        case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.insert):
             ChatViewController.pushDeepLinked(for: notification.tripId)
             
-        case (Constant.changeType.chatMessage, Constant.changeOperation.update):
+        case (Constant.ChangeType.chatMessage, Constant.ChangeOperation.update):
             os_log("Ignoring chat update (read notification)", log: OSLog.general, type: .debug)
             
-        case (Constant.changeType.chatMessage, _):
+        case (Constant.ChangeType.chatMessage, _):
             os_log("Unknown change type/operation: (%{public}s, %{public}s)", log: OSLog.notification, type: .error, notification.changeType, notification.changeOperation)
             
-        case (_, Constant.changeOperation.insert):
+        case (_, Constant.ChangeOperation.insert):
             fallthrough
-        case (_, Constant.changeOperation.update):
+        case (_, Constant.ChangeOperation.update):
             TripDetailsViewController.pushDeepLinked(for: notification.tripId)
             
         default:
