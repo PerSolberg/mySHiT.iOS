@@ -363,7 +363,7 @@ class TripListViewController: UITableViewController {
         
         do {
             let fileData = try Data(contentsOf: Constant.Archive.sectionsURL)
-            sections = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
+            sections = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, TripListSectionInfo.self], from: fileData) as? [TripListSectionInfo] ?? [TripListSectionInfo]()
         } catch {
             os_log("Failed to load sections: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
         }

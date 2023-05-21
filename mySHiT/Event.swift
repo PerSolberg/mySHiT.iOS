@@ -79,6 +79,8 @@ class Event: TripElement {
     //
     // MARK: NSCoding
     //
+    override class var supportsSecureCoding: Bool { return true }
+
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(eventStartTime, forKey: PropertyKey.eventStartTimeKey)
@@ -98,15 +100,15 @@ class Event: TripElement {
     //
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        eventStartTime = aDecoder.decodeObject(forKey: PropertyKey.eventStartTimeKey) as? Date
-        travelTime = aDecoder.decodeObject(forKey: PropertyKey.travelTimeKey) as? Int? ?? aDecoder.decodeInteger(forKey: PropertyKey.travelTimeKey)
-        venueName = aDecoder.decodeObject(forKey: PropertyKey.venueNameKey) as? String
-        venueAddress = aDecoder.decodeObject(forKey: PropertyKey.venueAddressKey) as? String
-        venuePostCode = aDecoder.decodeObject(forKey: PropertyKey.venuePostCodeKey) as? String
-        venueCity = aDecoder.decodeObject(forKey: PropertyKey.venueCityKey) as? String
-        venuePhone = aDecoder.decodeObject(forKey: PropertyKey.venuePhoneKey) as? String
-        accessInfo = aDecoder.decodeObject(forKey: PropertyKey.accessInfoKey) as? String
-        timezone = aDecoder.decodeObject(forKey: PropertyKey.timezoneKey) as? String
+        eventStartTime = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.eventStartTimeKey) as? Date
+        travelTime = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.travelTimeKey) as? Int // ?? aDecoder.decodeInteger(forKey: PropertyKey.travelTimeKey)
+        venueName = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.venueNameKey) as? String
+        venueAddress = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.venueAddressKey) as? String
+        venuePostCode = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.venuePostCodeKey) as? String
+        venueCity = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.venueCityKey) as? String
+        venuePhone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.venuePhoneKey) as? String
+        accessInfo = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.accessInfoKey) as? String
+        timezone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.timezoneKey) as? String
     }
     
     
@@ -128,6 +130,18 @@ class Event: TripElement {
     }
     
     
+    //
+    // MARK: Dynamic construction
+    //
+    override class func canHandle(_ elemType: ElementType!) -> Bool {
+        switch (elemType.type, elemType.subType) {
+        case (TripElement.MainType.Event, _):
+            return true;
+        default:
+            return false;
+        }
+    }
+
     //
     // MARK: Methods
     //

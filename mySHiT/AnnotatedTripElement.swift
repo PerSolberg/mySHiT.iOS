@@ -8,7 +8,7 @@
 
 import Foundation
 
-class AnnotatedTripElement: NSObject, NSCoding {
+class AnnotatedTripElement: NSObject, NSSecureCoding {
     var modified: ChangeState
     var tripElement: TripElement
     
@@ -21,6 +21,8 @@ class AnnotatedTripElement: NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
+    public class var supportsSecureCoding: Bool { return true }
+
     func encode(with aCoder: NSCoder) {
         aCoder.encode(modified.rawValue, forKey: PropertyKey.modifiedKey)
         aCoder.encode(tripElement, forKey: PropertyKey.tripElementKey)
@@ -28,17 +30,16 @@ class AnnotatedTripElement: NSObject, NSCoding {
     
     
     required convenience init?(coder aDecoder: NSCoder) {
-        let _modified   = aDecoder.decodeObject(forKey: PropertyKey.modifiedKey) as? String
+        let _modified   = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.modifiedKey) as? String
         var modified:ChangeState = .Unchanged
         if (_modified != nil) {
             modified  = ChangeState(rawValue: _modified!)!
         }
-        let tripElement = aDecoder.decodeObject(forKey: PropertyKey.tripElementKey) as! TripElement
+        let tripElement = aDecoder.decodeObject(of: TripElement.self, forKey: PropertyKey.tripElementKey)
         
-        self.init(tripElement: tripElement, modified: modified)
+        self.init(tripElement: tripElement!, modified: modified)
     }
-    
-    
+        
     init?(tripElement: TripElement) {
         self.modified = .Unchanged
         self.tripElement = tripElement

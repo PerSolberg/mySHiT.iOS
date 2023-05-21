@@ -72,6 +72,8 @@ class Hotel: TripElement {
     //
     // MARK: NSCoding
     //
+    override class var supportsSecureCoding: Bool { return true }
+
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(checkInDate, forKey: PropertyKey.checkInDateKey)
@@ -90,17 +92,16 @@ class Hotel: TripElement {
     // MARK: Initialisers
     //
     required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
-        checkInDate = aDecoder.decodeObject(forKey: PropertyKey.checkInDateKey) as? Date
-        checkOutDate = aDecoder.decodeObject(forKey: PropertyKey.checkOutDateKey) as? Date
-        hotelName = aDecoder.decodeObject(forKey: PropertyKey.hotelNameKey) as? String
-        address = aDecoder.decodeObject(forKey: PropertyKey.addressKey) as? String
-        postCode = aDecoder.decodeObject(forKey: PropertyKey.postCodeKey) as? String
-        city = aDecoder.decodeObject(forKey: PropertyKey.cityKey) as? String
-        phone = aDecoder.decodeObject(forKey: PropertyKey.phoneKey) as? String
-        transferInfo = aDecoder.decodeObject(forKey: PropertyKey.transferInfoKey) as? String
-        timezone = aDecoder.decodeObject(forKey: PropertyKey.timezoneKey) as? String
+        checkInDate = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.checkInDateKey) as? Date
+        checkOutDate = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.checkOutDateKey) as? Date
+        hotelName = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.hotelNameKey) as? String
+        address = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.addressKey) as? String
+        postCode = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.postCodeKey) as? String
+        city = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.cityKey) as? String
+        phone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.phoneKey) as? String
+        transferInfo = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.transferInfoKey) as? String
+        timezone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.timezoneKey) as? String
     }
     
     
@@ -120,6 +121,19 @@ class Hotel: TripElement {
     }
     
     
+    //
+    // MARK: Dynamic construction
+    //
+    override class func canHandle(_ elemType: ElementType!) -> Bool {
+        switch (elemType.type, elemType.subType) {
+        case (TripElement.MainType.Accommodation, _):
+            return true;
+        default:
+            return false;
+        }
+    }
+
+
     //
     // MARK: Methods
     //

@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import os
 
-class ChatThread:NSObject, NSCoding {
+class ChatThread:NSObject, NSSecureCoding {
     enum RefreshMode:String {
         case full           = "F"
         case incremental    = "I"
@@ -193,26 +193,28 @@ class ChatThread:NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
-    required init?(coder aDecoder: NSCoder) {
-        tripId = aDecoder.decodeObject(forKey: PropertyKey.tripIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.tripIdKey)
+    public class var supportsSecureCoding: Bool { return true }
 
-        let savedDeviceType = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_deviceTypeKey) as? String
-        let savedDeviceId = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_deviceIdKey) as? String
-        let savedLocalId = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedId_localIdKey) as? String
+    required init?(coder aDecoder: NSCoder) {
+        tripId = aDecoder.decodeInteger(forKey: PropertyKey.tripIdKey)
+
+        let savedDeviceType = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.lastDisplayedId_deviceTypeKey) as? String
+        let savedDeviceId = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.lastDisplayedId_deviceIdKey) as? String
+        let savedLocalId = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.lastDisplayedId_localIdKey) as? String
         
         if let savedDeviceType = savedDeviceType, let savedDeviceId = savedDeviceId, let savedLocalId = savedLocalId {
             lastDisplayedId = (savedDeviceType, savedDeviceId, savedLocalId)
         }
 
-        lastSeenByUserLocal = aDecoder.decodeObject(forKey: PropertyKey.lastSeenByUserLocalKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.lastSeenByUserLocalKey)
-        lastSeenByUserServer = aDecoder.decodeObject(forKey: PropertyKey.lastSeenByUserServerKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.lastSeenByUserServerKey)
-        lastSeenByOthers = (aDecoder.decodeObject(forKey: PropertyKey.lastSeenByOthersKey) as? NSDictionary) ?? NSDictionary()
-        messages = (aDecoder.decodeObject(forKey: PropertyKey.messagesKey) as? [ChatMessage]) ?? [ChatMessage]()
-        messageVersion = aDecoder.decodeObject(forKey: PropertyKey.messageVersionKey) as? Int
-        if let rawLastDisplayedPosition = aDecoder.decodeObject(forKey: PropertyKey.lastDisplayedPositionKey) as? Int {
+        lastSeenByUserLocal = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastSeenByUserLocalKey) as? Int
+        lastSeenByUserServer = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastSeenByUserServerKey) as? Int
+        lastSeenByOthers = aDecoder.decodeObject(of: NSDictionary.self, forKey: PropertyKey.lastSeenByOthersKey) ?? NSDictionary()
+        messages = (aDecoder.decodeObject(of: [NSArray.self, ChatMessage.self], forKey: PropertyKey.messagesKey) as? [ChatMessage]) ?? [ChatMessage]()
+        messageVersion = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.messageVersionKey) as? Int
+        if let rawLastDisplayedPosition = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastDisplayedPositionKey) as? Int {
             lastDisplayedPosition = UITableView.ScrollPosition(rawValue: rawLastDisplayedPosition)
         }
-        lastSeenVersion = aDecoder.decodeObject(forKey: PropertyKey.lastSeenVersionKey) as? Int
+        lastSeenVersion = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastSeenVersionKey) as? Int
     }
 
     

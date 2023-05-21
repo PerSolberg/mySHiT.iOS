@@ -6,7 +6,6 @@
 //  Copyright © 2020 &More AS. All rights reserved.
 //
 
-//import Foundation
 import UIKit
 
 extension UIWindow {

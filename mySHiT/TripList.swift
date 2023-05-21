@@ -53,7 +53,7 @@ public class TripList:NSObject, Sequence, NSCoding {
     required public init?( coder aDecoder: NSCoder) {
         super.init()
         // NB: use conditional cast (as?) for any optional properties
-        lastUpdateTS = aDecoder.decodeObject(forKey: PropertyKey.lastUpdateTSKey) as? ServerTimestamp
+        lastUpdateTS = aDecoder.decodeObject(of: ServerTimestamp.self, forKey: PropertyKey.lastUpdateTSKey)
         trips  = aDecoder.decodeObject(forKey: PropertyKey.tripsKey) as? [AnnotatedTrip]
     }
 
@@ -239,14 +239,14 @@ public class TripList:NSObject, Sequence, NSCoding {
     func loadFromArchive() {
         do {
             let fileData = try Data(contentsOf: Constant.Archive.tripsURL)
-            trips = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? [AnnotatedTrip] ?? [AnnotatedTrip]()
+            trips = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, AnnotatedTrip.self], from: fileData) as? [AnnotatedTrip] ?? [AnnotatedTrip]()
             refreshNotifications()
         } catch {
             os_log("Failed to load sections: %{public}s", log: OSLog.general, type: .error, error.localizedDescription)
         }
 
     }
-
+    
 
     func saveToArchive() {
         do {

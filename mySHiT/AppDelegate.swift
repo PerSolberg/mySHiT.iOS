@@ -8,7 +8,8 @@
 
 import UIKit
 import Firebase
-import FirebaseInstanceID
+//import FirebaseInstanceID
+import FirebaseInstallations
 import FirebaseMessaging
 import AVFoundation
 import UserNotifications
@@ -36,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (success : Bool, err : Error?) -> Void in } )
         self.registerDefaultsFromSettingsBundle();
         NotificationCenter.default.addObserver(self, selector: #selector(defaultsChanged(_:)), name: UserDefaults.didChangeNotification, object: UserDefaults.standard)
-        NotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: NSNotification.Name.InstanceIDTokenRefresh, object: nil)
+        //xNotificationCenter.default.addObserver(self, selector: #selector(tokenRefreshNotification), name: /*NSNotification.Name.InstanceIDTokenRefresh*/InstallationIDDidChange, object: nil)
 
         //
         // Set up notification categories
@@ -240,7 +241,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
     {
         os_log("AppDelegate userNotificationCenter willPresent", log: OSLog.general, type: .debug)
-        completionHandler([.alert, .sound])
+        completionHandler([/*.alert, */.badge, .banner, .sound])
     }
     
     

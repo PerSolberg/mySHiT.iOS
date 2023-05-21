@@ -10,11 +10,53 @@ import Foundation
 import UIKit
 import UserNotifications
 import os
+import Combine
 
-class TripElement: NSObject, NSCoding {
+class TripElement: NSObject, NSSecureCoding {
     static let RefTag_Type      = "type"
     static let RefTag_RefNo     = "refNo"
     static let RefTag_LookupURL = "urlLookup"
+    
+    enum IconStatus {
+        case missing
+        case downloaded
+        case pending
+    }
+
+    struct ElementType:Hashable { var type, subType: String? }
+    struct IconKey:Hashable {
+        var type: String?
+        var subType: String?
+        var tense: Tenses
+
+        static let TenseNames:[Tenses?:String] = [ Tenses.past : "historic", Tenses.present : "active" ]
+        static let DefaultName = "default"
+
+        var tenseName:String {
+            return TripElement.IconKey.TenseNames[tense] ?? TripElement.IconKey.DefaultName
+        }
+        func pathComponent(_ name: String?, _ separator: String) -> String {
+            return name == nil ? "" : name! + separator
+        }
+        var assetPath:String {
+            return "tripelement/" + pathComponent(type, "/") + pathComponent(subType, "/") + tenseName
+        }
+        var downloadPath:String {
+            return "https://shitt.no/mySHiT/v2/icons/tripelement/" + pathComponent(type, ".") + pathComponent(subType, ".") + tenseName + ".png"
+        }
+        var parentKey:IconKey? {
+            if type == nil {
+                return nil
+            } else if subType == nil {
+                return IconKey(tense: tense)
+            } else {
+                return IconKey(type: type, tense: tense)
+            }
+        }
+    }
+    static var handlingClasses:[ElementType:TripElement.Type] = [:]
+    static var iconCache:[IconKey:(status:IconStatus, icon:UIImage?)] = [:]
+    static let iconCacheSemaphore = DispatchSemaphore(value: 1)
     
     struct Format {
         static let taggedReference = NSLocalizedString("FMT.BOOKINGREF.TAGGED", comment: "")
@@ -36,12 +78,6 @@ class TripElement: NSObject, NSCoding {
         static let Hotel = "HTL"
         static let Limo = "LIMO"
         static let PrivateBus = "PBUS"
-    }
-    struct IconPath {
-        static let Separator = "/"
-        static let Base = "tripelement" + Separator
-        static let TenseNames:[Tenses?:String] = [ Tenses.past : "historic", Tenses.present : "active" ]
-        static let DefaultName = "default"
     }
     
     var type: String { willSet { checkChange(type, newValue) } }
@@ -97,23 +133,30 @@ class TripElement: NSObject, NSCoding {
         }
     }
     var icon: UIImage? {
-        let iconName = IconPath.TenseNames[tense] ?? IconPath.DefaultName
-        let imageName = IconPath.Base + type + IconPath.Separator + subType + IconPath.Separator + iconName
         // First try exact match
-        if let image = UIImage(named: imageName) {
-            return image
-        }
-        
-        // Try ignoring subtype
-        if let image = UIImage(named: IconPath.Base + type + IconPath.Separator + iconName) {
-            return image
-        }
-        
-        // Try defaults
-        if let image = UIImage(named: IconPath.Base + iconName) {
-            return image
-        }
-        
+        var iconKey:IconKey? = IconKey(type: type, subType: subType, tense: tense ?? .future)
+
+        repeat {
+            if let image = UIImage(named: iconKey!.assetPath ) {
+                return image
+            }
+
+            // Check cache
+            if let cached = TripElement.iconCache[iconKey!] {
+                switch (cached.status) {
+                case .missing, .pending:
+                    break
+                case .downloaded:
+                    return cached.icon
+                }
+            } else {
+                // Initiate download
+                self.downloadImage(iconKey!)
+            }
+
+            iconKey = iconKey!.parentKey
+        } while iconKey != nil
+
         return nil
     }
 
@@ -131,29 +174,39 @@ class TripElement: NSObject, NSCoding {
     //
     // MARK: Factory
     //
+    class func canHandle(_ elemType: ElementType!) -> Bool {
+        return false
+    }
+
+    
     class func createFromDictionary( _ elementData: NSDictionary! ) -> TripElement? {
         let elemType = elementData[Constant.JSON.elementType] as? String ?? ""
         let elemSubType = elementData[Constant.JSON.elementSubType] as? String ?? ""
+        let typeKey = ElementType(type: elemType, subType: elemSubType)
 
-        // TODO: Find dynamic way of creating elements (let subclasses register which types they handle)
         var elem: TripElement?
-        switch (elemType, elemSubType) {
-        case (TripElement.MainType.Transport, TripElement.SubType.Airline):
-            elem = Flight(fromDictionary: elementData)
-        case (TripElement.MainType.Transport, TripElement.SubType.Bus):
-            elem = ScheduledTransport(fromDictionary: elementData)
-        case (TripElement.MainType.Transport, TripElement.SubType.Train):
-            elem = ScheduledTransport(fromDictionary: elementData)
-        case (TripElement.MainType.Transport, TripElement.SubType.Boat):
-            elem = ScheduledTransport(fromDictionary: elementData)
-        case (TripElement.MainType.Transport, _):
-            elem = GenericTransport(fromDictionary: elementData)
-        case (TripElement.MainType.Accommodation, _):
-            elem = Hotel(fromDictionary: elementData)
-        case (TripElement.MainType.Event, _):
-            elem = Event(fromDictionary: elementData)
-        default:
-            elem = nil
+        if let handlingClass = handlingClasses[typeKey] {
+            elem = handlingClass.init(fromDictionary: elementData)
+        } else {
+            // First check if any of the subclasses can handle til element
+            let subclasses = Runtime.directSubclasses(of: self)
+            for sc in subclasses {
+                if let sc = sc as? TripElement.Type {
+                    elem = sc.createFromDictionary(elementData)
+                    
+                    if elem != nil {
+                        break
+                    }
+                }
+            }
+            // If not, check if this class can handle it
+            if elem == nil && canHandle(typeKey) {
+                elem = self.init(fromDictionary: elementData)
+            }
+            // Cache the mapping to avoid traversing the class hierarchy every time
+            if let elem = elem {
+                handlingClasses[typeKey] = Swift.type(of: elem)
+            }
         }
 
         return elem
@@ -163,6 +216,8 @@ class TripElement: NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
+    public class var supportsSecureCoding: Bool { return true }
+
     func encode(with aCoder: NSCoder) {
         aCoder.encode(type, forKey: PropertyKey.typeKey)
         aCoder.encode(subType, forKey: PropertyKey.subTypeKey)
@@ -177,18 +232,21 @@ class TripElement: NSObject, NSCoding {
     // MARK: Initialisers
     //
     required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
-        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String
-        subType = aDecoder.decodeObject(forKey: PropertyKey.subTypeKey) as! String
-        id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        type  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.typeKey)! as String
+        subType = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.subTypeKey)! as String
+        id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         
-        if let refSet = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? Set<[String:String]> {
+        if let refSet = aDecoder.decodeObject(of: [NSSet.self, NSDictionary.self, NSString.self], forKey: PropertyKey.referencesKey) as? Set<[String:String]> {
             references = refSet
-        } else if let refList = aDecoder.decodeObject(forKey: PropertyKey.referencesKey) as? [[String:String]] {
+        } else if let refList = aDecoder.decodeObject(of: [NSArray.self, NSDictionary.self, NSString.self], forKey: PropertyKey.referencesKey) as? [[String:String]] {
             references = Set(refList)
         }
-        serverData = aDecoder.decodeObject(forKey: PropertyKey.serverDataKey) as? NSDictionary
-        notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
+        serverData = aDecoder.decodeObject(of: [NSDictionary.self, NSArray.self, NSString.self, NSNumber.self, NSNull.self], forKey: PropertyKey.serverDataKey) as? NSDictionary
+//        notifications = aDecoder.decodeObject(of: [NSDictionary.self, NSString.self, NotificationInfo.self], forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
+        notifications = aDecoder.decodeDictionary(
+            withKeyClass: NSString.self,
+            objectClass: NotificationInfo.self,
+            forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
     }
     
     
@@ -223,6 +281,41 @@ class TripElement: NSObject, NSCoding {
     //
     // MARK: Methods
     //
+    final func downloadImage(_ iconKey:IconKey) {
+        TripElement.iconCacheSemaphore.wait()
+        if TripElement.iconCache[iconKey] == nil {
+            TripElement.iconCache[iconKey] = (.pending, nil)
+        }
+        TripElement.iconCacheSemaphore.signal()
+
+        let imgUrl = URL(string: iconKey.downloadPath)!
+
+        DispatchQueue.global().async {
+            URLSession.shared.dataTask(with: imgUrl) { data, response, error in
+                guard let gData = data,
+                      let gResponse = response as? HTTPURLResponse,
+                      gResponse.statusCode >= 200 && gResponse.statusCode < 300,
+                      let image = UIImage(data: gData, scale: 1.0) else {
+                    TripElement.iconCacheSemaphore.wait()
+                    let cached = TripElement.iconCache[iconKey]!
+                    if cached.status == .pending {
+                        TripElement.iconCache[iconKey] = (.missing, nil)
+                    }
+                    TripElement.iconCacheSemaphore.signal()
+                    return
+                }
+                //            let imgSize = image.size
+                //            print("Downloaded image size = " + String(describing: imgSize))
+                TripElement.iconCacheSemaphore.wait()
+                TripElement.iconCache[iconKey] = (.downloaded, image)
+                TripElement.iconCacheSemaphore.signal()
+                NotificationCenter.default.post(name: Constant.Notification.refreshTripElements, object: self)
+            }
+            .resume()
+        }
+
+    }
+   
     func checkChange<T:Equatable>(_ old: T, _ new: T) {
         let propertyChanged = (old != new)
         changed = changed || propertyChanged

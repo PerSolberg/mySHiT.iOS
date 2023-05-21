@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bLV-pR-mfM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bLV-pR-mfM">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -35,10 +36,10 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ew2-fg-gRx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="myAlertInfoCell" id="WRp-np-zcR">
-                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WRp-np-zcR" id="vTw-pZ-FzR">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -66,10 +67,10 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="90" sectionHeaderHeight="28" sectionFooterHeight="28" id="9JJ-t0-9JO">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="TopLeft" selectionStyle="default" indentationWidth="10" reuseIdentifier="MyTripCell" id="pGW-le-BoT">
-                                <rect key="frame" x="0.0" y="28" width="320" height="90"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="90"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" tableViewCell="pGW-le-BoT" id="k73-An-xTD">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="90"/>
@@ -87,13 +88,13 @@
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" verticalCompressionResistancePriority="751" text="Trip Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aXh-27-7HO">
                                                             <rect key="frame" x="0.0" y="0.0" width="220" height="20.5"/>
                                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" verticalCompressionResistancePriority="751" text="Dates" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0X5-nN-fip">
                                                             <rect key="frame" x="0.0" y="20.5" width="220" height="16"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <color key="textColor" systemColor="systemBlueColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" tag="3" contentMode="TopLeft" placeholderIntrinsicWidth="200" placeholderIntrinsicHeight="10" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Description" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JMV-Gy-34V">
@@ -101,6 +102,7 @@
                                                             <accessibility key="accessibilityConfiguration">
                                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
                                                             </accessibility>
+                                                            <color key="textColor" systemColor="labelColor"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                             <userDefinedRuntimeAttributes>
@@ -169,10 +171,10 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" id="zzv-Ce-ODC">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="myTripDetailsCell" rowHeight="80" id="abq-eW-aRi">
-                                <rect key="frame" x="0.0" y="28" width="320" height="80"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="abq-eW-aRi" id="Cdq-hV-YcQ">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
@@ -195,13 +197,13 @@
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" verticalCompressionResistancePriority="751" ambiguous="YES" text="Start Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="exQ-e7-zwl">
                                                             <rect key="frame" x="0.0" y="22.5" width="218" height="16"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <color key="textColor" systemColor="systemBlueColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="left" verticalCompressionResistancePriority="751" ambiguous="YES" text="End Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nmN-QJ-XGj">
                                                             <rect key="frame" x="0.0" y="40.5" width="218" height="15.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <color key="textColor" systemColor="systemBlueColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" tag="4" contentMode="scaleToFill" placeholderIntrinsicWidth="514" placeholderIntrinsicHeight="10" layoutMarginsFollowReadableWidth="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Description" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qtd-Ax-N5h">
@@ -209,6 +211,7 @@
                                                             <accessibility key="accessibilityConfiguration">
                                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
                                                             </accessibility>
+                                                            <color key="textColor" systemColor="labelColor"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                             <userDefinedRuntimeAttributes>
@@ -300,10 +303,10 @@
                                 <rect key="frame" x="16" y="44" width="288" height="475"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="myU-gE-8b1" userLabel="Main Stack View">
-                                        <rect key="frame" x="8" y="8" width="288" height="602"/>
+                                        <rect key="frame" x="8" y="8" width="288" height="599.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="DsY-Mh-1q3" userLabel="Venue Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="288" height="171"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="288" height="170"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Venue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b6A-U0-ZSP" userLabel="Venue Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="20.5"/>
@@ -311,7 +314,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ThW-zd-JFN" userLabel="Venue Stack View">
-                                                        <rect key="frame" x="88" y="2.5" width="200" height="168.5"/>
+                                                        <rect key="frame" x="88" y="1.5" width="200" height="168.5"/>
                                                         <subviews>
                                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ym5-rs-cmt" userLabel="Venue Name Text Field">
                                                                 <rect key="frame" x="0.0" y="0.0" width="200" height="18.5"/>
@@ -333,7 +336,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="27F-iJ-9I4" userLabel="StartTime Stack View">
-                                                <rect key="frame" x="0.0" y="179" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="178" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W4p-OF-FEY" userLabel="StartTime Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="20.5"/>
@@ -342,14 +345,14 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QjX-vM-rpT" userLabel="StartTime Text Field">
-                                                        <rect key="frame" x="88" y="2.5" width="200" height="18.5"/>
+                                                        <rect key="frame" x="88" y="1.5" width="200" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="NM1-hu-x9H" userLabel="TravelTime Stack View">
-                                                <rect key="frame" x="0.0" y="208" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="206.5" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Travel Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U5M-E0-ukH" userLabel="TravelTime Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="20.5"/>
@@ -358,14 +361,14 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hy7-50-bNP" userLabel="TravelTime Text Field">
-                                                        <rect key="frame" x="88" y="2.5" width="200" height="18.5"/>
+                                                        <rect key="frame" x="88" y="1.5" width="200" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="cDX-aN-uvr" userLabel="Reference Stack View">
-                                                <rect key="frame" x="0.0" y="237" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="235" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Reference" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RHx-U1-tjj" userLabel="Reference Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="20.5"/>
@@ -374,14 +377,14 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wQn-9N-TCM" userLabel="Reference Text Field">
-                                                        <rect key="frame" x="88" y="2.5" width="200" height="18.5"/>
+                                                        <rect key="frame" x="88" y="1.5" width="200" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="MHj-wQ-hxj" userLabel="Phone Stack View">
-                                                <rect key="frame" x="0.0" y="266" width="288" height="66"/>
+                                                <rect key="frame" x="0.0" y="263.5" width="288" height="66"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hCS-0j-dPH" userLabel="Phone Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="20.5"/>
@@ -404,13 +407,13 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Access Info" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nuk-1W-LBA" userLabel="AccessInfo Label">
-                                                <rect key="frame" x="0.0" y="340" width="288" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="337.5" width="288" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="4cN-7I-4N5" userLabel="AccessInfo Text View">
-                                                <rect key="frame" x="0.0" y="368.5" width="288" height="233.5"/>
+                                                <rect key="frame" x="0.0" y="366" width="288" height="233.5"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -437,7 +440,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="msU-yt-9Do" secondAttribute="trailing" id="HPj-46-k2y"/>
                             <constraint firstItem="on8-Kl-II3" firstAttribute="top" secondItem="msU-yt-9Do" secondAttribute="bottom" id="NKt-TW-RbB"/>
@@ -476,8 +479,8 @@
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="251" placeholderIntrinsicWidth="560" placeholderIntrinsicHeight="120" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Z0h-4l-70L">
                                 <rect key="frame" x="16" y="52" width="288" height="120"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -485,7 +488,7 @@
                                 <rect key="frame" x="16" y="180" width="288" height="331"/>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Z0h-4l-70L" firstAttribute="top" secondItem="Gys-3r-2ey" secondAttribute="bottom" constant="8" id="1Ut-GP-yT8"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Wnx-Zc-clx" secondAttribute="trailing" id="G3A-sq-Mqo"/>
@@ -521,61 +524,61 @@
                                 <rect key="frame" x="16" y="44" width="288" height="475"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="PTF-gB-B5y">
-                                        <rect key="frame" x="0.0" y="8" width="288" height="334.5"/>
+                                        <rect key="frame" x="0.0" y="8" width="288" height="331.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" restorationIdentifier="FlightNoStack" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="YKF-5y-aYA" userLabel="Flight No Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Flight #" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TGs-b0-VHE">
-                                                        <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="48.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gqx-aw-1E9">
-                                                        <rect key="frame" x="57" y="2.5" width="231" height="18.5"/>
+                                                        <rect key="frame" x="56.5" y="1.5" width="231.5" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="CLa-PQ-CsA">
-                                                <rect key="frame" x="0.0" y="29" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="28.5" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Airline" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Zl-dL-TkN" userLabel="Airline Label">
-                                                        <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="48.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="u2d-Rc-vyb" userLabel="Airline Text Field">
-                                                        <rect key="frame" x="57" y="2.5" width="231" height="18.5"/>
+                                                        <rect key="frame" x="56.5" y="1.5" width="231.5" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="BWH-7I-2qe" userLabel="Departure Stack View">
-                                                <rect key="frame" x="0.0" y="58" width="288" height="41"/>
+                                                <rect key="frame" x="0.0" y="57" width="288" height="40"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Departure" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WYI-cG-pEY">
-                                                        <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="48.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="54v-Fa-BoJ" userLabel="Departure Info Stack View">
-                                                        <rect key="frame" x="57" y="2.5" width="231" height="38.5"/>
+                                                        <rect key="frame" x="56.5" y="1.5" width="231.5" height="38.5"/>
                                                         <subviews>
                                                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xyo-Vk-kdG">
-                                                                <rect key="frame" x="0.0" y="0.0" width="231" height="18.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="231.5" height="18.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits"/>
                                                             </textField>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="200" verticalHuggingPriority="500" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="494" placeholderIntrinsicHeight="20" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Efy-PK-MQr">
-                                                                <rect key="frame" x="0.0" y="18.5" width="231" height="20"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <rect key="frame" x="0.0" y="18.5" width="231.5" height="20"/>
                                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                                <color key="textColor" systemColor="linkColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                             </textView>
@@ -584,26 +587,26 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="L62-dx-mXg" userLabel="Arrival Stack View">
-                                                <rect key="frame" x="0.0" y="107" width="288" height="41"/>
+                                                <rect key="frame" x="0.0" y="105" width="288" height="40"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Arrival" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dEe-j1-Y3O">
-                                                        <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="48.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="iDa-ef-QU6" userLabel="Arrival Info Stack View">
-                                                        <rect key="frame" x="57" y="2.5" width="231" height="38.5"/>
+                                                        <rect key="frame" x="56.5" y="1.5" width="231.5" height="38.5"/>
                                                         <subviews>
                                                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="am3-L0-2BE">
-                                                                <rect key="frame" x="0.0" y="0.0" width="231" height="18.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="231.5" height="18.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits"/>
                                                             </textField>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="200" verticalHuggingPriority="500" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="474" placeholderIntrinsicHeight="20" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="U0c-aw-wMn">
-                                                                <rect key="frame" x="0.0" y="18.5" width="231" height="20"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <rect key="frame" x="0.0" y="18.5" width="231.5" height="20"/>
                                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                                <color key="textColor" systemColor="linkColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                                 <dataDetectorType key="dataDetectorTypes" address="YES"/>
@@ -613,14 +616,13 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="References" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8WV-Mr-ZMC">
-                                                <rect key="frame" x="0.0" y="156" width="288" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="153" width="288" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" placeholderIntrinsicWidth="560" placeholderIntrinsicHeight="150" translatesAutoresizingMaskIntoConstraints="NO" id="hH4-Es-7Jr">
-                                                <rect key="frame" x="0.0" y="184.5" width="288" height="150"/>
-                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <rect key="frame" x="0.0" y="181.5" width="288" height="150"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             </view>
                                         </subviews>
                                         <constraints>
@@ -642,7 +644,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="E2b-Dd-3ng" firstAttribute="top" secondItem="cTl-xy-57W" secondAttribute="bottom" id="66D-WO-ZIj"/>
                             <constraint firstItem="cTl-xy-57W" firstAttribute="top" secondItem="FqW-Cw-1GI" secondAttribute="topMargin" id="Sec-2k-j6D"/>
@@ -683,19 +685,18 @@
                                 <rect key="frame" x="16" y="44" width="288" height="475"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="iBo-EZ-yfh" userLabel="Main Stack View">
-                                        <rect key="frame" x="0.0" y="8" width="288" height="586"/>
+                                        <rect key="frame" x="0.0" y="8" width="288" height="583.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Shd-XJ-vBX" userLabel="Hotel Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="288" height="171"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="288" height="170"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hotel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-Au-C2G" userLabel="Hotel Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="69.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="251" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Nd1-wN-Rwn">
-                                                        <rect key="frame" x="77.5" y="2.5" width="210.5" height="168.5"/>
+                                                        <rect key="frame" x="77.5" y="1.5" width="210.5" height="168.5"/>
                                                         <subviews>
                                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MGK-lb-O8Y" userLabel="Hotel Name Text Field">
                                                                 <rect key="frame" x="0.0" y="0.0" width="210.5" height="18.5"/>
@@ -704,7 +705,6 @@
                                                             </textField>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" placeholderIntrinsicWidth="0.0" placeholderIntrinsicHeight="150" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, " textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="hI6-tN-mM9" userLabel="Hotel Address Text View">
                                                                 <rect key="frame" x="0.0" y="18.5" width="210.5" height="150"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                             </textView>
@@ -716,60 +716,56 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="4T1-ml-O0F" userLabel="CheckIn Stack View">
-                                                <rect key="frame" x="0.0" y="179" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="178" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Check-In" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WRf-eZ-bEY" userLabel="CheckIn Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="69.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vP0-Px-NR4" userLabel="CheckIn Text Field">
-                                                        <rect key="frame" x="77.5" y="2.5" width="210.5" height="18.5"/>
+                                                        <rect key="frame" x="77.5" y="1.5" width="210.5" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EFm-9i-V3U" userLabel="CheckOut Stack View">
-                                                <rect key="frame" x="0.0" y="208" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="206.5" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Check-Out" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eS6-2s-LVJ" userLabel="CheckOut Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="69.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5QK-iY-yCl" userLabel="CheckOut Text Field">
-                                                        <rect key="frame" x="77.5" y="2.5" width="210.5" height="18.5"/>
+                                                        <rect key="frame" x="77.5" y="1.5" width="210.5" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="HLV-oY-dJE" userLabel="Reference Stack View">
-                                                <rect key="frame" x="0.0" y="237" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="235" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Reference" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tzP-sf-wU2" userLabel="Reference Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="69.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BC8-bo-nqv" userLabel="Reference Text Field">
-                                                        <rect key="frame" x="77.5" y="2.5" width="210.5" height="18.5"/>
+                                                        <rect key="frame" x="77.5" y="1.5" width="210.5" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="Tfa-Gz-TdH" userLabel="Phone Stack View">
-                                                <rect key="frame" x="0.0" y="266" width="288" height="50"/>
+                                                <rect key="frame" x="0.0" y="263.5" width="288" height="50"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZNV-NZ-Cwr" userLabel="Phone Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="77.5" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AbN-BI-x9s" userLabel="Phone View">
@@ -777,14 +773,13 @@
                                                         <subviews>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="280" placeholderIntrinsicHeight="50" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="zkl-d5-RHg" userLabel="Phone Text View">
                                                                 <rect key="frame" x="0.0" y="0.0" width="210.5" height="50"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                                <color key="textColor" systemColor="labelColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" textContentType="tel"/>
                                                                 <dataDetectorType key="dataDetectorTypes" phoneNumber="YES"/>
                                                             </textView>
                                                         </subviews>
-                                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="trailing" secondItem="zkl-d5-RHg" secondAttribute="trailing" id="02n-W7-qSe"/>
                                                             <constraint firstItem="zkl-d5-RHg" firstAttribute="leading" secondItem="AbN-BI-x9s" secondAttribute="leading" id="24q-M5-uLi"/>
@@ -795,15 +790,14 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Transfer Info" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7xR-iJ-vOd" userLabel="Transfer Info Label">
-                                                <rect key="frame" x="0.0" y="324" width="288" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="321.5" width="288" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="fNW-8O-8Ck" userLabel="Transfer Info Text View">
-                                                <rect key="frame" x="0.0" y="352.5" width="288" height="233.5"/>
-                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <rect key="frame" x="0.0" y="350" width="288" height="233.5"/>
                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                <color key="textColor" systemColor="labelColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
@@ -828,7 +822,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="1ay-SM-b25" secondAttribute="trailing" id="0b0-BK-LFr"/>
                             <constraint firstItem="UPE-Rp-SZL" firstAttribute="top" secondItem="1ay-SM-b25" secondAttribute="bottom" id="26x-bb-bHl"/>
@@ -861,9 +855,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="411"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="sectionIndexBackgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MyChatCell" id="Ugi-yi-bwB" userLabel="MyChatCell">
-                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ugi-yi-bwB" id="c8E-lj-1bS">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -873,14 +868,13 @@
                                             <rect key="frame" x="16" y="11" width="288" height="22"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bgu-un-rvc" userLabel="User Init">
-                                                    <rect key="frame" x="0.0" y="0.0" width="144" height="22"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="41.5" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" tag="2" contentMode="scaleToFill" scrollEnabled="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="I8V-PR-YZU">
-                                                    <rect key="frame" x="144" y="0.0" width="144" height="22"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <rect key="frame" x="41.5" y="0.0" width="246.5" height="22"/>
                                                     <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -897,7 +891,7 @@
                                 </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CustomChatCellWithUserInfo" rowHeight="64" id="4Fa-ew-4qH" customClass="SHiTChatCell" customModule="mySHiT" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="72" width="320" height="64"/>
+                                <rect key="frame" x="0.0" y="94" width="320" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4Fa-ew-4qH" id="oev-Sl-6wZ">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
@@ -911,8 +905,8 @@
                                         </label>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="hSz-0c-dQB" customClass="UIChatMessage" customModule="mySHiT" customModuleProvider="target">
                                             <rect key="frame" x="73.5" y="11" width="210.5" height="42"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </string>
+                                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES"/>
@@ -921,7 +915,7 @@
                                             <rect key="frame" x="73.5" y="53" width="210.5" height="0.0"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="textColor" systemColor="systemGray3Color"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                         </textView>
@@ -945,7 +939,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CustomChatCell" id="0vd-KY-arc" customClass="SHiTChatCell" customModule="mySHiT" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="136" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="158" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0vd-KY-arc" id="fN4-PK-ewF">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -959,8 +953,8 @@
                                         </label>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="mZO-Lv-fHg" customClass="UIChatMessage" customModule="mySHiT" customModuleProvider="target">
                                             <rect key="frame" x="73.5" y="11" width="210.5" height="22"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </string>
+                                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES"/>
@@ -981,7 +975,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CustomChatCellOwnWithUserInfo" rowHeight="64" id="WhU-Sd-jMd" customClass="SHiTChatCell" customModule="mySHiT" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="180" width="320" height="64"/>
+                                <rect key="frame" x="0.0" y="202" width="320" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WhU-Sd-jMd" id="Pgc-ZL-f3u">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
@@ -989,8 +983,8 @@
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="gGz-PI-I78" customClass="UIChatMessage" customModule="mySHiT" customModuleProvider="target">
                                             <rect key="frame" x="76" y="11" width="208" height="42"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </string>
+                                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES"/>
@@ -999,7 +993,7 @@
                                             <rect key="frame" x="76" y="53" width="208" height="0.0"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="textColor" systemColor="systemGray3Color"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                         </textView>
@@ -1020,7 +1014,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CustomChatCellOwn" rowHeight="64" id="WY0-xL-9hA" userLabel="CustomChatCellOwn" customClass="SHiTChatCell" customModule="mySHiT" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="244" width="320" height="64"/>
+                                <rect key="frame" x="0.0" y="266" width="320" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WY0-xL-9hA" id="Inu-QN-pon">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
@@ -1028,8 +1022,8 @@
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Jgq-z7-c0w" customClass="UIChatMessage" customModule="mySHiT" customModuleProvider="target">
                                             <rect key="frame" x="76" y="11" width="208" height="42"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </string>
+                                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES"/>
@@ -1077,61 +1071,61 @@
                                 <rect key="frame" x="16" y="44" width="288" height="475"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="kI5-Ic-0tX" userLabel="Main Stack View">
-                                        <rect key="frame" x="0.0" y="8" width="288" height="485.5"/>
+                                        <rect key="frame" x="0.0" y="8" width="288" height="482.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="mdf-lT-8gT" userLabel="Company Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="749" text="Company" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mDx-kA-DAj" userLabel="Company Label">
-                                                        <rect key="frame" x="0.0" y="0.0" width="77.5" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="77" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4LR-0R-n40" userLabel="Company Text Field">
-                                                        <rect key="frame" x="85.5" y="2.5" width="202.5" height="18.5"/>
+                                                        <rect key="frame" x="85" y="1.5" width="203" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="6NC-hT-edc" userLabel="Route No Stack View">
-                                                <rect key="frame" x="0.0" y="29" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="28.5" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Route #" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xCO-Ww-d6y" userLabel="Route No Label">
-                                                        <rect key="frame" x="0.0" y="0.0" width="77.5" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="77" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xaT-fe-OpE" userLabel="Route No Text Field">
-                                                        <rect key="frame" x="85.5" y="2.5" width="202.5" height="18.5"/>
+                                                        <rect key="frame" x="85" y="1.5" width="203" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ixo-Ov-t3t" userLabel="Departure Stack View">
-                                                <rect key="frame" x="0.0" y="58" width="288" height="81"/>
+                                                <rect key="frame" x="0.0" y="57" width="288" height="80"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="749" text="Departure" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Iw-uL-UdO">
-                                                        <rect key="frame" x="0.0" y="0.0" width="77.5" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="77" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="zPv-Cm-czR">
-                                                        <rect key="frame" x="85.5" y="2.5" width="202.5" height="78.5"/>
+                                                        <rect key="frame" x="85" y="1.5" width="203" height="78.5"/>
                                                         <subviews>
                                                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Zwp-4M-a3e" userLabel="Departure Time Text Field">
-                                                                <rect key="frame" x="0.0" y="0.0" width="202.5" height="18.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="203" height="18.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits"/>
                                                             </textField>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="200" verticalHuggingPriority="499" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="60" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="hmm-4y-7wR">
-                                                                <rect key="frame" x="0.0" y="18.5" width="202.5" height="60"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <rect key="frame" x="0.0" y="18.5" width="203" height="60"/>
                                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                                <color key="textColor" systemColor="labelColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" textContentType="street-address"/>
                                                                 <dataDetectorType key="dataDetectorTypes" address="YES"/>
@@ -1141,26 +1135,26 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="500" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="xcA-NV-SWT" userLabel="Arrival Stack View">
-                                                <rect key="frame" x="0.0" y="147" width="288" height="81"/>
+                                                <rect key="frame" x="0.0" y="145" width="288" height="80"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="749" text="Arrival" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ixw-Pa-yga">
-                                                        <rect key="frame" x="0.0" y="0.0" width="77.5" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="77" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="PfC-1a-L5r">
-                                                        <rect key="frame" x="85.5" y="2.5" width="202.5" height="78.5"/>
+                                                        <rect key="frame" x="85" y="1.5" width="203" height="78.5"/>
                                                         <subviews>
                                                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="500" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7iF-Hi-Qbo" userLabel="Arrival Time Text Field">
-                                                                <rect key="frame" x="0.0" y="0.0" width="202.5" height="18.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="203" height="18.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits"/>
                                                             </textField>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="498" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="60" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="hgE-ae-Cg3">
-                                                                <rect key="frame" x="0.0" y="18.5" width="202.5" height="60"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <rect key="frame" x="0.0" y="18.5" width="203" height="60"/>
                                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                                <color key="textColor" systemColor="labelColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" textContentType="street-address"/>
                                                                 <dataDetectorType key="dataDetectorTypes" address="YES"/>
@@ -1170,13 +1164,13 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="References" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qNl-2c-Qgr">
-                                                <rect key="frame" x="0.0" y="236" width="288" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="233" width="288" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" placeholderIntrinsicWidth="288" placeholderIntrinsicHeight="221" translatesAutoresizingMaskIntoConstraints="NO" id="DJf-s3-Ad3" userLabel="References View">
-                                                <rect key="frame" x="0.0" y="264.5" width="288" height="221"/>
+                                                <rect key="frame" x="0.0" y="261.5" width="288" height="221"/>
                                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </view>
                                         </subviews>
@@ -1199,7 +1193,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="oL3-bE-nw1" firstAttribute="leading" secondItem="le1-Mu-eGE" secondAttribute="leadingMargin" id="85y-jb-sTq"/>
                             <constraint firstItem="oL3-bE-nw1" firstAttribute="top" secondItem="le1-Mu-eGE" secondAttribute="topMargin" id="Kow-M8-U68"/>
@@ -1282,7 +1276,7 @@
                                 <edgeInsets key="layoutMargins" top="0.0" left="0.0" bottom="0.0" right="0.0"/>
                             </stackView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="6dH-Dh-Yvm" firstAttribute="top" secondItem="Cf0-8m-Ydo" secondAttribute="bottom" id="ItR-VO-ltO"/>
                             <constraint firstItem="6dH-Dh-Yvm" firstAttribute="centerX" secondItem="Y3y-9E-7a3" secondAttribute="centerX" id="QJJ-BF-6sN"/>
@@ -1330,31 +1324,29 @@
                                 <rect key="frame" x="16" y="44" width="288" height="475"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="8So-wf-gti" userLabel="Main Stack View">
-                                        <rect key="frame" x="0.0" y="8" width="288" height="216"/>
+                                        <rect key="frame" x="0.0" y="8" width="288" height="215.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EaM-J1-PWZ" userLabel="Company Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="288" height="21"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="288" height="20.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pte-yh-bx1" userLabel="Company Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gVx-ao-v2E" userLabel="Company Text Field">
-                                                        <rect key="frame" x="57" y="2.5" width="231" height="18.5"/>
+                                                        <rect key="frame" x="57" y="1.5" width="231" height="18.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="gbI-T0-2xb" userLabel="Departure Stack View">
-                                                <rect key="frame" x="0.0" y="29" width="288" height="40"/>
+                                                <rect key="frame" x="0.0" y="28.5" width="288" height="40"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Departure" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M51-6C-a1u" userLabel="Departure Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="y5d-u0-TN9">
@@ -1362,7 +1354,6 @@
                                                         <subviews>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="480" placeholderIntrinsicHeight="40" scrollEnabled="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="oan-2q-PBO" userLabel="Departure Text View">
                                                                 <rect key="frame" x="0.0" y="0.0" width="231" height="40"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -1372,12 +1363,11 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="8kv-o0-AvY" userLabel="Arrival Stack View">
-                                                <rect key="frame" x="0.0" y="77" width="288" height="40"/>
+                                                <rect key="frame" x="0.0" y="76.5" width="288" height="40"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Arrival" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MY1-ds-3uA" userLabel="Arrival Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="n4E-cc-hLX">
@@ -1385,7 +1375,6 @@
                                                         <subviews>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="480" placeholderIntrinsicHeight="40" scrollEnabled="NO" text="Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="LB8-v3-BHw" userLabel="Arrival Text View">
                                                                 <rect key="frame" x="0.0" y="0.0" width="231" height="40"/>
-                                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                             </textView>
@@ -1394,12 +1383,11 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="V3e-xI-Og7" userLabel="Phone Stack View">
-                                                <rect key="frame" x="0.0" y="125" width="288" height="33"/>
+                                                <rect key="frame" x="0.0" y="124.5" width="288" height="33"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IOW-yQ-abk" userLabel="Phone Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Odj-eR-I1P">
@@ -1407,7 +1395,7 @@
                                                         <subviews>
                                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="+1 250 555 7890" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pqP-ws-X6a" userLabel="Phone Text">
                                                                 <rect key="frame" x="0.0" y="0.0" width="231" height="33"/>
-                                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                <color key="textColor" systemColor="labelColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" textContentType="tel"/>
                                                                 <dataDetectorType key="dataDetectorTypes" phoneNumber="YES"/>
@@ -1417,17 +1405,15 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="WCO-N8-GuB" userLabel="Reference Stack View">
-                                                <rect key="frame" x="0.0" y="166" width="288" height="50"/>
+                                                <rect key="frame" x="0.0" y="165.5" width="288" height="50"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Reference" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mYM-tP-isl" userLabel="Reference Label">
                                                         <rect key="frame" x="0.0" y="0.0" width="49" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u9s-8d-Ju4" userLabel="Reference View">
                                                         <rect key="frame" x="57" y="0.0" width="231" height="50"/>
-                                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </view>
                                                 </subviews>
                                             </stackView>
@@ -1452,7 +1438,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="rj8-ZW-F8X" firstAttribute="top" secondItem="q8l-ZI-YEB" secondAttribute="bottom" id="50r-yC-ZoE"/>
                             <constraint firstItem="q8l-ZI-YEB" firstAttribute="leading" secondItem="aZX-w9-TRn" secondAttribute="leadingMargin" id="FZp-du-ldm"/>
@@ -1514,7 +1500,7 @@ To access your travel details, please log on using the user name and password pr
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C8I-hV-1aV">
                                                 <rect key="frame" x="0.0" y="140" width="288" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="560" placeholderIntrinsicHeight="30" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="User name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AmK-4j-lCV">
@@ -1529,7 +1515,7 @@ To access your travel details, please log on using the user name and password pr
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gGG-YR-B8p">
                                                 <rect key="frame" x="0.0" y="214.5" width="288" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="560" placeholderIntrinsicHeight="30" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="M9c-wV-gJe">
@@ -1541,7 +1527,7 @@ To access your travel details, please log on using the user name and password pr
                                                     <action selector="passwordChanged:" destination="BYZ-38-t0r" eventType="editingChanged" id="1nC-ce-Z9a"/>
                                                 </connections>
                                             </textField>
-                                            <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="47" placeholderIntrinsicHeight="30" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eVD-AU-hnc">
+                                            <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="47" placeholderIntrinsicHeight="30" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eVD-AU-hnc">
                                                 <rect key="frame" x="241" y="289" width="47" height="30"/>
                                                 <state key="normal" title="Log on"/>
                                                 <connections>
@@ -1568,7 +1554,7 @@ To access your travel details, please log on using the user name and password pr
                                 </constraints>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="VIL-f5-w9p" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" constant="20" id="LPq-1n-4nD"/>
                             <constraint firstItem="VIL-f5-w9p" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="bkJ-lD-tDO"/>
@@ -1597,5 +1583,20 @@ To access your travel details, please log on using the user name and password pr
         <image name="Alerts" width="25" height="25"/>
         <image name="Chat" width="25" height="25"/>
         <image name="Settings" width="25" height="25"/>
+        <systemColor name="labelColor">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="linkColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray3Color">
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>

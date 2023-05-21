@@ -192,7 +192,7 @@ class ChatViewController: UIViewController, UITextViewDelegate, DeepLinkableView
             }
         } else {
             oldUserNotificationCenterDelegate?.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler) ?? {
-                completionHandler([.alert, .sound]) }()
+                completionHandler([/*.alert,*/.badge, .banner, .sound]) }()
         }
     }
 

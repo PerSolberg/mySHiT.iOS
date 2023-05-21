@@ -49,6 +49,8 @@ class Flight: ScheduledTransport {
     //
     // MARK: NSCoding
     //
+    override class var supportsSecureCoding: Bool { return true }
+    
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(airlineCode, forKey: PropertyKey.airlineCodeKey)
@@ -60,7 +62,7 @@ class Flight: ScheduledTransport {
     //
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        airlineCode = aDecoder.decodeObject(forKey: PropertyKey.airlineCodeKey) as? String
+        airlineCode = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.airlineCodeKey) as? String
         setNotification()
     }
     
@@ -70,7 +72,18 @@ class Flight: ScheduledTransport {
         airlineCode = elementData[Constant.JSON.airlineCompanyCode] as? String
     }
     
-    
+    //
+    // MARK: Dynamic construction
+    //
+    override class func canHandle(_ elemType: ElementType!) -> Bool {
+        switch (elemType.type, elemType.subType) {
+        case (TripElement.MainType.Transport, TripElement.SubType.Airline):
+            return true;
+        default:
+            return false;
+        }
+    }
+
     //
     // MARK: Methods
     //

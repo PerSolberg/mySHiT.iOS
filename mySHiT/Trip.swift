@@ -12,14 +12,43 @@ import FirebaseMessaging
 import UserNotifications
 import os
 
-class Trip: NSObject, NSCoding {
-    struct IconPath {
-        static let Separator = "/"
-        static let Base = "trip" + Separator
-        static let TenseNames:[Tenses?:String] = [ Tenses.past : "historic" + Separator, Tenses.present : "active" + Separator, Tenses.future : "" ]
-        static let DefaultName = "UNKNOWN"
+class Trip: NSObject, NSSecureCoding {
+    static var iconCache:[IconKey:(status:IconStatus, icon:UIImage?)] = [:]
+    static let iconCacheSemaphore = DispatchSemaphore(value: 1)
+    enum IconStatus {
+        case missing
+        case downloaded
+        case pending
     }
 
+    struct IconKey:Hashable {
+        var type: String?
+        var tense: Tenses
+
+        static let TenseNames:[Tenses?:String] = [ Tenses.past : "historic", Tenses.present : "active" ]
+        static let DefaultName = "default"
+
+        var tenseName:String {
+            return Trip.IconKey.TenseNames[tense] ?? Trip.IconKey.DefaultName
+        }
+        func pathComponent(_ name: String?, _ separator: String) -> String {
+            return name == nil ? "" : name! + separator
+        }
+        var assetPath:String {
+            return "trip/" + pathComponent(type, "/") + tenseName
+        }
+        var downloadPath:String {
+            return "https://shitt.no/mySHiT/v2/icons/trip/" + pathComponent(type, ".") + tenseName + ".png"
+        }
+        var parentKey:IconKey? {
+            if type == nil {
+                return nil
+            } else {
+                return IconKey(tense: tense)
+            }
+        }
+    }
+    
     var id: Int { willSet { checkChange(id, newValue) } }
     var itineraryId: Int? { willSet { checkChange(itineraryId, newValue) } }
     var startDate: Date? { willSet { checkChange(startDate, newValue) } }
@@ -81,26 +110,33 @@ class Trip: NSObject, NSCoding {
         }
     }
     var icon: UIImage? {
-        let path = IconPath.Base + (IconPath.TenseNames[tense] ?? "")
-        let imageName = path + type!
-        
         // First try exact match
-        if let image = UIImage(named: imageName) {
-            return image
-        }
-        
-        // Try default variant for trip type
-        if let image = UIImage(named: IconPath.Base + type!) {
-            return image
-        }
-        
-        // Try dummy image
-        if let image = UIImage(named: IconPath.Base + IconPath.DefaultName) {
-            return image
-        }
+        var iconKey:IconKey? = IconKey(type: type, tense: tense ?? .future)
+
+        repeat {
+            if let image = UIImage(named: iconKey!.assetPath ) {
+                return image
+            }
+
+            // Check cache
+            if let cached = Trip.iconCache[iconKey!] {
+                switch (cached.status) {
+                case .missing, .pending:
+                    break
+                case .downloaded:
+                    return cached.icon
+                }
+            } else {
+                // Initiate download
+                self.downloadImage(iconKey!)
+            }
+
+            iconKey = iconKey!.parentKey
+        } while iconKey != nil
 
         return nil
     }
+
     var detailsLoaded: Bool {
         return ( elements != nil )
     }
@@ -141,6 +177,8 @@ class Trip: NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
+    public class var supportsSecureCoding: Bool { return true }
+
     func encode(with aCoder: NSCoder) {
         aCoder.encode(id, forKey: PropertyKey.idKey)
         aCoder.encode(itineraryId, forKey: PropertyKey.itineraryIdKey)
@@ -161,22 +199,26 @@ class Trip: NSObject, NSCoding {
     // MARK: Initialisers
     //
     required init?(coder aDecoder: NSCoder) {
-        let id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.idKey)
+        let id = aDecoder.decodeInteger(forKey: PropertyKey.idKey)
         self.id = id
-        chatThread = (aDecoder.decodeObject(forKey: PropertyKey.chatThreadKey) as? ChatThread) ?? ChatThread(tripId: id)
+        chatThread = aDecoder.decodeObject(of: ChatThread.self, forKey: PropertyKey.chatThreadKey) ?? ChatThread(tripId: id)
         super.init()
-        // NB: use conditional cast (as?) for any optional properties
-        itineraryId = aDecoder.decodeObject(forKey: PropertyKey.itineraryIdKey) as? Int? ?? aDecoder.decodeInteger(forKey: PropertyKey.itineraryIdKey)
-        startDate  = aDecoder.decodeObject(forKey: PropertyKey.startDateKey) as? Date
-        endDate  = aDecoder.decodeObject(forKey: PropertyKey.endDateKey) as? Date
-        tripDescription  = aDecoder.decodeObject(forKey: PropertyKey.tripDescriptionKey) as? String
-        code  = aDecoder.decodeObject(forKey: PropertyKey.codeKey) as? String
-        name  = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String
-        type  = aDecoder.decodeObject(forKey: PropertyKey.typeKey) as? String
-        elements  = aDecoder.decodeObject(forKey: PropertyKey.elementsKey) as? [AnnotatedTripElement]
-        notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
 
-        lastUpdateTS = aDecoder.decodeObject(forKey: PropertyKey.lastUpdateTSKey) as? ServerTimestamp
+        itineraryId = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.itineraryIdKey) as? Int /*?? aDecoder.decodeInteger(forKey: PropertyKey.itineraryIdKey) */
+        startDate = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.startDateKey) as? Date
+        endDate  = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.endDateKey) as? Date
+        tripDescription  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.tripDescriptionKey) as? String
+        code  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.codeKey) as? String
+        name  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.nameKey) as? String
+        type  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.typeKey) as? String
+        elements  = aDecoder.decodeObject(of: [NSArray.self, AnnotatedTripElement.self], forKey: PropertyKey.elementsKey) as? [AnnotatedTripElement]
+//        notifications = aDecoder.decodeObject(forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
+        notifications = aDecoder.decodeDictionary(
+            withKeyClass: NSString.self,
+            objectClass: NotificationInfo.self,
+            forKey: PropertyKey.notificationsKey) as? [String:NotificationInfo] ?? [String:NotificationInfo]()
+
+        lastUpdateTS = aDecoder.decodeObject(of: ServerTimestamp.self, forKey: PropertyKey.lastUpdateTSKey)
 
         setNotification()
     }
@@ -216,6 +258,39 @@ class Trip: NSObject, NSCoding {
     //
     // MARK: Methods
     //
+    final func downloadImage(_ iconKey:IconKey) {
+        Trip.iconCacheSemaphore.wait()
+        if Trip.iconCache[iconKey] == nil {
+            Trip.iconCache[iconKey] = (.pending, nil)
+        }
+        Trip.iconCacheSemaphore.signal()
+
+        let imgUrl = URL(string: iconKey.downloadPath)!
+
+        DispatchQueue.global().async {
+            URLSession.shared.dataTask(with: imgUrl) { data, response, error in
+                guard let gData = data,
+                      let gResponse = response as? HTTPURLResponse,
+                      gResponse.statusCode >= 200 && gResponse.statusCode < 300,
+                      let image = UIImage(data: gData, scale: 1.0) else {
+                    Trip.iconCacheSemaphore.wait()
+                    let cached = Trip.iconCache[iconKey]!
+                    if cached.status == .pending {
+                        Trip.iconCache[iconKey] = (.missing, nil)
+                    }
+                    Trip.iconCacheSemaphore.signal()
+                    return
+                }
+                Trip.iconCacheSemaphore.wait()
+                Trip.iconCache[iconKey] = (.downloaded, image)
+                Trip.iconCacheSemaphore.signal()
+                NotificationCenter.default.post(name: Constant.Notification.refreshTripList, object: self)
+            }
+            .resume()
+        }
+
+    }
+
     func update(fromDictionary elementData: NSDictionary!, updateTS: ServerTimestamp) -> Bool {
         guard let dictId = elementData[Constant.JSON.tripId] as? Int else {
             os_log("Update error: Trip data doesn't have ID", log: OSLog.general, type: .error)

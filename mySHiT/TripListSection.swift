@@ -16,7 +16,7 @@ enum TripListSection:String {
     static let allValues = [Future, Upcoming, Current, Historic]
 }
 
-class TripListSectionInfo: NSObject, NSCoding {
+class TripListSectionInfo: NSObject, NSSecureCoding {
     var visible: Bool
     var type: TripListSection
     var firstTrip: Int?
@@ -27,15 +27,17 @@ class TripListSectionInfo: NSObject, NSCoding {
         static let firstTripKey = "firstTrip"
     }
 
-    
+    class var supportsSecureCoding: Bool { return true }
+
     //
     // MARK: Initialisers
     //
     required convenience init(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        let visible  = aDecoder.decodeObject(forKey: PropertyKey.visibleKey) as? Bool ?? aDecoder.decodeBool(forKey: PropertyKey.visibleKey)
-        let type = TripListSection(rawValue: aDecoder.decodeObject(forKey: PropertyKey.typeKey) as! String)!
-        var firstTrip = aDecoder.decodeObject(forKey: PropertyKey.firstTripKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.firstTripKey)
+        let visible = aDecoder.decodeBool(forKey: PropertyKey.visibleKey)
+        let typeString = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.typeKey)
+        let type = TripListSection(rawValue: typeString! as String)!
+        var firstTrip = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.firstTripKey) as? Int
 
         // Legacy support
         if let firstTripDecoded = firstTrip, firstTripDecoded == -1 {

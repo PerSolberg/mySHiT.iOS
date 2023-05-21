@@ -9,7 +9,7 @@
 import Foundation
 //import UIKit
 
-class NotificationInfo: NSObject, NSCoding {
+class NotificationInfo: NSObject, NSSecureCoding {
     var baseDate: Date!
     var notificationDate: Date!
     var leadTime: Int!
@@ -24,6 +24,8 @@ class NotificationInfo: NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
+    class var supportsSecureCoding: Bool { return true }
+
     func encode(with aCoder: NSCoder) {
         aCoder.encode(baseDate, forKey: PropertyKey.baseDateKey)
         aCoder.encode(notificationDate, forKey: PropertyKey.notificationDateKey)
@@ -36,9 +38,9 @@ class NotificationInfo: NSObject, NSCoding {
     //
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        baseDate  = aDecoder.decodeObject(forKey: PropertyKey.baseDateKey) as? Date
-        notificationDate = aDecoder.decodeObject(forKey: PropertyKey.notificationDateKey) as? Date
-        leadTime = aDecoder.decodeObject(forKey: PropertyKey.leadTimeKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.leadTimeKey)
+        baseDate  = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.baseDateKey) as? Date
+        notificationDate = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.notificationDateKey) as? Date
+        leadTime = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.leadTimeKey) as? Int //?? aDecoder.decodeInteger(forKey: PropertyKey.leadTimeKey)
     }
     
     

@@ -68,6 +68,7 @@ class ScheduledTransport: GenericTransport {
     //
     // MARK: NSCoding
     //
+    override class var supportsSecureCoding: Bool { return true }
     
     
     //
@@ -75,6 +76,25 @@ class ScheduledTransport: GenericTransport {
     //
     
     
+    //
+    // MARK: Dynamic construction
+    //
+    override class func canHandle(_ elemType: ElementType!) -> Bool {
+        switch (elemType.type, elemType.subType) {
+        case (TripElement.MainType.Transport, TripElement.SubType.Bus):
+            return true;
+        case (TripElement.MainType.Transport, TripElement.SubType.Train):
+            return true;
+        case (TripElement.MainType.Transport, TripElement.SubType.Boat):
+            return true;
+        case (TripElement.MainType.Transport, TripElement.SubType.Airline):
+            return true;
+        default:
+            return false;
+        }
+    }
+
+
     //
     // MARK: Methods
     //

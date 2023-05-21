@@ -124,7 +124,7 @@ extension UIView
             valueWrapper.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
             valueWrapper.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
             if (changed) {
-                valueWrapper.backgroundColor = UIColor.yellow
+                valueWrapper.backgroundColor = UIColor.systemYellow
             }
 
             if (value is NSArray) {
@@ -144,8 +144,9 @@ extension UIView
                 valueField.isScrollEnabled = false
                 valueField.setContentHuggingPriority(horisontalHuggingForValue, for: .horizontal)
                 valueField.setContentHuggingPriority(verticalHuggingForValue, for: .vertical)
+                //valueField.backgroundColor = UIColor.systemPink
                 if (changed) {
-                    valueField.backgroundColor = UIColor.yellow
+                    valueField.backgroundColor = UIColor.systemYellow
                 }
                 
                 if (value is NSAttributedString) {
@@ -163,6 +164,7 @@ extension UIView
                 }
                 valueField.textContainerInset = UIEdgeInsets(top: baselineShift, left: 0, bottom: 0, right: 0)
                 valueField.textContainer.lineFragmentPadding = 0.0
+                valueField.textColor = UIColor.label
 
                 valueWrapper.addSubview(valueField)
                 valueWrapper.addConstraint(NSLayoutConstraint(item: valueField, attribute: .leading, relatedBy: .equal, toItem: valueWrapper, attribute: .leading, multiplier: 1.0, constant: 0.0))

@@ -16,7 +16,7 @@ enum LastSeenBy {
     case some([String])
 }
 
-class ChatMessage: NSObject, NSCoding {
+class ChatMessage: NSObject, NSSecureCoding {
     typealias LocalId = (deviceType: String, deviceId: String, localId: String)
     static let missingLocalId:LocalId = ("", "", "")
     
@@ -63,6 +63,8 @@ class ChatMessage: NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
+    class var supportsSecureCoding: Bool { return true }
+    
     func encode(with aCoder: NSCoder) {
         aCoder.encode(id, forKey: PropertyKey.idKey)
         aCoder.encode(userId, forKey: PropertyKey.userIdKey)
@@ -90,21 +92,21 @@ class ChatMessage: NSObject, NSCoding {
     // MARK: Initialisers
     //
     required init?(coder aDecoder: NSCoder) {
-        id = aDecoder.decodeObject(forKey: PropertyKey.idKey) as? Int
-        userId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
+        id = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.idKey) as? Int
+        userId = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.userIdKey) as? Int// ?? aDecoder.decodeInteger(forKey: PropertyKey.userIdKey)
 
-        userName  = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String ?? Constant.Message.unknownUserName
-        userInitials = aDecoder.decodeObject(forKey: PropertyKey.userInitialsKey) as? String ?? Constant.Message.unknownUserInitials
+        userName  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.userNameKey) as? String ?? Constant.Message.unknownUserName
+        userInitials = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.userInitialsKey) as? String ?? Constant.Message.unknownUserInitials
         
-        let savedDeviceType = aDecoder.decodeObject(forKey: PropertyKey.deviceTypeKey) as! String
-        let savedDeviceId = aDecoder.decodeObject(forKey: PropertyKey.deviceIdKey) as! String
-        let savedLocalId = aDecoder.decodeObject(forKey: PropertyKey.localIdKey) as! String
+        let savedDeviceType = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.deviceTypeKey)! as String
+        let savedDeviceId = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.deviceIdKey)! as String
+        let savedLocalId = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.localIdKey)! as String
         
         localId = (savedDeviceType, savedDeviceId, savedLocalId)
         
-        messageText = aDecoder.decodeObject(forKey: PropertyKey.messageTextKey) as? String
-        storedTimestamp = aDecoder.decodeObject(forKey: PropertyKey.storedTimestampKey) as? Date
-        createdTimestamp = aDecoder.decodeObject(forKey: PropertyKey.createdTimestampKey) as? Date
+        messageText = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.messageTextKey) as? String
+        storedTimestamp = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.storedTimestampKey) as? Date
+        createdTimestamp = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.createdTimestampKey) as? Date
     }
 
 

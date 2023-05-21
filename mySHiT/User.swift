@@ -10,7 +10,7 @@ import Foundation
 import FirebaseMessaging
 import os
 
-class User : NSObject, NSCoding {
+class User : NSObject, NSSecureCoding {
     static let sharedUser = User()
     
     //
@@ -91,6 +91,8 @@ class User : NSObject, NSCoding {
     //
     // MARK: NSCoding
     //
+    class var supportsSecureCoding: Bool { return true }
+
     func encode(with aCoder: NSCoder) {
         aCoder.encode(srvUserId, forKey: PropertyKey.userIdKey)
         aCoder.encode(srvUserName, forKey: PropertyKey.userNameKey)
@@ -102,12 +104,12 @@ class User : NSObject, NSCoding {
     
     
     required init?(coder aDecoder: NSCoder) {
-        srvUserId = aDecoder.decodeObject(forKey: PropertyKey.userIdKey) as? Int
-        srvUserName = aDecoder.decodeObject(forKey: PropertyKey.userNameKey) as? String
-        srvFullName  = aDecoder.decodeObject(forKey: PropertyKey.fullNameKey) as? String
-        srvCommonName  = aDecoder.decodeObject(forKey: PropertyKey.commonNameKey) as? String
-        srvShortName  = aDecoder.decodeObject(forKey: PropertyKey.shortNameKey) as? String
-        srvInitials = aDecoder.decodeObject(forKey: PropertyKey.initialsKey) as? String
+        srvUserId = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.userIdKey) as? Int
+        srvUserName = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.userNameKey) as? String
+        srvFullName  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.fullNameKey) as? String
+        srvCommonName  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.commonNameKey) as? String
+        srvShortName  = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.shortNameKey) as? String
+        srvInitials = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.initialsKey) as? String
     }
 
 
@@ -202,7 +204,7 @@ class User : NSObject, NSCoding {
         if try! FileManager.default.fileExists(atPath: Constant.Archive.userURL.path) && FileManager.default.attributesOfItem(atPath: Constant.Archive.userURL.path)[FileAttributeKey.size] as! Int > 0 {
             do {
                 let fileData = try Data(contentsOf: Constant.Archive.userURL)
-                if let newUser = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(fileData) as? User {
+                if let newUser = try NSKeyedUnarchiver.unarchivedObject(ofClass: User.self, from: fileData) {
                     self.srvUserId     = newUser.srvUserId
                     self.srvUserName   = newUser.srvUserName
                     self.srvFullName   = newUser.fullName

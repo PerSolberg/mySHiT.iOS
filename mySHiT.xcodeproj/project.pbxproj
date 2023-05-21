@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -29,6 +29,7 @@
 		85595BEA22CC0D2200A51E4E /* String+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85595BE922CC0D2200A51E4E /* String+mySHiT.swift */; };
 		855F33591BDEE853002CB89B /* AlertListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F33581BDEE853002CB89B /* AlertListViewController.swift */; };
 		855F335B1BDF6C2F002CB89B /* TripList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F335A1BDF6C2F002CB89B /* TripList.swift */; };
+		85633C342A05215D0097F6A0 /* Runtime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85633C332A05215D0097F6A0 /* Runtime.swift */; };
 		8566AD681E8BD21C00855848 /* SHiTChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8566AD671E8BD21C00855848 /* SHiTChatCell.swift */; };
 		856B947622A025EB008A7E99 /* UITextField+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856B947522A025EB008A7E99 /* UITextField+mySHiT.swift */; };
 		856D66521BD66A3900C62D79 /* TripElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856D66511BD66A3900C62D79 /* TripElement.swift */; };
@@ -53,7 +54,7 @@
 		859F903B1E3620EF0006AEC4 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F903A1E3620EF0006AEC4 /* Event.swift */; };
 		859F903D1E3699450006AEC4 /* EventDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F903C1E3699450006AEC4 /* EventDetailsViewController.swift */; };
 		85A9D56324C84F0F008E6B28 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A9D56224C84F0E008E6B28 /* NotificationService.swift */; };
-		85A9D56724C84F0F008E6B28 /* SHiTNotifications.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 85A9D56024C84F0E008E6B28 /* SHiTNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		85A9D56724C84F0F008E6B28 /* SHiTNotifications.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 85A9D56024C84F0E008E6B28 /* SHiTNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		85A9D56B24C85081008E6B28 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FFD37A1C5000840083C72B /* Constant.swift */; };
 		85A9D56C24C854EB008E6B28 /* String+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85595BE922CC0D2200A51E4E /* String+mySHiT.swift */; };
 		85A9D56E24D30BA8008E6B28 /* OSLog+mySHiT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EF19E522B99FE7002FA60B /* OSLog+mySHiT.swift */; };
@@ -128,15 +129,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		853F7F862473C7630046E61C /* Embed App Extensions */ = {
+		853F7F862473C7630046E61C /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				85A9D56724C84F0F008E6B28 /* SHiTNotifications.appex in Embed App Extensions */,
+				85A9D56724C84F0F008E6B28 /* SHiTNotifications.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		85F02B331EBA09ED00E0C305 /* Embed Frameworks */ = {
@@ -185,6 +186,7 @@
 		85595BE922CC0D2200A51E4E /* String+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+mySHiT.swift"; sourceTree = "<group>"; };
 		855F33581BDEE853002CB89B /* AlertListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertListViewController.swift; sourceTree = "<group>"; };
 		855F335A1BDF6C2F002CB89B /* TripList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripList.swift; sourceTree = "<group>"; };
+		85633C332A05215D0097F6A0 /* Runtime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Runtime.swift; sourceTree = "<group>"; };
 		8566AD671E8BD21C00855848 /* SHiTChatCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SHiTChatCell.swift; sourceTree = "<group>"; };
 		856B947522A025EB008A7E99 /* UITextField+mySHiT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+mySHiT.swift"; sourceTree = "<group>"; };
 		856D66511BD66A3900C62D79 /* TripElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripElement.swift; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 				857A6B0A242D5C8800AEE36E /* GlobalFunctions.swift */,
 				856D66611BD824E300C62D79 /* SecurityWrapper.swift */,
 				856D66571BD6845D00C62D79 /* ServerDate.swift */,
+				85633C332A05215D0097F6A0 /* Runtime.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -577,7 +580,7 @@
 				85FEFC391BC7FCF800D8E38E /* Resources */,
 				295D7435AA711BC09513186F /* [CP] Embed Pods Frameworks */,
 				85F02B331EBA09ED00E0C305 /* Embed Frameworks */,
-				853F7F862473C7630046E61C /* Embed App Extensions */,
+				853F7F862473C7630046E61C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -633,11 +636,12 @@
 		85FEFC331BC7FCF800D8E38E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				KnownAssetTags = (
 					2,
 				);
 				LastSwiftUpdateCheck = 1160;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = "&More AS";
 				TargetAttributes = {
 					85A9D55F24C84F0E008E6B28 = {
@@ -778,16 +782,24 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-mySHiT/Pods-mySHiT-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/FirebaseCore/FirebaseCore.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseCoreInternal/FirebaseCoreInternal.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseInstallations/FirebaseInstallations.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseMessaging/FirebaseMessaging.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleDataTransport/GoogleDataTransport.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
-				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseCoreInternal.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseInstallations.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseMessaging.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleDataTransport.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -851,6 +863,7 @@
 				857A6B13243D336500AEE36E /* RESTRequest.swift in Sources */,
 				85FEFC411BC7FCF800D8E38E /* TripListViewController.swift in Sources */,
 				856D66561BD673C100C62D79 /* GenericTransport.swift in Sources */,
+				85633C342A05215D0097F6A0 /* Runtime.swift in Sources */,
 				8519D67E1E9FBB810077FB52 /* ChatThread.swift in Sources */,
 				85BF602F1E6453EA00E5D785 /* NotificationInfo.swift in Sources */,
 				853F7F9B2479DD5F0046E61C /* UIWindow+mySHiT.swift in Sources */,
@@ -993,8 +1006,13 @@
 				DEVELOPMENT_TEAM = LF3HBMECXF;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = SHiTNotifications/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.5.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT.SHiTNotifications;
@@ -1022,8 +1040,13 @@
 				DEVELOPMENT_TEAM = LF3HBMECXF;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = SHiTNotifications/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.5.2;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT.SHiTNotifications;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1037,6 +1060,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				"ALTERNATE_GROUP[sdk=*]" = "$(INSTALL_GROUP)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1082,7 +1106,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1095,6 +1120,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				"ALTERNATE_OWNER[sdk=*]" = "$(INSTALL_OWNER)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1134,10 +1160,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1147,20 +1175,24 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 74D433F1BFB2E6D26903622B /* Pods-mySHiT.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = mySHiT/mySHiTDebug.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = LF3HBMECXF;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleAppMeasurement/Frameworks",
 				);
 				INFOPLIST_FILE = mySHiT/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 3.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1173,7 +1205,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9AF23EC1DAB8D653EA83490D /* Pods-mySHiT.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = mySHiT/mySHiT.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1185,8 +1217,12 @@
 					"$(PROJECT_DIR)/Pods/GoogleAppMeasurement/Frameworks",
 				);
 				INFOPLIST_FILE = mySHiT/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 3.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = no.andmore.mySHiT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1201,7 +1237,12 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = mySHiTTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiTTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1215,7 +1256,12 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = mySHiTTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiTTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1228,7 +1274,12 @@
 			baseConfigurationReference = 635CB9024F4A69D050CF9411 /* Pods-mySHiTUITests.debug.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = mySHiTUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiTUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1242,7 +1293,12 @@
 			baseConfigurationReference = 93D147E31DD5C317DDDEE109 /* Pods-mySHiTUITests.release.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = mySHiTUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = no.shitt.mySHiTUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

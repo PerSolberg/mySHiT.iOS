@@ -9,7 +9,7 @@
 import Foundation
 import os
 
-class ServerTimestamp:NSObject, NSCoding, Comparable {
+class ServerTimestamp:NSObject, NSSecureCoding, Comparable {
     var formattedTS:String!
     var epochSeconds:Int!
     var epochMicroSec:Int!
@@ -36,15 +36,17 @@ class ServerTimestamp:NSObject, NSCoding, Comparable {
     //
     required init?(coder aDecoder: NSCoder) {
         // NB: use conditional cast (as?) for any optional properties
-        formattedTS = aDecoder.decodeObject(forKey: PropertyKey.formattedKey) as? String
-        epochSeconds = aDecoder.decodeObject(forKey: PropertyKey.secondsKey) as? Int
-        epochMicroSec = aDecoder.decodeObject(forKey: PropertyKey.microSecondsKey) as? Int
+        formattedTS = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.formattedKey) as? String
+        epochSeconds = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.secondsKey) as? Int
+        epochMicroSec = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.microSecondsKey) as? Int
     }
     
     
     //
     // MARK: NSCoding
     //
+    class var supportsSecureCoding: Bool { return true }
+    
     func encode(with aCoder: NSCoder) {
         aCoder.encode(formattedTS, forKey: PropertyKey.formattedKey)
         aCoder.encode(epochSeconds, forKey: PropertyKey.secondsKey)

@@ -135,6 +135,8 @@ class GenericTransport: TripElement {
     //
     // MARK: NSCoding
     //
+    override class var supportsSecureCoding: Bool { return true }
+
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(segmentId, forKey: PropertyKey.segmentIdKey)
@@ -166,30 +168,29 @@ class GenericTransport: TripElement {
     // MARK: Initialisers
     //
     required init?(coder aDecoder: NSCoder) {
-        // NB: use conditional cast (as?) for any optional properties
         super.init(coder: aDecoder)
-        segmentId = aDecoder.decodeObject(forKey: PropertyKey.segmentIdKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.segmentIdKey)
-        segmentCode = aDecoder.decodeObject(forKey: PropertyKey.segmentCodeKey) as? String
-        legNo = aDecoder.decodeObject(forKey: PropertyKey.legNoKey) as? Int ?? aDecoder.decodeInteger(forKey: PropertyKey.legNoKey)
-        departureTime  = aDecoder.decodeObject(forKey: PropertyKey.departureTimeKey) as? Date
-        departureLocation = aDecoder.decodeObject(forKey: PropertyKey.departureLocationKey) as? String
-        departureStop = aDecoder.decodeObject(forKey: PropertyKey.departureStopKey) as? String
-        departureAddress = aDecoder.decodeObject(forKey: PropertyKey.departureAddressKey) as? String
-        departureTimeZone = aDecoder.decodeObject(forKey: PropertyKey.departureTimeZoneKey) as? String
-        departureCoordinates = aDecoder.decodeObject(forKey: PropertyKey.departureCoordinatesKey) as? String
-        departureTerminalCode = aDecoder.decodeObject(forKey: PropertyKey.departureTerminalCodeKey) as? String
-        departureTerminalName = aDecoder.decodeObject(forKey: PropertyKey.departureTerminalNameKey) as? String
-        arrivalTime = aDecoder.decodeObject(forKey: PropertyKey.arrivalTimeKey) as? Date
-        arrivalLocation = aDecoder.decodeObject(forKey: PropertyKey.arrivalLocationKey) as? String
-        arrivalStop = aDecoder.decodeObject(forKey: PropertyKey.arrivalStopKey) as? String
-        arrivalAddress = aDecoder.decodeObject(forKey: PropertyKey.arrivalAddressKey) as? String
-        arrivalTimeZone = aDecoder.decodeObject(forKey: PropertyKey.arrivalTimeZoneKey) as? String
-        arrivalCoordinates = aDecoder.decodeObject(forKey: PropertyKey.arrivalCoordinatesKey) as? String
-        arrivalTerminalCode = aDecoder.decodeObject(forKey: PropertyKey.arrivalTerminalCodeKey) as? String
-        arrivalTerminalName = aDecoder.decodeObject(forKey: PropertyKey.arrivalTerminalNameKey) as? String
-        routeNo = aDecoder.decodeObject(forKey: PropertyKey.routeNoKey) as? String
-        companyName = aDecoder.decodeObject(forKey: PropertyKey.companyNameKey) as? String
-        companyPhone = aDecoder.decodeObject(forKey: PropertyKey.companyPhoneKey) as? String
+        segmentId = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.segmentIdKey) as? Int // ?? aDecoder.decodeInteger(forKey: PropertyKey.segmentIdKey)
+        segmentCode = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.segmentCodeKey) as? String
+        legNo = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.legNoKey) as? Int// ?? aDecoder.decodeInteger(forKey: PropertyKey.legNoKey)
+        departureTime  = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.departureTimeKey) as? Date
+        departureLocation = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureLocationKey) as? String
+        departureStop = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureStopKey) as? String
+        departureAddress = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureAddressKey) as? String
+        departureTimeZone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureTimeZoneKey) as? String
+        departureCoordinates = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureCoordinatesKey) as? String
+        departureTerminalCode = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureTerminalCodeKey) as? String
+        departureTerminalName = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.departureTerminalNameKey) as? String
+        arrivalTime = aDecoder.decodeObject(of: NSDate.self, forKey: PropertyKey.arrivalTimeKey) as? Date
+        arrivalLocation = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalLocationKey) as? String
+        arrivalStop = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalStopKey) as? String
+        arrivalAddress = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalAddressKey) as? String
+        arrivalTimeZone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalTimeZoneKey) as? String
+        arrivalCoordinates = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalCoordinatesKey) as? String
+        arrivalTerminalCode = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalTerminalCodeKey) as? String
+        arrivalTerminalName = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.arrivalTerminalNameKey) as? String
+        routeNo = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.routeNoKey) as? String
+        companyName = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.companyNameKey) as? String
+        companyPhone = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.companyPhoneKey) as? String
     }
     
     
@@ -226,6 +227,18 @@ class GenericTransport: TripElement {
     }
 
     
+    //
+    // MARK: Dynamic construction
+    //
+    override class func canHandle(_ elemType: ElementType!) -> Bool {
+        switch (elemType.type, elemType.subType) {
+        case (TripElement.MainType.Transport, _):
+            return true;
+        default:
+            return false;
+        }
+    }
+
     //
     // MARK: Methods
     //
