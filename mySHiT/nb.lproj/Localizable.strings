@@ -133,4 +133,7 @@
 
 "FMT.ADDRESS.POSTCODE_AND_CITY" = "%@ %@";
 
+"FMT.ALERTLIST.LOCAL_TIME_ONLY" = "%@";
+"FMT.ALERTLIST.LOCAL_TIME_AND_UTC" = "%@ (%@ UTC)";
+
 "REST_REQUEST.ERROR.SERVER_MSG_UNAVAILABLE" = "Unable to retrieve server error message";

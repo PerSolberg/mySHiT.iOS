@@ -38,10 +38,14 @@ public class AnnotatedTrip: NSObject, NSSecureCoding {
         }
 
         let sectionString = aDecoder.decodeObject(of: NSString.self, forKey: PropertyKey.sectionKey) as? String
-        let section = TripListSection(rawValue: sectionString!) ?? .Historic
-        let trip = aDecoder.decodeObject(of: Trip.self, forKey: PropertyKey.tripKey)!
+        let section = TripListSection(rawValue: sectionString ?? TripListSection.Historic.rawValue) ?? .Historic
+        let trip = aDecoder.decodeObject(of: Trip.self, forKey: PropertyKey.tripKey)
         
-        self.init(section: section, trip: trip, modified: modified)
+        if (trip == nil) {
+            return nil;
+        }
+        
+        self.init(section: section, trip: trip!, modified: modified)
     }
 
     

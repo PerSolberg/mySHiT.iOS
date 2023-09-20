@@ -209,12 +209,12 @@ class ChatThread:NSObject, NSSecureCoding {
         lastSeenByUserLocal = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastSeenByUserLocalKey) as? Int
         lastSeenByUserServer = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastSeenByUserServerKey) as? Int
         lastSeenByOthers = aDecoder.decodeObject(of: NSDictionary.self, forKey: PropertyKey.lastSeenByOthersKey) ?? NSDictionary()
-        messages = (aDecoder.decodeObject(of: [NSArray.self, ChatMessage.self], forKey: PropertyKey.messagesKey) as? [ChatMessage]) ?? [ChatMessage]()
         messageVersion = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.messageVersionKey) as? Int
         if let rawLastDisplayedPosition = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastDisplayedPositionKey) as? Int {
             lastDisplayedPosition = UITableView.ScrollPosition(rawValue: rawLastDisplayedPosition)
         }
         lastSeenVersion = aDecoder.decodeObject(of: NSNumber.self, forKey: PropertyKey.lastSeenVersionKey) as? Int
+        messages = aDecoder.decodeObject(of: [NSArray.self, ChatMessage.self], forKey: PropertyKey.messagesKey) as? [ChatMessage] ?? [ChatMessage]()
     }
 
     
