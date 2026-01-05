@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "TripElement.changed.setter:(null)">
+      </ContextState>
+      <ContextState
+         contextName = "GLOBAL">
+         <PersistentStrings>
+            <PersistentString
+               value = "TripList.sharedList">
+            </PersistentString>
+            <PersistentString
+               value = "self.changed">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TripElement.update(fromDictionary:):TripElement.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.changed">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AlertListViewController.tableView(_:cellForRowAt:):AlertListViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "SHiTChatCell.layoutSubviews():SHiTChatCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "messageText">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "static ServerDate.convertServerDate(_:timeZone:):ServerDate.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Constant.timezoneNameUTC">
+            </PersistentString>
+            <PersistentString
+               value = "Constant.timezoneUTC">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Trip.update(fromDictionary:updateTS:):Trip.swift">
+      </ContextState>
+      <ContextState
+         contextName = "GenericTransport.update(fromDictionary:):GenericTransport.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.changed">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TripElement.init(coder:):TripElement.swift">
+      </ContextState>
+      <ContextState
+         contextName = "UIView.bubblePath(borderWidth:radius:triangleHeight:triangleEdge:trianglePosition:):UIView+mySHiT.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TripListViewController.tableView(_:numberOfRowsInSection:):TripListViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TripListViewController.viewDidAppear(_:):TripListViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ChatMessage.savePayload.getter:ChatMessage.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Constant.timezoneUTC">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TripListViewController.updateSections():TripListViewController.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

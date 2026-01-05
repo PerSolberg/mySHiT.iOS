@@ -1,0 +1,32 @@
+{
+  "RowChange":{
+    "Metadata":{
+      "table":"EVENT"
+      ,"operation":"UPDATE"
+      ,"base_version":-1
+    }
+  ,"NewValues":{
+    "ID":-1181
+    ,"TRIP_ID":45
+    ,"ITINERARY_ID":null
+    ,"VENUE_ID":101
+    ,"RESERVATION":"None"
+    ,"START_TIME":"2017-02-07 14:45:00"
+    ,"TRAVEL_TIME":5
+    ,"ACCESS_INFO":"Hils Pierre"
+    ,"EVENT_TYPE_ID":1
+  }
+  ,"OldValues":{
+    "ID":-1181
+    ,"TRIP_ID":45
+    ,"ITINERARY_ID":null
+    ,"VENUE_ID":101
+    ,"RESERVATION":"None"
+    ,"START_TIME":"2017-02-06 14:45:00"
+    ,"TRAVEL_TIME":5
+    ,"ACCESS_INFO":"Hils Pierre"
+    ,"EVENT_TYPE_ID":1
+  }
+  }
+}
+

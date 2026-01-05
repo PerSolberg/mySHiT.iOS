@@ -74,11 +74,6 @@ class RemoteNotification {
         }
 
         self.trip = TripList.sharedList.trip(byId: tripId)?.trip
-//        if let trip = TripList.sharedList.trip(byId: tripId) {
-//            self.trip = trip.trip
-//        } else {
-//            self.trip = nil
-//        }
     }
 
     

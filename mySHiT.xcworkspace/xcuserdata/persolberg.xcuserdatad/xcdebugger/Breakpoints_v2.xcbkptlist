@@ -1,0 +1,1700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "CB27DF0F-329F-474C-960E-856099D4D482"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EAA3F1B2-8815-4F5D-B858-059CF71BD40E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/RemoteNotification.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
+            landmarkName = "init?(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "36C084C7-F312-4CE5-AB93-EEAFF747FBE2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "243"
+            endingLineNumber = "243"
+            landmarkName = "userNotificationCenter(_:willPresent:withCompletionHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F7453D8E-4A0B-4F12-9AD9-EE9A56E1E26A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "251"
+            endingLineNumber = "251"
+            landmarkName = "userNotificationCenter(_:didReceive:withCompletionHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "84938B98-DD54-48CE-9DBC-2B18F9FFFB3A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "185"
+            endingLineNumber = "185"
+            landmarkName = "application(_:didReceiveRemoteNotification:fetchCompletionHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "98AA3779-0A07-4B06-B2CE-85AE75B930CA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "197"
+            endingLineNumber = "197"
+            landmarkName = "handleRemoteNotification(notification:completionHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1224E0B8-BF9F-4CE2-846C-DF5DEDEC5AFF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SHiTNotifications/NotificationService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "didReceive(_:withContentHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A851D895-A6BE-43E5-9E8A-B5712AB9D42C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SHiTNotifications/NotificationService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "95"
+            endingLineNumber = "95"
+            landmarkName = "serviceExtensionTimeWillExpire()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C171D193-A90D-4B80-9E75-14B8ECF64422"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/ClassInfo.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "subclasses(of:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CA621267-573C-4C7C-8066-BCF76428F941"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/ClassInfo.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "subclasses(of:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "65D9FA9A-7C79-4D10-9C8A-13FBE094F327"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
+            landmarkName = "createFromDictionary(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "65D9FA9A-7C79-4D10-9C8A-13FBE094F327 - d6af40412c3e5ade"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static mySHiT.TripElement.createFromDictionary(Swift.Optional&lt;__C.NSDictionary&gt;) -&gt; Swift.Optional&lt;mySHiT.TripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "171"
+                  endingLineNumber = "171">
+               </Location>
+               <Location
+                  uuid = "65D9FA9A-7C79-4D10-9C8A-13FBE094F327 - d6af40412c3e5b1c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static mySHiT.TripElement.createFromDictionary(Swift.Optional&lt;__C.NSDictionary&gt;) -&gt; Swift.Optional&lt;mySHiT.TripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "173"
+                  endingLineNumber = "173">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5A408F02-FD9D-4ECB-8C2C-24187CFECCE2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "183"
+            endingLineNumber = "183"
+            landmarkName = "createFromDictionary(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9CD8DAEC-36A4-4372-B94E-E9C9BB2DA980"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "285"
+            endingLineNumber = "285"
+            landmarkName = "downloadImage(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9930CBDF-D2D0-4D92-8E87-E66EC25034BB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "286"
+            endingLineNumber = "286"
+            landmarkName = "downloadImage(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B14D351C-6CF3-4936-95E7-00A1C220F4C6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "309"
+            endingLineNumber = "309"
+            landmarkName = "downloadImage(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B14D351C-6CF3-4936-95E7-00A1C220F4C6 - 39c303fe24b68786"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "307"
+                  endingLineNumber = "307">
+               </Location>
+               <Location
+                  uuid = "B14D351C-6CF3-4936-95E7-00A1C220F4C6 - 2f4b71d2a9b57bc8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 () -&gt; () in mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "306"
+                  endingLineNumber = "306">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CD7CD867-8F5A-426D-B72E-40174FB2F281"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "304"
+            endingLineNumber = "304"
+            landmarkName = "downloadImage(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "CD7CD867-8F5A-426D-B72E-40174FB2F281 - 6eafc55a8777c8f5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.downloadImage(_: Swift.String, elementType: mySHiT.TripElement.ElementType) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "305"
+                  endingLineNumber = "305">
+               </Location>
+               <Location
+                  uuid = "CD7CD867-8F5A-426D-B72E-40174FB2F281 - 16106fdbcfb17f00"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in mySHiT.TripElement.downloadImage(_: Swift.String, elementType: mySHiT.TripElement.ElementType) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "303"
+                  endingLineNumber = "303">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C359325A-4103-44AD-B576-D30F6988AE17"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "145"
+            endingLineNumber = "145"
+            landmarkName = "icon"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "C359325A-4103-44AD-B576-D30F6988AE17 - b40c8d91c755d766"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.icon.getter : Swift.Optional&lt;__C.UIImage&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "147"
+                  endingLineNumber = "147">
+               </Location>
+               <Location
+                  uuid = "C359325A-4103-44AD-B576-D30F6988AE17 - b40c8d91c755d766"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.icon.getter : Swift.Optional&lt;__C.UIImage&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "147"
+                  endingLineNumber = "147">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6CCA812D-F561-4A13-AD0A-8A5DBAEB1289"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "291"
+            endingLineNumber = "291"
+            landmarkName = "downloadImage(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DBC0770E-92CC-4879-BB26-60960E81073C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
+            landmarkName = "downloadImage(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "DBC0770E-92CC-4879-BB26-60960E81073C - 23e0e57a26ad665b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "292"
+                  endingLineNumber = "292">
+               </Location>
+               <Location
+                  uuid = "DBC0770E-92CC-4879-BB26-60960E81073C - 39c303fe24b685b4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "293"
+                  endingLineNumber = "293">
+               </Location>
+               <Location
+                  uuid = "DBC0770E-92CC-4879-BB26-60960E81073C - 2f4b71d2a9b5793e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 () -&gt; () in mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "292"
+                  endingLineNumber = "292">
+               </Location>
+               <Location
+                  uuid = "DBC0770E-92CC-4879-BB26-60960E81073C - 2f4b71d2a9b5793e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 () -&gt; () in mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "292"
+                  endingLineNumber = "292">
+               </Location>
+               <Location
+                  uuid = "DBC0770E-92CC-4879-BB26-60960E81073C - 2f4b71d2a9b5793e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 () -&gt; () in mySHiT.TripElement.downloadImage(mySHiT.TripElement.IconKey) -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "292"
+                  endingLineNumber = "292">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "49CC88B0-9CEF-471F-B17E-15BED7E3CD95"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "137"
+            endingLineNumber = "137"
+            landmarkName = "icon"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "49CC88B0-9CEF-471F-B17E-15BED7E3CD95 - b40c8d91c755d65e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.icon.getter : Swift.Optional&lt;__C.UIImage&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "139"
+                  endingLineNumber = "139">
+               </Location>
+               <Location
+                  uuid = "49CC88B0-9CEF-471F-B17E-15BED7E3CD95 - d74ea86b0ca02f4a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in mySHiT.TripElement.icon.getter : Swift.Optional&lt;__C.UIImage&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "139"
+                  endingLineNumber = "139">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DE4BC141-F6DB-43AD-87A9-589560B0C294"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "139"
+            endingLineNumber = "139"
+            landmarkName = "icon"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "531BB404-DB99-48A4-963D-EA7056250F88"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "icon"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A8A8C389-914F-45A6-89D3-ACC09A01071B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
+            landmarkName = "icon"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "26AEF353-B1C9-4813-8763-F2625449A2A1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripListViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "365"
+            endingLineNumber = "365"
+            landmarkName = "loadTrips()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FA99FD55-0ADA-4EBB-8206-DA83ABF86ED1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripListViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "368"
+            endingLineNumber = "368"
+            landmarkName = "loadTrips()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "FA99FD55-0ADA-4EBB-8206-DA83ABF86ED1 - e21ea6617c3f198"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListViewController.loadTrips() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "369"
+                  endingLineNumber = "369">
+               </Location>
+               <Location
+                  uuid = "FA99FD55-0ADA-4EBB-8206-DA83ABF86ED1 - e21ea6617c3f198"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListViewController.loadTrips() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "369"
+                  endingLineNumber = "369">
+               </Location>
+               <Location
+                  uuid = "FA99FD55-0ADA-4EBB-8206-DA83ABF86ED1 - e21ea6617c3f198"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListViewController.loadTrips() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "369"
+                  endingLineNumber = "369">
+               </Location>
+               <Location
+                  uuid = "FA99FD55-0ADA-4EBB-8206-DA83ABF86ED1 - e21ea6617c3f07b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListViewController.loadTrips() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "368"
+                  endingLineNumber = "368">
+               </Location>
+               <Location
+                  uuid = "FA99FD55-0ADA-4EBB-8206-DA83ABF86ED1 - e21ea6617c3f07b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListViewController.loadTrips() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "368"
+                  endingLineNumber = "368">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3493BB2C-FFB4-4317-8B93-F93F68A9379A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripListViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "356"
+            endingLineNumber = "356"
+            landmarkName = "saveSections()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BE7D822C-B4E2-4A4A-8002-069E2444534E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripListSection.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "init(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BE7D822C-B4E2-4A4A-8002-069E2444534E - ca38486506889b06"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListSectionInfo.init(coder: __C.NSCoder) -&gt; mySHiT.TripListSectionInfo"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListSection.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "37"
+                  endingLineNumber = "37">
+               </Location>
+               <Location
+                  uuid = "BE7D822C-B4E2-4A4A-8002-069E2444534E - ca38486506889b06"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListSectionInfo.init(coder: __C.NSCoder) -&gt; mySHiT.TripListSectionInfo"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListSection.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "37"
+                  endingLineNumber = "37">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A744E3A3-BEA4-4784-96F9-A554C4A07251"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripListSection.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "init(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A744E3A3-BEA4-4784-96F9-A554C4A07251 - ca38486506889bc0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListSectionInfo.init(coder: __C.NSCoder) -&gt; mySHiT.TripListSectionInfo"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListSection.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+               <Location
+                  uuid = "A744E3A3-BEA4-4784-96F9-A554C4A07251 - ca38486506889bc0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListSectionInfo.init(coder: __C.NSCoder) -&gt; mySHiT.TripListSectionInfo"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListSection.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+               <Location
+                  uuid = "A744E3A3-BEA4-4784-96F9-A554C4A07251 - ca38486506889bc0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripListSectionInfo.init(coder: __C.NSCoder) -&gt; mySHiT.TripListSectionInfo"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripListSection.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AA45B783-B549-401C-AF09-D4F8CE769E39"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripList.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
+            landmarkName = "loadFromArchive()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "AA45B783-B549-401C-AF09-D4F8CE769E39 - a6ac0682c1ff69ee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripList.loadFromArchive() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripList.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "245"
+                  endingLineNumber = "245">
+               </Location>
+               <Location
+                  uuid = "AA45B783-B549-401C-AF09-D4F8CE769E39 - a6ac0682c1ff69ee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripList.loadFromArchive() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripList.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "245"
+                  endingLineNumber = "245">
+               </Location>
+               <Location
+                  uuid = "AA45B783-B549-401C-AF09-D4F8CE769E39 - a6ac0682c1ff69ee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripList.loadFromArchive() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripList.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "245"
+                  endingLineNumber = "245">
+               </Location>
+               <Location
+                  uuid = "AA45B783-B549-401C-AF09-D4F8CE769E39 - a6ac0682c1ff69ee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripList.loadFromArchive() -&gt; ()"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripList.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "245"
+                  endingLineNumber = "245">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6D1FAC67-4C8C-4B65-9873-810A74D67EBA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AnnotatedTrip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6D1FAC67-4C8C-4B65-9873-810A74D67EBA - c60f755f73c92651"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTrip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTrip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTrip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "42"
+                  endingLineNumber = "42">
+               </Location>
+               <Location
+                  uuid = "6D1FAC67-4C8C-4B65-9873-810A74D67EBA - c60f755f73c92651"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTrip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTrip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTrip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "42"
+                  endingLineNumber = "42">
+               </Location>
+               <Location
+                  uuid = "6D1FAC67-4C8C-4B65-9873-810A74D67EBA - c60f755f73c92651"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTrip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTrip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTrip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "42"
+                  endingLineNumber = "42">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B7A0B05C-6728-4622-9AFF-97C33A5C3B1C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B7A0B05C-6728-4622-9AFF-97C33A5C3B1C - ae3f2704b70fdfa8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Trip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Trip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Trip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "202"
+                  endingLineNumber = "202">
+               </Location>
+               <Location
+                  uuid = "B7A0B05C-6728-4622-9AFF-97C33A5C3B1C - ae3f2704b70fdfa8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Trip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Trip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Trip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "202"
+                  endingLineNumber = "202">
+               </Location>
+               <Location
+                  uuid = "B7A0B05C-6728-4622-9AFF-97C33A5C3B1C - ae3f2704b70fdfa8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Trip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Trip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Trip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "202"
+                  endingLineNumber = "202">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/ChatThread.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "201"
+            endingLineNumber = "201"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5 - c5a7516e4900bd58"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "201"
+                  endingLineNumber = "201">
+               </Location>
+               <Location
+                  uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5 - c5a7516e4900bd58"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "201"
+                  endingLineNumber = "201">
+               </Location>
+               <Location
+                  uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5 - c5a7516e4900bd58"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "201"
+                  endingLineNumber = "201">
+               </Location>
+               <Location
+                  uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5 - c5a7516e4900bd58"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "201"
+                  endingLineNumber = "201">
+               </Location>
+               <Location
+                  uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5 - c5a7516e4900bd58"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "201"
+                  endingLineNumber = "201">
+               </Location>
+               <Location
+                  uuid = "BCFD1967-016D-4AE8-B6C4-E4EBBC6008E5 - c5a7516e4900bd58"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "201"
+                  endingLineNumber = "201">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E18FE3D5-1B81-42C0-9C09-08CC35D210B3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AnnotatedTrip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E18FE3D5-1B81-42C0-9C09-08CC35D210B3 - c60f755f73c9268f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTrip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTrip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTrip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "40"
+                  endingLineNumber = "40">
+               </Location>
+               <Location
+                  uuid = "E18FE3D5-1B81-42C0-9C09-08CC35D210B3 - c60f755f73c9268f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTrip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTrip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTrip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "40"
+                  endingLineNumber = "40">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E159611C-90D9-406F-B1E6-A489DF09265F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E159611C-90D9-406F-B1E6-A489DF09265F - ae3f2704b70fddd5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Trip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Trip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Trip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "215"
+                  endingLineNumber = "215">
+               </Location>
+               <Location
+                  uuid = "E159611C-90D9-406F-B1E6-A489DF09265F - ae3f2704b70fddd5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Trip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Trip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Trip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "215"
+                  endingLineNumber = "215">
+               </Location>
+               <Location
+                  uuid = "E159611C-90D9-406F-B1E6-A489DF09265F - ae3f2704b70fddfa"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Trip.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Trip&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Trip.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "216"
+                  endingLineNumber = "216">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1572945A-1684-4EBB-9275-6FEE61847C4B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AnnotatedTripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "1572945A-1684-4EBB-9275-6FEE61847C4B - 68a5c4c89717060c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "38"
+                  endingLineNumber = "38">
+               </Location>
+               <Location
+                  uuid = "1572945A-1684-4EBB-9275-6FEE61847C4B - 68a5c4c89717060c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "38"
+                  endingLineNumber = "38">
+               </Location>
+               <Location
+                  uuid = "1572945A-1684-4EBB-9275-6FEE61847C4B - 68a5c4c89717060c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "38"
+                  endingLineNumber = "38">
+               </Location>
+               <Location
+                  uuid = "1572945A-1684-4EBB-9275-6FEE61847C4B - 68a5c4c89717060c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "38"
+                  endingLineNumber = "38">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2727EBE5-C14A-4028-BDAC-E90875207C24"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/AnnotatedTripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2727EBE5-C14A-4028-BDAC-E90875207C24 - 68a5c4c8971707ab"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33">
+               </Location>
+               <Location
+                  uuid = "2727EBE5-C14A-4028-BDAC-E90875207C24 - 68a5c4c8971707ab"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.AnnotatedTripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.AnnotatedTripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/AnnotatedTripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0EF43BF3-5671-45EE-97A0-B62BCFE20B4F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "235"
+            endingLineNumber = "235"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0A5328BB-1DA2-4B25-9466-FB6820D5D4A2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/GenericTransport.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "171"
+            endingLineNumber = "171"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0A5328BB-1DA2-4B25-9466-FB6820D5D4A2 - f568c0f141ec81a2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.GenericTransport.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.GenericTransport&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/GenericTransport.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "171"
+                  endingLineNumber = "171">
+               </Location>
+               <Location
+                  uuid = "0A5328BB-1DA2-4B25-9466-FB6820D5D4A2 - f568c0f141ec81a2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.GenericTransport.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.GenericTransport&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/GenericTransport.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "171"
+                  endingLineNumber = "171">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7C66410F-3271-4C6B-B40E-CF3143C87AA6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Flight.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7C66410F-3271-4C6B-B40E-CF3143C87AA6 - bf60b191d99c02bd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Flight.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Flight&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Flight.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64">
+               </Location>
+               <Location
+                  uuid = "7C66410F-3271-4C6B-B40E-CF3143C87AA6 - bf60b191d99c02bd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.Flight.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.Flight&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/Flight.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "67E78BCC-33B8-4F98-9939-B94B3D104FE7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B18C8EFE-CBC1-4B3B-8598-40EBA2FF1E81"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/NotificationInfo.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B18C8EFE-CBC1-4B3B-8598-40EBA2FF1E81 - 49d41ef95b85a75b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.NotificationInfo.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.NotificationInfo&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/NotificationInfo.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41">
+               </Location>
+               <Location
+                  uuid = "B18C8EFE-CBC1-4B3B-8598-40EBA2FF1E81 - 49d41ef95b85a75b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.NotificationInfo.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.NotificationInfo&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/NotificationInfo.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2B74FB38-A8E5-43F5-AA0A-3C41EB5EC891"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/TripElement.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2B74FB38-A8E5-43F5-AA0A-3C41EB5EC891 - 4e0534de6d8961d9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.TripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "244"
+                  endingLineNumber = "244">
+               </Location>
+               <Location
+                  uuid = "2B74FB38-A8E5-43F5-AA0A-3C41EB5EC891 - 4e0534de6d8961d9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.TripElement.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.TripElement&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/TripElement.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "244"
+                  endingLineNumber = "244">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "403F9761-ED03-4D8F-8D35-78DDB81CE739"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "214"
+            endingLineNumber = "214"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0A5A9216-F0F3-43BF-8AE8-4322346F1496"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "203"
+            endingLineNumber = "203"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F5E787F4-0F61-4791-B9CF-3F7FE503CF89"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/Trip.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C616CE3D-5D84-4205-A789-213630177A45"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/ChatThread.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C8B413C8-F482-4697-85B6-053979C96949"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/ChatMessage.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "95"
+            endingLineNumber = "95"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B734B1BD-FDB6-42E3-9C0F-D634226946F3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mySHiT/ChatThread.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "217"
+            endingLineNumber = "217"
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B734B1BD-FDB6-42E3-9C0F-D634226946F3 - c5a7516e4900a348"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "217"
+                  endingLineNumber = "217">
+               </Location>
+               <Location
+                  uuid = "B734B1BD-FDB6-42E3-9C0F-D634226946F3 - c5a7516e4900a348"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "217"
+                  endingLineNumber = "217">
+               </Location>
+               <Location
+                  uuid = "B734B1BD-FDB6-42E3-9C0F-D634226946F3 - c5a7516e4900a348"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "217"
+                  endingLineNumber = "217">
+               </Location>
+               <Location
+                  uuid = "B734B1BD-FDB6-42E3-9C0F-D634226946F3 - c5a7516e4900a348"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "mySHiT.ChatThread.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;mySHiT.ChatThread&gt;"
+                  moduleName = "mySHiT"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/persolberg/Documents/XCode%20Projects/mySHiT/mySHiT/ChatThread.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "217"
+                  endingLineNumber = "217">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
