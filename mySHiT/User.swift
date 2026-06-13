@@ -11,7 +11,7 @@ import FirebaseMessaging
 import os
 
 class User : NSObject, NSSecureCoding {
-    static let sharedUser = User()
+    nonisolated(unsafe) static let sharedUser = User()
     
     //
     // MARK: Properties

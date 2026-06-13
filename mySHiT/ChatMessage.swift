@@ -20,7 +20,7 @@ class ChatMessage: NSObject, NSSecureCoding {
     typealias LocalId = (deviceType: String, deviceId: String, localId: String)
     static let missingLocalId:LocalId = ("", "", "")
     
-    static var dateFormatter = DateFormatter()
+    //static var dateFormatter = DateFormatter()
 
     var id: Int?
     var userId: Int!

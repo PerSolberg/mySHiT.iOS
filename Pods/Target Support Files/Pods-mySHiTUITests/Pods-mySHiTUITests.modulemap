@@ -1,6 +1,0 @@
-framework module Pods_mySHiTUITests {
-  umbrella header "Pods-mySHiTUITests-umbrella.h"
-
-  export *
-  module * { export * }
-}

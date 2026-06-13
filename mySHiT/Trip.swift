@@ -13,7 +13,7 @@ import UserNotifications
 import os
 
 class Trip: NSObject, NSSecureCoding {
-    static var iconCache:[IconKey:(status:IconStatus, icon:UIImage?)] = [:]
+    nonisolated(unsafe) static var iconCache:[IconKey:(status:IconStatus, icon:UIImage?)] = [:]
     static let iconCacheSemaphore = DispatchSemaphore(value: 1)
     enum IconStatus {
         case missing

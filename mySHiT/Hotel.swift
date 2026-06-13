@@ -46,6 +46,7 @@ class Hotel: TripElement {
         let formatter = DateIntervalFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        formatter.timeZone = TimeZone(identifier: timezone ?? "UTC")
         return formatter.string(from: checkInDate!, to: checkOutDate!)
     }
     override var endInfo: String? {
@@ -108,9 +109,9 @@ class Hotel: TripElement {
     required init?(fromDictionary elementData: NSDictionary!) {
         super.init(fromDictionary: elementData)
         
-        let dictTimezone = elementData[Constant.JSON.hotelTimezone] as? String
-        checkInDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckIn] as? String, timeZoneName: dictTimezone)
-        checkOutDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckOut] as? String, timeZoneName: dictTimezone)
+        timezone = elementData[Constant.JSON.hotelTimezone] as? String
+        checkInDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckIn] as? String, timeZoneName: timezone)
+        checkOutDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckOut] as? String, timeZoneName: timezone)
 
         hotelName = elementData[Constant.JSON.hotelName] as? String
         address = elementData[Constant.JSON.hotelAddress] as? String
@@ -140,9 +141,9 @@ class Hotel: TripElement {
     override func update(fromDictionary elementData: NSDictionary!) -> Bool {
         changed = super.update(fromDictionary: elementData)
 
-        let dictTimezone = elementData[Constant.JSON.hotelTimezone] as? String
-        checkInDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckIn] as? String, timeZoneName: dictTimezone)
-        checkOutDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckOut] as? String, timeZoneName: dictTimezone)
+        timezone = elementData[Constant.JSON.hotelTimezone] as? String
+        checkInDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckIn] as? String, timeZoneName: timezone)
+        checkOutDate = ServerDate.convertServerDate(elementData[Constant.JSON.hotelCheckOut] as? String, timeZoneName: timezone)
 
         hotelName = elementData[Constant.JSON.hotelName] as? String
         address = elementData[Constant.JSON.hotelAddress] as? String

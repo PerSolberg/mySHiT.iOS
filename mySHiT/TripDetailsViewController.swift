@@ -149,7 +149,8 @@ class TripDetailsViewController: UITableViewController, DeepLinkableViewControll
             TripList.sharedList.saveToArchive()
             
             elementToRefresh = nil
-            UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
+            UNUserNotificationCenter.current().setBadgeCount(TripList.sharedList.changes())
+            //UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
         }
     }
 

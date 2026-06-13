@@ -166,7 +166,8 @@ class TripListViewController: UITableViewController {
             let prevModStatus = selectedTrip.modified
             selectedTrip.modified = selectedTrip.trip.changes() > 0 ? .Changed : .Unchanged
             
-            UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
+            UNUserNotificationCenter.current().setBadgeCount(TripList.sharedList.changes())
+            //UIApplication.shared.applicationIconBadgeNumber = TripList.sharedList.changes()
             
             if let cell = tableView.cellForRow(at: indexPath), let imgView = cell.viewWithTag(4) as? UIImageView {
                 imgView.image = selectedTrip.trip.icon?.overlayBadge(selectedTrip.modified)

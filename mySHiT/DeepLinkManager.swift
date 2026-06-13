@@ -9,11 +9,11 @@
 import Foundation
 import UserNotifications
 
-class DeepLinkManager {
+final class DeepLinkManager {
     //
     // MARK: properties
     //
-    private static let sharedMgr = DeepLinkManager()
+    nonisolated(unsafe) private static let sharedMgr = DeepLinkManager()
     private var deepLink : DeepLink?
     
     // Prevent other classes from instantiating - DeepLinkManager is singleton!

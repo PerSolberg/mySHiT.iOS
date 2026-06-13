@@ -16,7 +16,7 @@ import os
 public class TripList:NSObject, Sequence, NSCoding {
     typealias Index = Int
     
-    static let sharedList = TripList()
+    nonisolated(unsafe) static let sharedList = TripList()
     
     static let dqAccess = DispatchQueue(label: "no.andmore.mySHiT.triplist.access", attributes: .concurrent, target: .global())
     
@@ -229,9 +229,11 @@ public class TripList:NSObject, Sequence, NSCoding {
         }
         
         // Set application badge
-        DispatchQueue.main.async(execute: {
-            UIApplication.shared.applicationIconBadgeNumber = self.changes()
-        })
+        let changes = self.changes()
+        UNUserNotificationCenter.current().setBadgeCount(changes, withCompletionHandler: nil)
+        //DispatchQueue.main.async(execute: {
+        //    UIApplication.shared.applicationIconBadgeNumber = changes
+        //})
     }
     
     

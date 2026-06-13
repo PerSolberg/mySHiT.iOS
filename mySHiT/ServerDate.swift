@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Synchronization
 import os
 
 class ServerDate {
@@ -17,8 +18,8 @@ class ServerDate {
         "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$": "yyyy-MM-dd HH:mm:ss" ,
         "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$": "yyyy-MM-dd'T'HH:mm:ss"
     ]
-    static var dateFormatter = DateFormatter()
-    static var isoFormatter = ISO8601DateFormatter()
+    static let dateFormatter = Mutex<DateFormatter>(DateFormatter())
+    static let isoFormatter = Mutex<ISO8601DateFormatter>(ISO8601DateFormatter())
     static let defaultLocale = Locale(identifier: "en_US_POSIX")
 
     static let semaphore = DispatchSemaphore(value: 1)
@@ -46,7 +47,18 @@ class ServerDate {
         if let serverDateString = serverDateString {
             if let formatString = findFormatString(serverDateString) {
                 var result:Date?
-                semaphore.wait()
+                dateFormatter.withLock {
+                    if let timeZone = timeZone {
+                        $0.timeZone = timeZone
+                    } else {
+                        $0.timeZone = Constant.timezoneUTC
+                        os_log("Using default time zone for timestamp '%{public}s'", log: OSLog.general, type: .info, serverDateString)
+                    }
+                    $0.dateFormat = formatString
+                    $0.locale = defaultLocale
+                    result = $0.date(from: serverDateString)
+                }
+                /*semaphore.wait()
                     if let timeZone = timeZone {
                         dateFormatter.timeZone = timeZone
                     } else {
@@ -56,7 +68,7 @@ class ServerDate {
                     dateFormatter.dateFormat = formatString
                     dateFormatter.locale = defaultLocale
                     result = dateFormatter.date(from: serverDateString)
-                semaphore.signal()
+                semaphore.signal()*/
                 return result
             } else {
                 return nil
@@ -68,11 +80,16 @@ class ServerDate {
     
     
     class func convertServerDate (_ localDate: Date, timeZone: TimeZone?) -> String {
-        semaphore.wait()
+        /*semaphore.wait()
             isoFormatter.formatOptions = [ .withFullDate, .withTime, .withColonSeparatorInTime, .withDashSeparatorInDate, .withSpaceBetweenDateAndTime ]
             isoFormatter.timeZone = timeZone
             let result = isoFormatter.string(from: localDate)
-        semaphore.signal()
-        return result
+        semaphore.signal()*/
+        isoFormatter.withLock {
+            $0.formatOptions = [ .withFullDate, .withTime, .withColonSeparatorInTime, .withDashSeparatorInDate, .withSpaceBetweenDateAndTime ]
+            $0.timeZone = timeZone
+            return $0.string(from: localDate)
+        }
+//        return result
     }
 }
